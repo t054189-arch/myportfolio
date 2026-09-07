@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rayan Alajmi — Civil Engineering Portfolio</title>
+<meta name="description" content="Portfolio of Rayan Alajmi, civil engineering student at Kuwait University." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<!-- blueprint grid backdrop -->
+<div class="blueprint" aria-hidden="true"></div>
+
+<!-- page load / transition curtain -->
+<div class="curtain" id="curtain" aria-hidden="true">
+  <div class="curtain__bar"></div>
+</div>
+
+<header class="nav" id="nav">
+  <a class="nav__brand" href="#home">
+    <span class="nav__mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="26" height="26" role="img" aria-label="">
+        <path d="M4 26 L16 6 L28 26 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M9.5 26 L16 15 L22.5 26" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/>
+      </svg>
+    </span>
+    <span class="nav__name">RAYAN<span class="dot">.</span>ALAJMI</span>
+  </a>
+  <nav class="nav__links" aria-label="Main">
+    <a href="#about">About</a>
+    <a href="#profile">Profile</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero__inner">
+      <p class="eyebrow reveal">CIVIL ENGINEERING &nbsp;/&nbsp; KUWAIT</p>
+      <h1 class="hero__title">
+        <span class="line"><span>Rayan</span></span>
+        <span class="line"><span>Alajmi</span></span>
+      </h1>
+      <p class="hero__sub reveal" data-delay="1">
+        Civil engineering student at Kuwait University, building skills
+        one structure at a time.
+      </p>
+      <div class="hero__actions reveal" data-delay="2">
+        <a class="btn btn--solid" href="#contact">Get in touch</a>
+        <a class="btn btn--ghost" href="#about">About me</a>
+      </div>
+
+      <ul class="hero__stats reveal" data-delay="3">
+        <li><strong data-count="22">0</strong><span>Years old</span></li>
+        <li><strong>Kuwait</strong><span>Location</span></li>
+        <li><strong>CODED</strong><span>Team member</span></li>
+      </ul>
+    </div>
+
+    <div class="hero__scroll" aria-hidden="true">
+      <span>SCROLL</span>
+      <i></i>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="section__head reveal">
+      <span class="section__num">01</span>
+      <h2>About</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="about">
+      <div class="about__text reveal" data-delay="1">
+        <p class="lead">
+          I am Rayan Alajmi, 22 years old, based in Kuwait.
+        </p>
+        <p>
+          I study civil engineering at Kuwait University. I joined the CODED
+          team to learn new skills and improve myself.
+        </p>
+      </div>
+
+      <div class="about__card reveal" data-delay="2">
+        <div class="card">
+          <div class="card__bar"><span></span><span></span><span></span></div>
+          <dl class="specs">
+            <div><dt>Name</dt><dd>Rayan Alajmi</dd></div>
+            <div><dt>Age</dt><dd>22</dd></div>
+            <div><dt>Location</dt><dd>Kuwait</dd></div>
+            <div><dt>Field</dt><dd>Civil Engineering</dd></div>
+            <div><dt>University</dt><dd>Kuwait University</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
+  <section class="section section--alt" id="profile">
+    <div class="section__head reveal">
+      <span class="section__num">02</span>
+      <h2>Profile</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="grid">
+      <article class="tile reveal" data-delay="1">
+        <div class="tile__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28">
+            <path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h3>Civil Engineering</h3>
+        <p>My field of study.</p>
+      </article>
+
+      <article class="tile reveal" data-delay="2">
+        <div class="tile__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28">
+            <path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>Kuwait University</h3>
+        <p>Where I study.</p>
+      </article>
+
+      <article class="tile reveal" data-delay="3">
+        <div class="tile__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="28" height="28">
+            <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3>CODED Team</h3>
+        <p>Joined to learn new skills and improve myself.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section class="section" id="education">
+    <div class="section__head reveal">
+      <span class="section__num">03</span>
+      <h2>Education &amp; Growth</h2>
+      <div class="rule"></div>
+    </div>
+
+    <ol class="timeline">
+      <li class="reveal" data-delay="1">
+        <span class="timeline__dot" aria-hidden="true"></span>
+        <h3>Civil Engineering — Kuwait University</h3>
+        <p>Studying civil engineering.</p>
+      </li>
+      <li class="reveal" data-delay="2">
+        <span class="timeline__dot" aria-hidden="true"></span>
+        <h3>CODED Team</h3>
+        <p>Joined to learn new skills and improve myself.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section section--contact" id="contact">
+    <div class="section__head reveal">
+      <span class="section__num">04</span>
+      <h2>Contact</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="contact">
+      <a class="contact__item reveal" data-delay="1" href="mailto:al3jmir72@gmail.com">
+        <span class="contact__label">Email</span>
+        <span class="contact__value">al3jmir72@gmail.com</span>
+        <span class="contact__arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="contact__item reveal" data-delay="2" href="tel:+96597911108">
+        <span class="contact__label">Phone</span>
+        <span class="contact__value">+965 97911108</span>
+        <span class="contact__arrow" aria-hidden="true">→</span>
+      </a>
+      <div class="contact__item contact__item--static reveal" data-delay="3">
+        <span class="contact__label">Location</span>
+        <span class="contact__value">Kuwait</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p>Rayan Alajmi — Civil Engineering, Kuwait University</p>
+  <a href="#home" class="foot__top">Back to top ↑</a>
+</footer>
+
+<script src="assets/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 310" width="240" height="310" role="img">
+  <!-- Flat stand-in for the Three.js V60 rig, shown when WebGL or the
+       Three.js CDN is unavailable. Same object, same palette, no canvas. -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- server: glass carafe -->
+    <path d="M74 176h92l-8 96a14 14 0 0 1-14 12H96a14 14 0 0 1-14-12z" fill="#EBE1D0" opacity=".55"/>
+    <path d="M74 176h92l-8 96a14 14 0 0 1-14 12H96a14 14 0 0 1-14-12z" stroke="#DCCEB8" stroke-width="3"/>
+    <!-- brewed coffee sitting in the server -->
+    <path d="M84 236h72l-4 36a14 14 0 0 1-14 12H98a14 14 0 0 1-14-12z" fill="#4A2C1B"/>
+    <ellipse cx="120" cy="236" rx="36" ry="7" fill="#3B281C"/>
+    <!-- cone, opening upward -->
+    <path d="M32 62h176l-64 104h-48z" fill="#F2ECE1"/>
+    <path d="M32 62h176l-64 104h-48z" stroke="#DCCEB8" stroke-width="3"/>
+    <!-- rim -->
+    <ellipse cx="120" cy="62" rx="88" ry="13" fill="#F2ECE1"/>
+    <ellipse cx="120" cy="62" rx="88" ry="13" stroke="#DCCEB8" stroke-width="3"/>
+    <ellipse cx="120" cy="62" rx="70" ry="9" fill="#EBE1D0"/>
+    <!-- three brass rib rings -->
+    <path d="M56 92h128" stroke="#9B7433" stroke-width="2.6" opacity=".9"/>
+    <path d="M76 120h88" stroke="#9B7433" stroke-width="2.6" opacity=".9"/>
+    <path d="M96 146h48" stroke="#9B7433" stroke-width="2.6" opacity=".9"/>
+    <!-- beans orbiting the rig -->
+    <ellipse cx="26" cy="196" rx="12" ry="8" fill="#3B281C" transform="rotate(-18 26 196)"/>
+    <ellipse cx="214" cy="212" rx="12" ry="8" fill="#3B281C" transform="rotate(14 214 212)"/>
+    <ellipse cx="196" cy="34" rx="11" ry="7" fill="#3B281C" transform="rotate(-24 196 34)"/>
+    <ellipse cx="42" cy="26" rx="11" ry="7" fill="#3B281C" transform="rotate(20 42 26)"/>
+  </g>
+</svg>

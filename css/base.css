@@ -146,7 +146,8 @@ strong, b { font-weight: 600; }
 .lang-ar .brew-foot,
 .lang-ar .brew-meta .value,
 .lang-ar .specs td,
-.lang-ar .bar-today .detail { font-family: var(--font-mono-ar); }
+.lang-ar .bar-today .detail,
+.lang-ar .demo-box { font-family: var(--font-mono-ar); }
 
 /* One measurement, pinned left-to-right so the unit stays beside its number */
 .ltr { unicode-bidi: isolate; }
@@ -249,7 +250,7 @@ main { display: block; }
   border-radius: var(--r-control);
   padding: var(--s-2) var(--s-3);
   font-size: .875rem;
-  transition: top var(--t-fast) var(--ease);
+  transition: top var(--t-fast) var(--e-out);
 }
 .skip-link:focus { top: var(--s-3); }
 
@@ -277,3 +278,39 @@ main { display: block; }
 /* Bodoni never drops below 18px, so these stop at 1.125rem. */
 .h3 { font-size: 1.375rem; }
 .h4 { font-size: 1.125rem; }
+
+/* --- 8. Motion utilities ------------------------------------------------
+   Everything here is opt-in through a class that JavaScript adds to <html>.
+   With JS off the page renders complete and static: nothing is parked at
+   opacity 0 waiting for an event that may never arrive.
+   ----------------------------------------------------------------------- */
+
+/* Scroll reveal. Visible by default; only .js-reveal hides them first. */
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity var(--t-reveal) var(--e-out),
+              transform var(--t-reveal) var(--e-out);
+}
+.js-reveal .reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Page transition: fade up 12px on arrival, fade out on leaving. */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+.js-page main {
+  animation: page-in var(--t-slow) var(--e-in-out) both;
+}
+.js-page main.is-leaving {
+  opacity: 0;
+  transition: opacity var(--t-slow) var(--e-in-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal .reveal { opacity: 1; transform: none; }
+  .js-page main { animation: none; }
+}

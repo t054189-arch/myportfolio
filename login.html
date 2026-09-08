@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — Bloom</title>
+<meta name="description" content="Sign in to Bloom, a specialty coffee shop in Kuwait, to see your saved brews and orders — or continue as a guest.">
+<!-- Restore theme and reading direction before the first paint. -->
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem('bloom.theme');
+    if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('bloom.lang') === 'ar') {
+      var html = document.documentElement;
+      html.setAttribute('lang', 'ar');
+      html.setAttribute('dir', 'rtl');
+      html.classList.add('lang-ar');
+    }
+  } catch (e) { /* private mode — carry on in English and the OS theme */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body data-page="login" data-title-en="Sign in — Bloom" data-title-ar="تسجيل الدخول — بلوم">
+
+<main id="main" class="login-page">
+
+  <!-- The V60 rig, turning slowly. Falls back to a flat SVG with no WebGL. -->
+  <div class="scene login-scene" id="login-scene"
+       data-model="v60" data-mode="auto" data-fallback="assets/v60-rig.svg"></div>
+
+  <div class="login-controls">
+    <button type="button" class="icon-btn icon-btn-wide" id="lang-btn"
+            data-en-label="Switch to Arabic" data-ar-label="التبديل إلى الإنجليزية"></button>
+    <button type="button" class="icon-btn" id="theme-btn"
+            data-en-label="Switch to dark theme" data-ar-label="التبديل إلى الوضع الداكن"></button>
+  </div>
+
+  <form class="login-card" id="login-form" novalidate>
+    <h1 class="login-mark">Bl<em>oo</em>m</h1>
+    <p class="note" data-en="Sign in to see your saved brews and orders"
+       data-ar="سجّل الدخول لعرض وصفاتك المحفوظة وطلباتك">Sign in to see your saved brews and orders</p>
+
+    <div class="field">
+      <label for="username" data-en="Username" data-ar="اسم المستخدم">Username</label>
+      <input type="text" id="username" name="username" autocomplete="username" autocapitalize="none"
+             spellcheck="false" data-en-placeholder="bloom" data-ar-placeholder="bloom">
+    </div>
+
+    <div class="field">
+      <label for="password" data-en="Password" data-ar="كلمة المرور">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password"
+             data-en-placeholder="••••••••" data-ar-placeholder="••••••••">
+    </div>
+
+    <p class="form-msg" id="login-msg" hidden role="alert"></p>
+
+    <button type="submit" class="btn btn-primary btn-block" id="login-submit"
+            data-en="Sign in" data-ar="تسجيل الدخول">Sign in</button>
+
+    <!-- Always visible, always works. -->
+    <a class="guest-link" href="index.html" id="guest-link"
+       data-en="Continue as guest →" data-ar="المتابعة كزائر →">Continue as guest →</a>
+
+    <p class="demo-box">
+      <span data-en="Demo account" data-ar="حساب تجريبي">Demo account</span>
+      <span><b>bloom</b> / <b>bloom123</b></span>
+    </p>
+  </form>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

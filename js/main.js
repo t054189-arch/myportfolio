@@ -54,6 +54,17 @@ function byCategory(category) {
 
 function el(id) { return document.getElementById(id); }
 
+/* Duration tokens live in CSS; JS reads them rather than repeating numbers. */
+function ms(token) {
+  var raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  var value = parseFloat(raw) || 0;
+  return raw.indexOf('ms') !== -1 ? value : value * 1000;
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
 /* Strings the interface itself needs. */
 var WORDS = {
   kwd:        { en: 'KWD', ar: 'د.ك' },
@@ -99,7 +110,20 @@ var WORDS = {
   seconds:    { en: 's', ar: 'ث' },
   grams:      { en: 'g', ar: 'غم' },
   degrees:    { en: '°C', ar: '°م' },
-  bar:        { en: 'bar', ar: 'بار' }
+  bar:        { en: 'bar', ar: 'بار' },
+
+  /* login and account */
+  account:    { en: 'Account', ar: 'الحساب' },
+  signedIn:   { en: 'Signed in as', ar: 'تم الدخول باسم' },
+  guest:      { en: 'Guest', ar: 'زائر' },
+  signOut:    { en: 'Sign out', ar: 'تسجيل الخروج' },
+  signIn:     { en: 'Sign in', ar: 'تسجيل الدخول' },
+  signingIn:  { en: 'Signing in…', ar: 'جارٍ الدخول…' },
+  emptyForm:  { en: 'Please fill in both the username and the password.', ar: 'الرجاء إدخال اسم المستخدم وكلمة المرور.' },
+  wrongForm:  { en: 'That username and password do not match. Try bloom / bloom123, or continue as guest.', ar: 'اسم المستخدم أو كلمة المرور غير صحيحة. جرّب bloom / bloom123، أو تابع كزائر.' },
+  dragHint:   { en: 'Drag to rotate', ar: 'اسحب للتدوير' },
+  rigAlt:     { en: 'A V60 cone with brass rib rings above a glass server of brewed coffee',
+                ar: 'قمع V60 بحلقات نحاسية فوق دورق زجاجي فيه قهوة محضّرة' }
 };
 
 /* --- 2. Theme ----------------------------------------------------------- */
@@ -220,6 +244,17 @@ function headerHTML(page) {
             '<span class="lang-label"' + bi(WORDS.langLabel) + '>' + esc(t(WORDS.langLabel)) + '</span>' +
           '</button>' +
           '<button type="button" class="icon-btn" id="theme-btn"' + biLabel(WORDS.toDark) + '>' + icon('moon') + '</button>' +
+          '<div class="account-wrap" id="account-wrap">' +
+            '<button type="button" class="icon-btn icon-btn-wide" id="account-btn"' +
+              ' aria-expanded="false" aria-controls="account-menu"' + biLabel(WORDS.account) + '>' +
+              icon('user') +
+              '<span class="account-name" id="account-name"></span>' +
+            '</button>' +
+            '<div class="account-menu" id="account-menu">' +
+              '<p class="account-who" id="account-who"></p>' +
+              '<button type="button" class="btn btn-secondary" id="signout-btn"' + bi(WORDS.signOut) + '>' + esc(t(WORDS.signOut)) + '</button>' +
+            '</div>' +
+          '</div>' +
           '<button type="button" class="icon-btn bag-btn" id="bag-btn"' + biLabel(WORDS.bag) + '>' +
             icon('bag') +
             '<span class="bag-badge" id="bag-badge" hidden>0</span>' +
@@ -298,6 +333,8 @@ function initHeader() {
     closeAll(null);
     header.classList.remove('nav-open');
     el('menu-btn').setAttribute('aria-expanded', 'false');
+    el('account-wrap').classList.remove('is-open');
+    el('account-btn').setAttribute('aria-expanded', 'false');
   });
 
   /* Hamburger below 900px */
@@ -305,6 +342,26 @@ function initHeader() {
     var open = !header.classList.contains('nav-open');
     header.classList.toggle('nav-open', open);
     this.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  /* Account menu: the signed-in name plus a way out. */
+  var accountWrap = el('account-wrap');
+  var accountBtn = el('account-btn');
+  accountBtn.addEventListener('click', function () {
+    var open = !accountWrap.classList.contains('is-open');
+    accountWrap.classList.toggle('is-open', open);
+    accountBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  el('signout-btn').addEventListener('click', function () {
+    Auth.signOut();
+    window.location.href = 'login.html';
+  });
+  document.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape' && accountWrap.classList.contains('is-open')) {
+      accountWrap.classList.remove('is-open');
+      accountBtn.setAttribute('aria-expanded', 'false');
+      accountBtn.focus();
+    }
   });
 
   el('theme-btn').addEventListener('click', function () { Theme.toggle(); });
@@ -436,7 +493,7 @@ var Drawer = (function () {
     var backdrop = el('drawer-backdrop');
     drawer.classList.remove('is-open');
     backdrop.classList.remove('is-open');
-    window.setTimeout(function () { backdrop.hidden = true; }, 200);
+    window.setTimeout(function () { backdrop.hidden = true; }, ms('--t-slow'));
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
 
@@ -493,6 +550,17 @@ function onCartClick(event) {
   }
   var remove = event.target.closest ? event.target.closest('[data-remove]') : null;
   if (remove) Cart.remove(remove.getAttribute('data-remove'));
+}
+
+/* The header shows who is signed in, in the current language. */
+function syncAccount() {
+  var nameEl = el('account-name');
+  if (!nameEl) return;
+  var user = Auth.current();
+  var label = !user ? t(WORDS.signIn) : (user === 'guest' ? t(WORDS.guest) : user);
+  nameEl.textContent = label;
+  el('account-who').innerHTML = esc(t(WORDS.signedIn)) + ' <b>' + esc(label) + '</b>';
+  el('account-btn').setAttribute('aria-label', t(WORDS.account) + ' — ' + label);
 }
 
 function syncBadge() {
@@ -982,7 +1050,217 @@ function initTimer() {
   reset();
 }
 
-/* --- 12. Home page pieces ---------------------------------------------- */
+/* --- 12. Motion ---------------------------------------------------------
+   Reveal and page-transition classes are added here, never in the markup,
+   so a visitor with JavaScript off gets the whole page, fully readable.
+   ----------------------------------------------------------------------- */
+
+var Motion = (function () {
+  var observer = null;
+  var STAGGER = 60;   /* ms between items entering together */
+
+  function revealNow(node) {
+    node.classList.add('is-revealed');
+    node.style.transitionDelay = '';
+  }
+
+  function revealAll() {
+    var pending = document.querySelectorAll('.reveal:not(.is-revealed)');
+    for (var i = 0; i < pending.length; i++) revealNow(pending[i]);
+  }
+
+  /* Position among its reveal siblings, so a row of cards enters in order. */
+  function staggerIndex(node) {
+    var parent = node.parentNode;
+    if (!parent) return 0;
+    var siblings = parent.querySelectorAll(':scope > .reveal');
+    for (var i = 0; i < siblings.length; i++) {
+      if (siblings[i] === node) return Math.min(i, 8);
+    }
+    return 0;
+  }
+
+  function observe(root) {
+    if (!observer) return;
+    var nodes = (root || document).querySelectorAll('.reveal:not(.is-revealed)');
+    for (var i = 0; i < nodes.length; i++) observer.observe(nodes[i]);
+  }
+
+  function initReveals() {
+    if (prefersReducedMotion() || !('IntersectionObserver' in window)) return;
+    document.documentElement.classList.add('js-reveal');
+
+    observer = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (!entries[i].isIntersecting) continue;
+        var node = entries[i].target;
+        node.style.transitionDelay = (staggerIndex(node) * STAGGER) + 'ms';
+        revealNow(node);
+        observer.unobserve(node);
+      }
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
+
+    observe(document);
+
+    /* Safety net: nothing stays invisible because an observer never fired. */
+    window.setTimeout(revealAll, 3000);
+  }
+
+  /* Fade <main> out, then navigate. Same-document and external links pass
+     straight through untouched. */
+  function initPageTransitions() {
+    if (prefersReducedMotion()) return;
+    document.documentElement.classList.add('js-page');
+
+    document.addEventListener('click', function (event) {
+      if (event.defaultPrevented || event.button !== 0) return;
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+      var link = event.target.closest ? event.target.closest('a[href]') : null;
+      if (!link || link.target === '_blank' || link.hasAttribute('download')) return;
+
+      var href = link.getAttribute('href');
+      if (!href || href.charAt(0) === '#') return;
+      if (/^[a-z]+:/i.test(href) && href.indexOf('.html') === -1) return;
+      if (link.origin && link.origin !== window.location.origin) return;
+
+      /* Same page, only the query changing, is still a navigation we animate. */
+      event.preventDefault();
+      var main = document.querySelector('main');
+      if (main) main.classList.add('is-leaving');
+      window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
+    });
+  }
+
+  function init() {
+    initPageTransitions();
+    initReveals();
+  }
+
+  return { init: init, observe: observe, revealAll: revealAll };
+})();
+
+/* --- 13. Cursor tilt ----------------------------------------------------
+   Tilt is written as two custom properties; the hover lift stays in CSS so
+   the two never overwrite each other's transform.
+   ----------------------------------------------------------------------- */
+
+function initTilt(root) {
+  if (prefersReducedMotion()) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  var MAX = 14;   /* degrees */
+  var nodes = (root || document).querySelectorAll('[data-tilt]');
+
+  for (var i = 0; i < nodes.length; i++) {
+    (function (node) {
+      node.addEventListener('pointermove', function (event) {
+        var box = node.getBoundingClientRect();
+        var px = (event.clientX - box.left) / box.width - 0.5;
+        var py = (event.clientY - box.top) / box.height - 0.5;
+        node.style.setProperty('--tilt-y', (px * MAX).toFixed(2) + 'deg');
+        node.style.setProperty('--tilt-x', (-py * MAX).toFixed(2) + 'deg');
+      });
+      node.addEventListener('pointerleave', function () {
+        node.style.setProperty('--tilt-y', '0deg');
+        node.style.setProperty('--tilt-x', '0deg');
+      });
+    })(nodes[i]);
+  }
+}
+
+/* --- 14. The 3D layer ---------------------------------------------------
+   Every canvas host is a .scene element carrying data-model, data-mode and
+   data-fallback. If Three.js or WebGL is missing, the flat illustration
+   named by data-fallback takes its place and the page stays fully usable.
+   ----------------------------------------------------------------------- */
+
+function sceneFallback(host) {
+  var src = host.getAttribute('data-fallback');
+  if (!src) return;
+  host.innerHTML = '<div class="scene-fallback">' +
+    '<img src="' + esc(src) + '" alt="' + esc(t(WORDS.rigAlt)) + '">' +
+    '</div>';
+}
+
+function initScenes() {
+  var hosts = document.querySelectorAll('.scene');
+  for (var i = 0; i < hosts.length; i++) {
+    var host = hosts[i];
+    var mounted = false;
+
+    if (window.Scene && Scene.supported()) {
+      mounted = !!Scene.mount(host, {
+        model: host.getAttribute('data-model') || 'v60',
+        mode: host.getAttribute('data-mode') || 'auto',
+        hint: t(WORDS.dragHint)
+      });
+    }
+    if (!mounted) sceneFallback(host);
+  }
+}
+
+/* --- 15. Login page ----------------------------------------------------- */
+
+function initLogin() {
+  var form = el('login-form');
+  if (!form) return;
+
+  var msg = el('login-msg');
+  var card = form;
+
+  function showMessage(words) {
+    msg.setAttribute('data-en', words.en);
+    msg.setAttribute('data-ar', words.ar);
+    msg.hidden = false;
+    /* restart the rise animation on a repeat failure */
+    msg.style.animation = 'none';
+    void msg.offsetWidth;
+    msg.style.animation = '';
+    I18N.apply(msg);
+  }
+
+  function leaveTo(href) {
+    card.classList.add('is-leaving');
+    window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
+  }
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var result = Auth.signIn(el('username').value, el('password').value);
+    if (result.ok) {
+      msg.hidden = true;
+      leaveTo('index.html');
+      return;
+    }
+    showMessage(result.reason === 'empty' ? WORDS.emptyForm : WORDS.wrongForm);
+    el(result.reason === 'empty' ? 'username' : 'password').focus();
+  });
+
+  /* Guests get in too — same fade, no credentials. */
+  el('guest-link').addEventListener('click', function (event) {
+    event.preventDefault();
+    Auth.signInAsGuest();
+    leaveTo('index.html');
+  });
+
+  /* The login page has no header, so it carries its own two controls. */
+  el('theme-btn').addEventListener('click', function () { Theme.toggle(); });
+  el('lang-btn').addEventListener('click', function () { I18N.toggle(); });
+  paintLoginControls();
+  document.addEventListener('bloom:lang', paintLoginControls);
+}
+
+function paintLoginControls() {
+  var lang = el('lang-btn');
+  if (!lang) return;
+  lang.innerHTML = icon('globe') +
+    '<span class="lang-label"' + bi(WORDS.langLabel) + '>' + esc(t(WORDS.langLabel)) + '</span>';
+  I18N.apply(lang);
+  Theme.paintButton();
+}
+
+/* --- 16. Home page pieces ---------------------------------------------- */
 
 function initHome() {
   var featured = el('featured-beans');
@@ -1024,15 +1302,28 @@ function initHome() {
 function boot() {
   var page = document.body.getAttribute('data-page') || '';
 
-  document.body.insertAdjacentHTML('afterbegin', headerHTML(page));
-  document.body.insertAdjacentHTML('beforeend', footerHTML() + drawerHTML());
+  /* No session? Straight to the front door, before anything else renders. */
+  if (Auth.guard()) return;
 
-  initHeader();
-  Drawer.init();
+  /* The login page is full-screen and deliberately has no header, footer
+     or cart drawer. Every other page gets all three, built right here so
+     they cannot drift apart. */
+  if (page !== 'login') {
+    document.body.insertAdjacentHTML('afterbegin', headerHTML(page));
+    document.body.insertAdjacentHTML('beforeend', footerHTML() + drawerHTML());
 
-  document.addEventListener('bloom:cart', function () { syncBadge(); Drawer.render(); });
-  document.addEventListener('bloom:lang', function () { syncBadge(); Drawer.render(); Theme.paintButton(); });
+    initHeader();
+    Drawer.init();
 
+    document.addEventListener('bloom:cart', function () { syncBadge(); Drawer.render(); });
+    document.addEventListener('bloom:lang', function () {
+      syncBadge(); syncAccount(); Drawer.render(); Theme.paintButton();
+    });
+  }
+
+  Motion.init();
+
+  initLogin();
   initHome();
   initListing(page === 'beans' || page === 'tools' || page === 'machines' ? page : '');
   initProductPage();
@@ -1040,9 +1331,12 @@ function boot() {
   initCafe();
   initCartPage();
   initTimer();
+  initScenes();
 
   I18N.apply();
   syncBadge();
+  syncAccount();
+  initTilt(document);
 }
 
 if (document.readyState === 'loading') {

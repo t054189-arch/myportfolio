@@ -54,14 +54,23 @@
   --gutter: 28px;
   --header-h: 64px;
 
-  /* --- Motion (never longer than 200ms) --------------------------------- */
-  --t-fast: 120ms;
-  --t-base: 180ms;
-  --ease: cubic-bezier(.2, .6, .3, 1);
+  /* --- Motion -----------------------------------------------------------
+     Two curves only. Things that enter use --e-out; things that travel
+     across the screen use --e-in-out. Never ease, never linear on movement
+     (linear is reserved for hover colour, which does not move).
+     ---------------------------------------------------------------------- */
+  --e-out:    cubic-bezier(.22, .85, .28, 1);
+  --e-in-out: cubic-bezier(.6, 0, .25, 1);
+
+  --t-fast:   120ms;   /* hover and focus: colour, border, tilt          */
+  --t-base:   200ms;   /* card lift, filter fade                        */
+  --t-slow:   320ms;   /* drawer, menus, page transition, card flip     */
+  --t-reveal: 640ms;   /* scroll reveal                                 */
 
   /* --- Elevation — dropdowns and hovered cards only --------------------- */
   --shadow-panel: 0 10px 24px -12px rgba(36, 26, 20, .28);
-  --shadow-card:  0 6px 18px -12px rgba(36, 26, 20, .35);
+  --shadow-card:  0 10px 26px -14px rgba(36, 26, 20, .40);
+  --shadow-login: 0 24px 60px -24px rgba(36, 26, 20, .45);
 }
 
 /* --- Colour: dark, when the viewer's OS asks for it and no explicit
@@ -88,7 +97,8 @@
     --band-text:  var(--crema);
 
     --shadow-panel: 0 10px 24px -12px rgba(0, 0, 0, .6);
-    --shadow-card:  0 6px 18px -12px rgba(0, 0, 0, .7);
+    --shadow-card:  0 10px 26px -14px rgba(0, 0, 0, .7);
+    --shadow-login: 0 24px 60px -24px rgba(0, 0, 0, .8);
   }
 }
 
@@ -114,5 +124,6 @@
   --band-text:  var(--crema);
 
   --shadow-panel: 0 10px 24px -12px rgba(0, 0, 0, .6);
-  --shadow-card:  0 6px 18px -12px rgba(0, 0, 0, .7);
+  --shadow-card:  0 10px 26px -14px rgba(0, 0, 0, .7);
+  --shadow-login: 0 24px 60px -24px rgba(0, 0, 0, .8);
 }

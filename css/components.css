@@ -22,9 +22,9 @@
   font-size: .9375rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color var(--t-fast) var(--ease),
-              border-color var(--t-fast) var(--ease),
-              color var(--t-fast) var(--ease);
+  transition: background-color var(--t-fast) linear,
+              border-color var(--t-fast) linear,
+              color var(--t-fast) linear;
 }
 .btn-primary {
   background: var(--leaf);
@@ -62,7 +62,7 @@
   color: var(--ink-2);
   font-family: var(--font-mono);
   font-size: 1rem;
-  transition: background-color var(--t-fast) var(--ease);
+  transition: background-color var(--t-fast) linear;
 }
 .stepper button:hover { background: var(--surface-2); color: var(--ink); }
 .stepper-value {
@@ -145,7 +145,7 @@
   text-decoration: none;
   border-bottom: 2px solid transparent;
   border-radius: var(--r-control) var(--r-control) 0 0;
-  transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+  transition: color var(--t-fast) linear, border-color var(--t-fast) linear;
 }
 .nav-trigger:hover, .nav-link:hover { color: var(--ink); }
 .nav-link[aria-current="page"] { color: var(--leaf); border-bottom-color: var(--leaf); }
@@ -156,7 +156,7 @@
 .nav-chevron {
   width: 12px; height: 12px;
   stroke: currentColor;
-  transition: transform var(--t-fast) var(--ease);
+  transition: transform var(--t-fast) var(--e-out);
 }
 .nav-item.is-open .nav-chevron { transform: rotate(180deg); }
 
@@ -176,9 +176,9 @@
   border-radius: var(--r-control);
   border: 1px solid transparent;
   color: var(--ink-2);
-  transition: background-color var(--t-fast) var(--ease),
-              border-color var(--t-fast) var(--ease),
-              color var(--t-fast) var(--ease);
+  transition: background-color var(--t-fast) linear,
+              border-color var(--t-fast) linear,
+              color var(--t-fast) linear;
 }
 .icon-btn:hover { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
 .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
@@ -276,7 +276,7 @@
   border-radius: var(--r-control);
   text-decoration: none;
   color: var(--ink);
-  transition: background-color var(--t-fast) var(--ease);
+  transition: background-color var(--t-fast) linear;
 }
 .panel-link:hover { background: var(--surface-2); color: var(--ink); }
 .panel-link-name {
@@ -365,7 +365,9 @@
   overflow: hidden;
   text-decoration: none;
   color: var(--ink);
-  transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+  transition: transform var(--t-base) var(--e-out),
+              box-shadow var(--t-base) var(--e-out),
+              border-color var(--t-fast) linear;
 }
 .card:hover { border-color: var(--ink-3); box-shadow: var(--shadow-card); color: var(--ink); }
 
@@ -431,7 +433,9 @@
   border-radius: var(--r-card);
   text-decoration: none;
   color: var(--ink);
-  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+  transition: transform var(--t-base) var(--e-out),
+              box-shadow var(--t-base) var(--e-out),
+              border-color var(--t-fast) linear;
 }
 .strip-tile:hover { border-color: var(--ink-3); background: var(--surface); color: var(--ink); }
 .strip-tile-name { font-weight: 600; font-size: .875rem; line-height: 1.3; }
@@ -454,9 +458,9 @@
   border-radius: var(--r-control);
   background: var(--surface);
   color: var(--ink-2);
-  transition: background-color var(--t-fast) var(--ease),
-              border-color var(--t-fast) var(--ease),
-              color var(--t-fast) var(--ease);
+  transition: background-color var(--t-fast) linear,
+              border-color var(--t-fast) linear,
+              color var(--t-fast) linear;
 }
 .pill:hover { background: var(--surface-2); color: var(--ink); }
 .pill[aria-pressed="true"] {
@@ -681,7 +685,7 @@
   z-index: 190;
   opacity: 0;
   visibility: hidden;
-  transition: opacity var(--t-base) var(--ease), visibility var(--t-base) var(--ease);
+  transition: opacity var(--t-slow) var(--e-in-out), visibility var(--t-slow) var(--e-in-out);
 }
 .drawer-backdrop.is-open { opacity: 1; visibility: visible; }
 
@@ -696,7 +700,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   visibility: hidden;
-  transition: transform var(--t-base) var(--ease), visibility var(--t-base) var(--ease);
+  transition: transform var(--t-slow) var(--e-in-out), visibility var(--t-slow) var(--e-in-out);
   /* Parked just past the inline end, in both writing directions */
   transform: translateX(110%);
 }
@@ -891,3 +895,272 @@
 .band-ink .note,
 .band-ink a { color: var(--band-text); }
 .band-ink a:hover { color: var(--band-text); text-decoration: underline; }
+
+/* --- 12. Depth: lift, tilt, flip ---------------------------------------
+   The tilt angles arrive as custom properties set by js/main.js, so the
+   hover lift stays in CSS and the two never fight over `transform`.
+   ----------------------------------------------------------------------- */
+
+.card,
+.strip-tile {
+  transform: perspective(600px)
+             rotateX(var(--tilt-x, 0deg))
+             rotateY(var(--tilt-y, 0deg))
+             translateY(var(--lift, 0px));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.card:hover, .card:focus-visible,
+.strip-tile:hover, .strip-tile:focus-visible { --lift: -6px; }
+
+/* Bean cards flip instead of tilting — one subject in motion at a time. */
+.card-flip { position: relative; height: 356px; overflow: visible; }
+.card-flip .flip-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform var(--t-slow) var(--e-in-out);
+  border-radius: var(--r-card);
+}
+.card-flip:hover .flip-inner,
+.card-flip:focus-visible .flip-inner { transform: rotateY(180deg); }
+
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 158px 1fr;
+  background: var(--surface);
+}
+.flip-back {
+  transform: rotateY(180deg);
+  grid-template-rows: auto;
+  align-content: start;
+  gap: var(--s-3);
+  padding: var(--s-4);
+  background: var(--surface-2);
+}
+.flip-back .eyebrow { color: var(--ink-3); }
+.flip-back .flip-note {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.lang-ar .flip-back .flip-note { font-family: var(--font-arabic); font-weight: 600; }
+.flip-recipe {
+  display: grid;
+  gap: 2px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: .8125rem;
+  color: var(--ink-2);
+}
+.lang-ar .flip-recipe { font-family: var(--font-mono-ar); }
+.flip-cta {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.lang-ar .flip-cta { font-family: var(--font-arabic); letter-spacing: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .card, .strip-tile { transform: none; will-change: auto; }
+  .card:hover, .card:focus-visible,
+  .strip-tile:hover, .strip-tile:focus-visible { --lift: 0px; }
+  .card-flip .flip-inner { transition: none; }
+}
+
+/* --- 13. The 3D layer --------------------------------------------------- */
+
+.scene {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.scene canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.scene-drag { cursor: grab; }
+.scene-drag:active { cursor: grabbing; }
+
+/* Shown instead of the canvas when WebGL or Three.js is unavailable. */
+.scene-fallback {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--s-4);
+}
+.scene-fallback img { max-height: 100%; width: auto; }
+
+.scene-hint {
+  position: absolute;
+  inset-inline-start: 50%;
+  bottom: var(--s-2);
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: .625rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+.lang-ar .scene-hint { font-family: var(--font-arabic); letter-spacing: 0; }
+
+/* --- 14. Login ---------------------------------------------------------- */
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--s-5) var(--gutter);
+  overflow: hidden;
+}
+.login-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* The only real shadow on the site. */
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: min(400px, 100%);
+  display: grid;
+  gap: var(--s-3);
+  padding: var(--s-5);
+  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-login);
+  transition: opacity var(--t-slow) var(--e-in-out),
+              transform var(--t-slow) var(--e-in-out);
+}
+.login-card.is-leaving { opacity: 0; transform: translateY(-12px); }
+
+.login-mark {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+}
+.login-mark em { font-style: italic; font-weight: 400; color: var(--leaf); }
+
+.field { display: grid; gap: var(--s-1); }
+.field label {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.lang-ar .field label { font-family: var(--font-arabic); letter-spacing: 0; }
+.field input {
+  height: 44px;
+  padding-inline: var(--s-3);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  color: var(--ink);
+  font-size: .9375rem;
+  transition: border-color var(--t-fast) linear, background-color var(--t-fast) linear;
+}
+.field input:hover { border-color: var(--ink-3); }
+.field input::placeholder { color: var(--ink-3); }
+
+/* Inline message that rises 6px as it appears — never an alert(). */
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+.form-msg {
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-control);
+  border: 1px solid var(--clay);
+  background: var(--clay-wash);
+  color: var(--clay);
+  font-size: .875rem;
+  animation: msg-in var(--t-base) var(--e-out) both;
+}
+.form-msg[hidden] { display: none; }
+
+.guest-link {
+  justify-self: center;
+  color: var(--clay);
+  font-size: .9375rem;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--t-fast) linear;
+}
+.guest-link:hover { color: var(--clay); border-bottom-color: var(--clay); }
+
+.demo-box {
+  display: grid;
+  gap: 2px;
+  padding: var(--s-3);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-control);
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--ink-3);
+}
+.demo-box b { color: var(--ink-2); font-weight: 500; }
+
+/* --- 15. Account menu in the header ------------------------------------ */
+
+.account-name {
+  max-width: 8ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .8125rem;
+  font-weight: 500;
+}
+.account-menu {
+  position: absolute;
+  top: 100%;
+  inset-inline-end: 0;
+  min-width: 200px;
+  display: none;
+  padding: var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 var(--r-card) var(--r-card);
+  box-shadow: var(--shadow-panel);
+  z-index: 110;
+}
+.account-wrap.is-open .account-menu { display: grid; gap: var(--s-2); }
+.account-who { font-size: .875rem; color: var(--ink-2); }
+.account-who b { color: var(--ink); font-weight: 600; }
+
+/* Small language and theme controls on the login page, which has no header */
+.login-controls {
+  position: absolute;
+  z-index: 2;
+  top: var(--s-3);
+  inset-inline-end: var(--s-3);
+  display: flex;
+  gap: var(--s-1);
+}
+
+/* On the login page the flat fallback stands in for a full-screen scene, so
+   it is drawn large enough to read around the sign-in card. */
+.login-scene .scene-fallback img {
+  height: min(82vh, 620px);
+  max-height: none;
+  width: auto;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Beans — Bloom</title>
+<meta name="description" content="Single-origin coffee beans roasted weekly in Kuwait: Ethiopian, Colombian and Yemeni, in 250 g bags for filter and espresso.">
+<!-- Restore theme and reading direction before the first paint. -->
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem('bloom.theme');
+    if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('bloom.lang') === 'ar') {
+      var html = document.documentElement;
+      html.setAttribute('lang', 'ar');
+      html.setAttribute('dir', 'rtl');
+      html.classList.add('lang-ar');
+    }
+  } catch (e) { /* private mode — carry on in English and the OS theme */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body data-page="beans" data-title-en="Beans — Bloom" data-title-ar="حبوب البن — بلوم">
+<!-- The header, footer and cart drawer are injected by js/main.js so that
+     every page carries exactly the same one. -->
+<main id="main">
+  <section class="wrap">
+    <div class="page-head">
+      <p class="eyebrow" data-en="Single origin · roasted weekly" data-ar="أصل واحد · تُحمّص أسبوعياً">Single origin · roasted weekly</p>
+      <h1 data-en="Beans" data-ar="حبوب البن">Beans</h1>
+      <p class="lede" data-en="Three origins at a time, roasted every Tuesday and rested three days. Every bag carries the recipe we brew it with." data-ar="ثلاثة أصول في الوقت نفسه، تُحمّص كل ثلاثاء وتستريح ثلاثة أيام. كل كيس يحمل الوصفة التي نحضّره بها.">Three origins at a time, roasted every Tuesday and rested three days. Every bag carries the recipe we brew it with.</p>
+    </div>
+
+    <div class="row-between">
+      <!-- Tag pills filter the grid in place, no page reload -->
+      <div class="filters" id="listing-filters" role="group" data-en-label="Filter by tag" data-ar-label="التصفية بحسب التصنيف"></div>
+      <p class="result-count" id="listing-count" aria-live="polite"></p>
+    </div>
+
+    <div class="grid grid-cards block-tight" id="listing-grid"></div>
+  </section>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

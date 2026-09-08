@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img">
+  <!-- One stroke weight across every tool and machine, in --brass. An SVG
+       loaded through <img> cannot read prefers-color-scheme, so this palette
+       is chosen to hold on both the cream and the roasted ground. -->
+  <g fill="none" stroke="#9B7433" stroke-width=".48" stroke-linecap="round" stroke-linejoin="round"
+     transform="translate(16 16) scale(7)"><path d="M12 3.6a1.9 1.9 0 0 1 1.9 1.9v8.2a3.6 3.6 0 1 1-3.8 0V5.5A1.9 1.9 0 0 1 12 3.6z"/><path d="M15.8 7.2h2.4"/><path d="M15.8 10.4h2.4"/></g>
+</svg>

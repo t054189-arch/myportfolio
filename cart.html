@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your bag — Bloom</title>
+<meta name="description" content="Your Bloom bag: beans, brewing tools and machines, with a subtotal in KWD.">
+<!-- Restore theme and reading direction before the first paint. -->
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem('bloom.theme');
+    if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('bloom.lang') === 'ar') {
+      var html = document.documentElement;
+      html.setAttribute('lang', 'ar');
+      html.setAttribute('dir', 'rtl');
+      html.classList.add('lang-ar');
+    }
+  } catch (e) { /* private mode — carry on in English and the OS theme */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body data-page="cart" data-title-en="Your bag — Bloom" data-title-ar="حقيبتك — بلوم">
+<!-- The header, footer and cart drawer are injected by js/main.js so that
+     every page carries exactly the same one. -->
+<main id="main">
+  <section class="wrap" id="cart-host">
+    <div class="page-head">
+      <p class="eyebrow" data-en="Cart" data-ar="السلة">Cart</p>
+      <h1 data-en="Your bag" data-ar="حقيبتك">Your bag</h1>
+    </div>
+
+    <div class="grid grid-wide block-tight">
+      <div id="cart-lines"></div>
+
+      <div class="stack stack-3">
+        <div class="totals">
+          <span class="eyebrow" data-en="Subtotal" data-ar="المجموع">Subtotal</span>
+          <span id="cart-total"></span>
+        </div>
+        <p class="note" data-en="Prices are in Kuwaiti dinar. Beans ship the day after roasting." data-ar="الأسعار بالدينار الكويتي. تُشحن الحبوب في اليوم التالي للتحميص.">Prices are in Kuwaiti dinar.</p>
+        <button type="button" class="btn btn-primary" id="cart-checkout" data-en="Checkout" data-ar="إتمام الشراء">Checkout</button>
+        <p class="notice" id="cart-notice" hidden data-en="Online checkout is coming soon — visit us at the café and we will grind it for you." data-ar="الشراء عبر الموقع قريباً — زُرنا في المقهى ونطحنها لك."></p>
+        <a class="btn btn-secondary" href="beans.html" data-en="Keep shopping" data-ar="متابعة التسوّق">Keep shopping</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

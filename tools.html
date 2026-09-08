@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brewing tools — Bloom</title>
+<meta name="description" content="Pour-over gear at Bloom Kuwait: drippers, filter papers, hand grinders, gooseneck kettles, 0.1 g scales, thermometers and glass servers.">
+<!-- Restore theme and reading direction before the first paint. -->
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem('bloom.theme');
+    if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('bloom.lang') === 'ar') {
+      var html = document.documentElement;
+      html.setAttribute('lang', 'ar');
+      html.setAttribute('dir', 'rtl');
+      html.classList.add('lang-ar');
+    }
+  } catch (e) { /* private mode — carry on in English and the OS theme */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body data-page="tools" data-title-en="Brewing tools — Bloom" data-title-ar="أدوات التحضير — بلوم">
+<!-- The header, footer and cart drawer are injected by js/main.js so that
+     every page carries exactly the same one. -->
+<main id="main">
+  <section class="wrap">
+    <div class="page-head">
+      <p class="eyebrow" data-en="Everything for pour-over" data-ar="كل ما يلزم للتقطير">Everything for pour-over</p>
+      <h1 data-en="Brewing tools" data-ar="أدوات التحضير">Brewing tools</h1>
+      <p class="lede" data-en="Seven things, and nothing you will not use. Grams, degrees and seconds are the whole craft — these are what measure them." data-ar="سبعة أشياء، ولا شيء لن تستخدمه. الغرامات والدرجات والثواني هي الحرفة كلها — وهذه ما يقيسها.">Seven things, and nothing you will not use. Grams, degrees and seconds are the whole craft — these are what measure them.</p>
+    </div>
+
+    <div class="row-between">
+      <!-- Tag pills filter the grid in place, no page reload -->
+      <div class="filters" id="listing-filters" role="group" data-en-label="Filter by tag" data-ar-label="التصفية بحسب التصنيف"></div>
+      <p class="result-count" id="listing-count" aria-live="polite"></p>
+    </div>
+
+    <div class="grid grid-cards block-tight" id="listing-grid"></div>
+  </section>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

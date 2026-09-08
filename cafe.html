@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The café — Bloom</title>
+<meta name="description" content="Bloom's café in Salmiya, Kuwait: address, opening hours and what is on the bar today, filter and espresso.">
+<!-- Restore theme and reading direction before the first paint. -->
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem('bloom.theme');
+    if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('bloom.lang') === 'ar') {
+      var html = document.documentElement;
+      html.setAttribute('lang', 'ar');
+      html.setAttribute('dir', 'rtl');
+      html.classList.add('lang-ar');
+    }
+  } catch (e) { /* private mode — carry on in English and the OS theme */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body data-page="cafe" data-title-en="The café — Bloom" data-title-ar="المقهى — بلوم">
+<!-- The header, footer and cart drawer are injected by js/main.js so that
+     every page carries exactly the same one. -->
+<main id="main">
+  <section class="wrap">
+    <div class="page-head">
+      <p class="eyebrow" data-en="Salmiya · Kuwait" data-ar="السالمية · الكويت">Salmiya · Kuwait</p>
+      <h1 data-en="The café" data-ar="المقهى">The café</h1>
+      <p class="lede" data-en="One bar, eight seats and a batch brewer that holds 93 °C. Filter by the cup, espresso on the Haraz, and whatever we roasted on Tuesday." data-ar="بار واحد وثمانية مقاعد ومكينة دفعات تثبّت 93 °م. تقطير بالفنجان، وإسبريسو من حراز، وما حمّصناه يوم الثلاثاء.">One bar, eight seats and a batch brewer that holds 93 °C.</p>
+    </div>
+  </section>
+
+  <section class="wrap block-tight" id="cafe-host">
+    <div class="section">
+      <div class="section-label">
+        <span class="eyebrow" data-en="Find us" data-ar="كيف تجدنا">Find us</span>
+        <h2 id="find-us" data-en="Address" data-ar="العنوان">Address</h2>
+        <p class="note" data-en="Parking behind the block, on Street 23." data-ar="المواقف خلف القطعة، على شارع ٢٣.">Parking behind the block, on Street 23.</p>
+      </div>
+
+      <div class="grid grid-wide">
+        <div class="stack stack-4">
+          <div class="address" id="cafe-address"></div>
+          <h2 id="hours" class="h4" data-en="Opening hours" data-ar="أوقات العمل">Opening hours</h2>
+          <div class="scroll-x">
+            <table class="hours">
+              <caption class="visually-hidden" data-en="Opening hours" data-ar="أوقات العمل">Opening hours</caption>
+              <tbody id="cafe-hours"></tbody>
+            </table>
+          </div>
+          <h2 id="bar-today" class="h4" data-en="On the bar today" data-ar="على البار اليوم">On the bar today</h2>
+          <ul class="bar-today" id="cafe-bar"></ul>
+        </div>
+
+        <!-- Map goes here once we embed one -->
+        <div class="map-placeholder">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 21.2s7-6.2 7-11a7 7 0 0 0-14 0c0 4.8 7 11 7 11z"></path><circle cx="12" cy="10" r="2.6"></circle></svg>
+          <p class="eyebrow" data-en="Map" data-ar="الخريطة">Map</p>
+          <p class="note" data-en="Block 5, Street 21, Shop 3 — Salmiya, Kuwait" data-ar="قطعة ٥، شارع ٢١، محل ٣ — السالمية، الكويت">Block 5, Street 21, Shop 3 — Salmiya, Kuwait</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

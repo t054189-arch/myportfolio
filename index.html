@@ -1,209 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rayan Alajmi — Civil Engineering Portfolio</title>
-<meta name="description" content="Portfolio of Rayan Alajmi, civil engineering student at Kuwait University." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bloom — specialty coffee, Kuwait</title>
+<meta name="description" content="Bloom is a specialty coffee shop in Salmiya, Kuwait: filter and espresso in the cafe, and beans by origin, brewing tools and machines online.">
+<!-- Restore theme and reading direction before the first paint. -->
+<script>
+(function () {
+  try {
+    var theme = localStorage.getItem('bloom.theme');
+    if (theme === 'dark' || theme === 'light') document.documentElement.setAttribute('data-theme', theme);
+    if (localStorage.getItem('bloom.lang') === 'ar') {
+      var html = document.documentElement;
+      html.setAttribute('lang', 'ar');
+      html.setAttribute('dir', 'rtl');
+      html.classList.add('lang-ar');
+    }
+  } catch (e) { /* private mode — carry on in English and the OS theme */ }
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;1,6..96,400&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
 </head>
-<body>
-
-<!-- blueprint grid backdrop -->
-<div class="blueprint" aria-hidden="true"></div>
-
-<!-- page load / transition curtain -->
-<div class="curtain" id="curtain" aria-hidden="true">
-  <div class="curtain__bar"></div>
-</div>
-
-<header class="nav" id="nav">
-  <a class="nav__brand" href="#home">
-    <span class="nav__mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32" width="26" height="26" role="img" aria-label="">
-        <path d="M4 26 L16 6 L28 26 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-        <path d="M9.5 26 L16 15 L22.5 26" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".55"/>
-      </svg>
-    </span>
-    <span class="nav__name">RAYAN<span class="dot">.</span>ALAJMI</span>
-  </a>
-  <nav class="nav__links" aria-label="Main">
-    <a href="#about">About</a>
-    <a href="#profile">Profile</a>
-    <a href="#education">Education</a>
-    <a href="#contact">Contact</a>
-  </nav>
-  <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
-    <span></span><span></span><span></span>
-  </button>
-</header>
-
-<main>
-
-  <!-- HERO -->
-  <section class="hero" id="home">
-    <div class="hero__inner">
-      <p class="eyebrow reveal">CIVIL ENGINEERING &nbsp;/&nbsp; KUWAIT</p>
-      <h1 class="hero__title">
-        <span class="line"><span>Rayan</span></span>
-        <span class="line"><span>Alajmi</span></span>
-      </h1>
-      <p class="hero__sub reveal" data-delay="1">
-        Civil engineering student at Kuwait University, building skills
-        one structure at a time.
-      </p>
-      <div class="hero__actions reveal" data-delay="2">
-        <a class="btn btn--solid" href="#contact">Get in touch</a>
-        <a class="btn btn--ghost" href="#about">About me</a>
+<body data-page="home" data-title-en="Bloom — specialty coffee, Kuwait" data-title-ar="بلوم — قهوة مختصة، الكويت">
+<!-- The header, footer and cart drawer are injected by js/main.js so that
+     every page carries exactly the same one. -->
+<main id="main">
+  <!-- Hero: the wordmark, the tagline, and a working 30-second bloom timer -->
+  <div class="wrap hero">
+    <div class="stack stack-4">
+      <p class="eyebrow" data-en="Specialty coffee · Salmiya, Kuwait" data-ar="قهوة مختصة · السالمية، الكويت">Specialty coffee · Salmiya, Kuwait</p>
+      <h1 class="hero-mark">Bl<em>oo</em>m</h1>
+      <p class="hero-tagline" data-en="Filter &amp; espresso. Beans by origin, brewing tools, and machines for home and café." data-ar="تقطير وإسبريسو. حبوب بحسب الأصل، وأدوات تحضير، ومكائن للمنزل والمقهى.">Filter &amp; espresso. Beans by origin, brewing tools, and machines for home and café.</p>
+      <div class="row">
+        <a class="btn btn-primary" href="beans.html" data-en="Shop beans" data-ar="تسوّق الحبوب">Shop beans</a>
+        <a class="btn btn-quiet" href="brew-guides.html" data-en="Brew guides" data-ar="طرق التحضير">Brew guides</a>
       </div>
-
-      <ul class="hero__stats reveal" data-delay="3">
-        <li><strong data-count="22">0</strong><span>Years old</span></li>
-        <li><strong>Kuwait</strong><span>Location</span></li>
-        <li><strong>CODED</strong><span>Team member</span></li>
-      </ul>
     </div>
 
-    <div class="hero__scroll" aria-hidden="true">
-      <span>SCROLL</span>
-      <i></i>
+    <div class="timer" id="bloom-timer">
+      <div class="timer-figure">
+        <svg viewBox="0 0 176 176" aria-hidden="true" focusable="false">
+          <circle class="timer-track" cx="88" cy="88" r="76"></circle>
+          <circle class="timer-ring" id="timer-ring" cx="88" cy="88" r="76"></circle>
+          <circle class="timer-bubble" id="timer-bubble" cx="88" cy="88" r="26"></circle>
+        </svg>
+        <span class="timer-count" id="timer-count" role="timer" aria-live="off">30</span>
+      </div>
+      <button type="button" class="btn btn-primary" id="timer-btn" data-en="Start the bloom" data-ar="ابدأ التفتّح">Start the bloom</button>
+      <p class="timer-caption" id="timer-caption" data-en="30 seconds of swelling grounds, releasing CO₂." data-ar="٣٠ ثانية يتفتّح فيها البنّ ويطلق ثاني أكسيد الكربون.">30 seconds of swelling grounds, releasing CO₂.</p>
+    </div>
+  </div>
+
+  <!-- Three beans -->
+  <section class="wrap block-tight">
+    <div class="section">
+      <div class="section-label">
+        <span class="eyebrow" data-en="Roasted weekly" data-ar="تُحمّص أسبوعياً">Roasted weekly</span>
+        <h2 data-en="Beans by origin" data-ar="حبوب بحسب الأصل">Beans by origin</h2>
+        <p class="note" data-en="Three origins at a time, 250 g bags, rested three days." data-ar="ثلاثة أصول في الوقت نفسه، أكياس ٢٥٠ غم، تستريح ثلاثة أيام.">Three origins at a time, 250 g bags, rested three days.</p>
+      </div>
+      <div class="grid grid-cards" id="featured-beans"></div>
     </div>
   </section>
 
-  <!-- ABOUT -->
-  <section class="section" id="about">
-    <div class="section__head reveal">
-      <span class="section__num">01</span>
-      <h2>About</h2>
-      <div class="rule"></div>
-    </div>
-
-    <div class="about">
-      <div class="about__text reveal" data-delay="1">
-        <p class="lead">
-          I am Rayan Alajmi, 22 years old, based in Kuwait.
-        </p>
-        <p>
-          I study civil engineering at Kuwait University. I joined the CODED
-          team to learn new skills and improve myself.
-        </p>
+  <!-- How we brew -->
+  <section class="band-ink block-tight" id="the-bloom">
+    <div class="wrap section">
+      <div class="section-label">
+        <span class="eyebrow" data-en="How we brew" data-ar="كيف نحضّر">How we brew</span>
+        <h2 data-en="The bloom" data-ar="التفتّح">The bloom</h2>
       </div>
-
-      <div class="about__card reveal" data-delay="2">
-        <div class="card">
-          <div class="card__bar"><span></span><span></span><span></span></div>
-          <dl class="specs">
-            <div><dt>Name</dt><dd>Rayan Alajmi</dd></div>
-            <div><dt>Age</dt><dd>22</dd></div>
-            <div><dt>Location</dt><dd>Kuwait</dd></div>
-            <div><dt>Field</dt><dd>Civil Engineering</dd></div>
-            <div><dt>University</dt><dd>Kuwait University</dd></div>
-          </dl>
-        </div>
+      <div class="stack stack-3">
+        <p data-en="Pour twice the coffee's weight in water at 93 °C and wait thirty seconds: the grounds swell and push out the CO₂ they have held since roasting. Skip it and the gas fights your pour, and the cup comes out sour and thin." data-ar="اصبب ضعف وزن البنّ ماءً عند 93 °م وانتظر ثلاثين ثانية: يتفتّح البنّ ويطلق ثاني أكسيد الكربون المحتجز فيه من وقت التحميص. تجاهل هذه الخطوة فيقاوم الغاز صبّك، ويأتي الفنجان حامضاً خفيفاً.">Pour twice the coffee's weight in water at 93 °C and wait thirty seconds.</p>
+        <p class="mono" data-en="15 g coffee · 30 g bloom water · 93 °C · 30 s" data-ar="15 غم بنّ · 30 غم ماء التفتّح · 93 °م · 30 ثانية">15 g coffee · 30 g bloom water · 93 °C · 30 s</p>
+        <p><a href="brew-guides.html" data-en="Read the full V60 recipe →" data-ar="اقرأ وصفة V60 كاملة →">Read the full V60 recipe →</a></p>
       </div>
     </div>
   </section>
 
-  <!-- PROFILE -->
-  <section class="section section--alt" id="profile">
-    <div class="section__head reveal">
-      <span class="section__num">02</span>
-      <h2>Profile</h2>
-      <div class="rule"></div>
-    </div>
-
-    <div class="grid">
-      <article class="tile reveal" data-delay="1">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="28" height="28">
-            <path d="M3 21h18M6 21V8l6-4 6 4v13M10 21v-6h4v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <h3>Civil Engineering</h3>
-        <p>My field of study.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="2">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="28" height="28">
-            <path d="M4 6h16M4 12h16M4 18h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3>Kuwait University</h3>
-        <p>Where I study.</p>
-      </article>
-
-      <article class="tile reveal" data-delay="3">
-        <div class="tile__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" width="28" height="28">
-            <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
-            <path d="M12 7v5l3.5 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3>CODED Team</h3>
-        <p>Joined to learn new skills and improve myself.</p>
-      </article>
+  <!-- Tools strip -->
+  <section class="wrap block-tight">
+    <div class="section">
+      <div class="section-label">
+        <span class="eyebrow" data-en="Everything for pour-over" data-ar="كل ما يلزم للتقطير">Everything for pour-over</span>
+        <h2 data-en="Brewing tools" data-ar="أدوات التحضير">Brewing tools</h2>
+        <p class="note" data-en="Dripper, papers, grinder, kettle, scale, thermometer, server." data-ar="قمع، أوراق، مطحنة، غلاية، ميزان، حرارة، دورق.">Dripper, papers, grinder, kettle, scale, thermometer, server.</p>
+      </div>
+      <div class="grid grid-tiles" id="tools-strip"></div>
     </div>
   </section>
 
-  <!-- EDUCATION -->
-  <section class="section" id="education">
-    <div class="section__head reveal">
-      <span class="section__num">03</span>
-      <h2>Education &amp; Growth</h2>
-      <div class="rule"></div>
-    </div>
-
-    <ol class="timeline">
-      <li class="reveal" data-delay="1">
-        <span class="timeline__dot" aria-hidden="true"></span>
-        <h3>Civil Engineering — Kuwait University</h3>
-        <p>Studying civil engineering.</p>
-      </li>
-      <li class="reveal" data-delay="2">
-        <span class="timeline__dot" aria-hidden="true"></span>
-        <h3>CODED Team</h3>
-        <p>Joined to learn new skills and improve myself.</p>
-      </li>
-    </ol>
-  </section>
-
-  <!-- CONTACT -->
-  <section class="section section--contact" id="contact">
-    <div class="section__head reveal">
-      <span class="section__num">04</span>
-      <h2>Contact</h2>
-      <div class="rule"></div>
-    </div>
-
-    <div class="contact">
-      <a class="contact__item reveal" data-delay="1" href="mailto:al3jmir72@gmail.com">
-        <span class="contact__label">Email</span>
-        <span class="contact__value">al3jmir72@gmail.com</span>
-        <span class="contact__arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="contact__item reveal" data-delay="2" href="tel:+96597911108">
-        <span class="contact__label">Phone</span>
-        <span class="contact__value">+965 97911108</span>
-        <span class="contact__arrow" aria-hidden="true">→</span>
-      </a>
-      <div class="contact__item contact__item--static reveal" data-delay="3">
-        <span class="contact__label">Location</span>
-        <span class="contact__value">Kuwait</span>
+  <!-- Café teaser -->
+  <section class="band block-tight">
+    <div class="wrap section">
+      <div class="section-label">
+        <span class="eyebrow" data-en="The café" data-ar="المقهى">The café</span>
+        <h2 data-en="Salmiya" data-ar="السالمية">Salmiya</h2>
+        <p class="note" data-en="Block 5, Street 21, Shop 3." data-ar="قطعة ٥، شارع ٢١، محل ٣.">Block 5, Street 21, Shop 3.</p>
+      </div>
+      <div class="stack stack-3">
+        <div class="scroll-x">
+          <table class="hours">
+            <caption class="visually-hidden" data-en="Opening hours" data-ar="أوقات العمل">Opening hours</caption>
+            <tbody id="teaser-hours"></tbody>
+          </table>
+        </div>
+        <p><a class="btn btn-secondary" href="cafe.html" data-en="Visit the café" data-ar="زيارة المقهى">Visit the café</a></p>
       </div>
     </div>
   </section>
-
 </main>
 
-<footer class="foot">
-  <p>Rayan Alajmi — Civil Engineering, Kuwait University</p>
-  <a href="#home" class="foot__top">Back to top ↑</a>
-</footer>
-
-<script src="assets/script.js"></script>
+<script src="js/data.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

@@ -123,7 +123,12 @@ var WORDS = {
   wrongForm:  { en: 'That username and password do not match. Try bloom / bloom123, or continue as guest.', ar: 'اسم المستخدم أو كلمة المرور غير صحيحة. جرّب bloom / bloom123، أو تابع كزائر.' },
   dragHint:   { en: 'Drag to rotate', ar: 'اسحب للتدوير' },
   rigAlt:     { en: 'A V60 cone with brass rib rings above a glass server of brewed coffee',
-                ar: 'قمع V60 بحلقات نحاسية فوق دورق زجاجي فيه قهوة محضّرة' }
+                ar: 'قمع V60 بحلقات نحاسية فوق دورق زجاجي فيه قهوة محضّرة' },
+  tasting:    { en: 'Tasting notes', ar: 'ملاحظات التذوّق' },
+  viewBean:   { en: 'View the bean →', ar: 'عرض الحبة →' },
+  brewsWith:  { en: 'Brews well with', ar: 'يُستحسن معه' },
+  restOfKit:  { en: 'The rest of the kit', ar: 'بقية العدّة' },
+  relatedNote:{ en: 'What we reach for alongside it on the bar.', ar: 'ما نستخدمه معه على البار.' }
 };
 
 /* --- 2. Theme ----------------------------------------------------------- */
@@ -578,20 +583,53 @@ function syncBadge() {
 
 /* --- 6. Listing pages -------------------------------------------------- */
 
-function cardHTML(product) {
+/* The front of every card is identical, so a row shares its edges,
+   padding and baselines and the price always lands in the same place. */
+function cardFaceHTML(product) {
   return '' +
-    '<a class="card" href="product.html?id=' + esc(product.id) + '">' +
-      '<span class="card-art">' + productArt(product) + '</span>' +
-      '<span class="card-body">' +
-        '<span class="card-origin">' + esc(t(product.origin)) + ' · ' + esc(t(product.unit)) + '</span>' +
-        '<span class="card-name">' + esc(t(product.name)) + '</span>' +
-        '<span class="card-note">' + esc(t(product.notes)) + '</span>' +
-        '<span class="card-foot">' +
-          tagChip(product.tags[0]) +
-          '<span>' + money(product.price) + '</span>' +
-        '</span>' +
+    '<span class="card-art">' + productArt(product) + '</span>' +
+    '<span class="card-body">' +
+      '<span class="card-origin">' + esc(t(product.origin)) + ' · ' + esc(t(product.unit)) + '</span>' +
+      '<span class="card-name">' + esc(t(product.name)) + '</span>' +
+      '<span class="card-note">' + esc(t(product.notes)) + '</span>' +
+      '<span class="card-foot">' +
+        tagChip(product.tags[0]) +
+        '<span>' + money(product.price) + '</span>' +
       '</span>' +
-    '</a>';
+    '</span>';
+}
+
+/* Beans flip to their tasting notes; tools and machines tilt toward the
+   cursor. One subject in motion per card, never both. */
+function cardHTML(product) {
+  var href = 'product.html?id=' + esc(product.id);
+
+  if (product.category === 'beans' && product.recipe) {
+    var r = product.recipe;
+    var ratio = '1:' + (Math.floor((r.water / r.dose) * 10) / 10).toFixed(1);
+    return '' +
+      '<div class="reveal card-slot">' +
+      '<a class="card card-flip" href="' + href + '">' +
+        '<span class="flip-inner">' +
+          '<span class="flip-face flip-front">' + cardFaceHTML(product) + '</span>' +
+          '<span class="flip-face flip-back">' +
+            '<span class="eyebrow">' + esc(t(WORDS.tasting)) + '</span>' +
+            '<span class="flip-note">' + esc(t(product.notes)) + '</span>' +
+            '<span class="flip-recipe">' +
+              '<span>' + esc(r.dose + ' ' + t(WORDS.grams) + ' / ' + r.water + ' ' + t(WORDS.grams)) + '</span>' +
+              '<span>' + esc(r.temp + ' ' + t(WORDS.degrees) + ' · ' + t(r.grind)) + '</span>' +
+              '<span>' + esc(t(WORDS.ratio) + ' ' + ratio + ' · ' + r.total) + '</span>' +
+            '</span>' +
+            '<span class="flip-cta">' + esc(t(WORDS.viewBean)) + '</span>' +
+          '</span>' +
+        '</span>' +
+      '</a>' +
+      '</div>';
+  }
+
+  return '<div class="reveal card-slot">' +
+           '<a class="card" data-tilt href="' + href + '">' + cardFaceHTML(product) + '</a>' +
+         '</div>';
 }
 
 var FILTER_SETS = {
@@ -621,7 +659,7 @@ function initListing(category) {
     filters.innerHTML = html;
   }
 
-  function paintGrid() {
+  function paintGrid(settled) {
     var all = byCategory(category);
     var shown = [];
     for (var i = 0; i < all.length; i++) {
@@ -635,19 +673,35 @@ function initListing(category) {
       grid.innerHTML = html;
     }
     count.textContent = shown.length + ' ' + t(WORDS.results);
+
+    if (settled) {
+      /* A filter change is its own animation: the cards arrive already
+         revealed so the grid fade is the only thing moving. */
+      var cards = grid.querySelectorAll('.reveal');
+      for (var k = 0; k < cards.length; k++) cards[k].classList.add('is-revealed');
+    } else {
+      Motion.observe(grid);
+    }
+    initTilt(grid);
   }
 
-  function paint() { paintFilters(); paintGrid(); I18N.apply(el('main')); }
+  function paint(settled) { paintFilters(); paintGrid(settled); I18N.apply(el('main')); }
 
   filters.addEventListener('click', function (event) {
     var pill = event.target.closest ? event.target.closest('[data-filter]') : null;
     if (!pill) return;
     active = pill.getAttribute('data-filter');
-    paint();
+
+    if (prefersReducedMotion()) { paint(true); return; }
+    grid.classList.add('is-fading');
+    window.setTimeout(function () {
+      paint(true);
+      grid.classList.remove('is-fading');
+    }, ms('--t-base'));
   });
 
-  document.addEventListener('bloom:lang', paint);
-  paint();
+  document.addEventListener('bloom:lang', function () { paint(true); });
+  paint(false);
 }
 
 /* --- 7. Product page --------------------------------------------------- */
@@ -690,16 +744,23 @@ function initProductPage() {
       ? product.stock + ' ' + t(WORDS.inStock)
       : product.stock + ' ' + t(WORDS.lowStock);
 
+    /* The gallery slot: a drag-to-rotate viewer when this product has a
+       build, the flat illustration when it does not. */
+    var gallery = product.model
+      ? '<div class="scene product-scene" data-model="' + esc(product.model) + '" data-mode="drag"' +
+        ' data-fallback="' + esc(product.image) + '"></div>'
+      : '<div class="product-art">' + productArt(product) + '</div>';
+
     host.innerHTML =
       '<div class="product">' +
-        '<div class="product-art">' + productArt(product) + '</div>' +
+        gallery +
         '<div class="product-info">' +
           '<p class="eyebrow">' + esc(t(product.origin)) + '</p>' +
           '<h1>' + esc(t(product.name)) + '</h1>' +
           '<p class="product-price">' + money(product.price) +
             '<span class="note">/ ' + esc(t(product.unit)) + '</span></p>' +
           '<div class="row">' + tags + '</div>' +
-          '<p class="product-desc">' + esc(t(product.about)) + '</p>' +
+          '<p class="product-desc">' + esc(t(product.desc)) + '</p>' +
           specsTableHTML(product) +
           '<div class="buy-row">' +
             '<span class="stepper" role="group"' + biLabel(WORDS.qty) + '>' +
@@ -707,13 +768,14 @@ function initProductPage() {
               '<span class="stepper-value" id="qty-value">1</span>' +
               '<button type="button" id="qty-more"' + biLabel(WORDS.more) + '>+</button>' +
             '</span>' +
-            '<button type="button" class="btn btn-primary" id="add-to-cart"' + bi(WORDS.addToCart) + '>' + esc(t(WORDS.addToCart)) + '</button>' +
+            '<button type="button" class="btn btn-primary btn-sheen" id="add-to-cart"' + bi(WORDS.addToCart) + '>' + esc(t(WORDS.addToCart)) + '</button>' +
             '<span class="stock-note">' + esc(stockLine) + '</span>' +
           '</div>' +
           '<p class="notice" id="added-notice" hidden' + bi(WORDS.added) + '></p>' +
         '</div>' +
       '</div>' +
-      (product.recipe ? '<div class="block-tight" id="product-recipe">' + brewBlockHTML(product.recipe, t(product.name), product.recipe.note) + '</div>' : '');
+      (product.recipe ? '<div class="block-tight" id="product-recipe">' + brewBlockHTML(product.recipe, t(product.name), product.recipe.note) + '</div>' : '') +
+      relatedHTML(product);
 
     var qty = 1;
     el('qty-less').addEventListener('click', function () {
@@ -727,14 +789,76 @@ function initProductPage() {
       var notice = el('added-notice');
       notice.hidden = false;
       I18N.apply(notice);
+      sweep(this);
       Drawer.open();
     });
 
     I18N.apply(host);
+    Motion.observe(host);
+    initTilt(host);
+    initScenes(host);
   }
 
   document.addEventListener('bloom:lang', paint);
   paint();
+}
+
+/* Three things we would reach for alongside this one. */
+function relatedFor(product) {
+  var wanted = product.category === 'beans'
+    ? ['gooseneck-kettle', 'digital-scale', 'dripper-v60']
+    : ['eth-guji', 'col-huila', 'yem-haraz'];
+
+  var out = [];
+  for (var i = 0; i < wanted.length; i++) {
+    var item = productById(wanted[i]);
+    if (item && item.id !== product.id) out.push(item);
+  }
+  /* Never show a short row: top up from the same category if one was the
+     product we are already looking at. */
+  if (out.length < 3) {
+    var pool = byCategory(product.category === 'beans' ? 'tools' : 'beans');
+    for (var j = 0; j < pool.length && out.length < 3; j++) {
+      if (pool[j].id === product.id) continue;
+      var already = false;
+      for (var k = 0; k < out.length; k++) if (out[k].id === pool[j].id) already = true;
+      if (!already) out.push(pool[j]);
+    }
+  }
+  return out;
+}
+
+function relatedHTML(product) {
+  var items = relatedFor(product);
+  if (!items.length) return '';
+  var cards = '';
+  for (var i = 0; i < items.length; i++) cards += cardHTML(items[i]);
+
+  return '<section class="related">' +
+    '<div class="section">' +
+      '<div class="section-label">' +
+        '<span class="eyebrow">' + esc(t(WORDS.restOfKit)) + '</span>' +
+        '<h2>' + esc(t(WORDS.brewsWith)) + '</h2>' +
+        '<p class="note">' + esc(t(WORDS.relatedNote)) + '</p>' +
+      '</div>' +
+      '<div class="grid grid-cards">' + cards + '</div>' +
+    '</div>' +
+  '</section>';
+}
+
+/* One sweep of light across a button, and one pop of the bag badge. */
+function sweep(button) {
+  if (prefersReducedMotion()) return;
+  button.classList.remove('is-sweeping');
+  void button.offsetWidth;
+  button.classList.add('is-sweeping');
+
+  var badge = el('bag-badge');
+  if (badge) {
+    badge.classList.remove('is-popping');
+    void badge.offsetWidth;
+    badge.classList.add('is-popping');
+  }
 }
 
 /* --- 8. Brew recipe block ---------------------------------------------- */
@@ -1061,9 +1185,11 @@ var Motion = (function () {
   var observer = null;
   var STAGGER = 60;   /* ms between items entering together */
 
-  function revealNow(node) {
+  /* The delay must be set before the class, and must survive it — an
+     earlier version cleared it here and the stagger never played. */
+  function revealNow(node, delayMs) {
+    node.style.transitionDelay = delayMs ? delayMs + 'ms' : '';
     node.classList.add('is-revealed');
-    node.style.transitionDelay = '';
   }
 
   function revealAll() {
@@ -1096,8 +1222,7 @@ var Motion = (function () {
       for (var i = 0; i < entries.length; i++) {
         if (!entries[i].isIntersecting) continue;
         var node = entries[i].target;
-        node.style.transitionDelay = (staggerIndex(node) * STAGGER) + 'ms';
-        revealNow(node);
+        revealNow(node, staggerIndex(node) * STAGGER);
         observer.unobserve(node);
       }
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.04 });
@@ -1185,18 +1310,28 @@ function sceneFallback(host) {
     '</div>';
 }
 
-function initScenes() {
-  var hosts = document.querySelectorAll('.scene');
+function initScenes(root) {
+  var hosts = (root || document).querySelectorAll('.scene');
   for (var i = 0; i < hosts.length; i++) {
     var host = hosts[i];
+    if (host.getAttribute('data-mounted') === 'true') continue;
+    host.setAttribute('data-mounted', 'true');
     var mounted = false;
 
     if (window.Scene && Scene.supported()) {
       mounted = !!Scene.mount(host, {
         model: host.getAttribute('data-model') || 'v60',
-        mode: host.getAttribute('data-mode') || 'auto',
-        hint: t(WORDS.dragHint)
+        mode: host.getAttribute('data-mode') || 'auto'
       });
+      /* mount() clears the host, so the hint is added after it, not before */
+      if (mounted && host.getAttribute('data-mode') === 'drag') {
+        var hint = document.createElement('span');
+        hint.className = 'scene-hint';
+        hint.setAttribute('data-en', WORDS.dragHint.en);
+        hint.setAttribute('data-ar', WORDS.dragHint.ar);
+        hint.textContent = t(WORDS.dragHint);
+        host.appendChild(hint);
+      }
     }
     if (!mounted) sceneFallback(host);
   }
@@ -1278,11 +1413,11 @@ function initHome() {
     var strip = '';
     for (var j = 0; j < tools.length; j++) {
       strip +=
-        '<a class="strip-tile" href="product.html?id=' + esc(tools[j].id) + '">' +
+        '<div class="reveal card-slot"><a class="strip-tile" data-tilt href="product.html?id=' + esc(tools[j].id) + '">' +
           '<span class="tile">' + icon(tools[j].icon) + '</span>' +
           '<span class="strip-tile-name">' + esc(t(tools[j].name)) + '</span>' +
           '<span>' + money(tools[j].price) + '</span>' +
-        '</a>';
+        '</a></div>';
     }
     el('tools-strip').innerHTML = strip;
 
@@ -1293,6 +1428,8 @@ function initHome() {
     el('teaser-hours').innerHTML = hours;
 
     I18N.apply(el('main'));
+    Motion.observe(el('main'));
+    initTilt(el('main'));
   }
 
   document.addEventListener('bloom:lang', paint);

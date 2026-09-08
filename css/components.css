@@ -1171,3 +1171,61 @@
   height: 100%;
 }
 @media (max-width: 860px) { .hero-scene { min-height: 320px; } }
+
+/* --- 16. Listing filter fade ------------------------------------------- */
+
+.grid-fade { transition: opacity var(--t-base) var(--e-out); }
+.grid-fade.is-fading { opacity: 0; }
+
+/* --- 17. Product gallery, add-to-cart feedback -------------------------- */
+
+.product-scene {
+  min-height: 380px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+@media (max-width: 860px) { .product-scene { min-height: 300px; } }
+
+/* A sheen sweeping across the button once, on add. */
+.btn-sheen { position: relative; overflow: hidden; }
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, var(--leaf-wash), transparent);
+  opacity: .55;
+  pointer-events: none;
+}
+.btn-sheen.is-sweeping::after {
+  animation: sheen var(--t-slow) var(--e-in-out) 1;
+}
+@keyframes sheen {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+@keyframes badge-pop {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.55); }
+  100% { transform: scale(1); }
+}
+.bag-badge.is-popping { animation: badge-pop var(--t-slow) var(--e-out) 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-sheen.is-sweeping::after,
+  .bag-badge.is-popping { animation: none; }
+}
+
+/* --- 18. Related products ---------------------------------------------- */
+
+.related { padding-block: var(--s-6) 0; }
+
+/* Reveal lives on a wrapper: it animates transform, and so does the card's
+   tilt, so they must never be the same element. The slot is a grid so its
+   single child stretches to the row height and a row keeps level edges —
+   except a flip card, which sets its own height because both of its faces
+   are absolutely positioned and would otherwise collapse to nothing. */
+.card-slot { display: grid; }

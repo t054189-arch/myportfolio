@@ -106,7 +106,7 @@ var PRODUCTS = [
       en: 'Jasmine, peach and black tea. Light-roasted for filter — the clean, floral classic.',
       ar: 'ياسمين وخوخ وشاي أسود. تحميص فاتح للتقطير — نظيف وزهري وكلاسيكي.'
     },
-    about: {
+    desc: {
       en: 'Grown at 2050 m in the Guji highlands and fully washed at the mill, so the cup arrives clear and tea-like. We roast it light on Tuesdays and rest it three days before it ships. It is the bean we hand to anyone brewing pour-over for the first time.',
       ar: 'تُزرع على ارتفاع ٢٠٥٠ متراً في مرتفعات قوجي وتُغسل كاملاً في المعمل، فيأتي الفنجان صافياً قريباً من الشاي. نحمّصها تحميصاً فاتحاً كل ثلاثاء وتستريح ثلاثة أيام قبل الشحن. هذه أول حبة نرشّحها لمن يبدأ بالتقطير.'
     },
@@ -124,6 +124,7 @@ var PRODUCTS = [
       total: '2:45',
       grind: { en: 'Medium-fine', ar: 'وسط ناعم' }
     },
+    model: 'v60',
     stock: 12,
     image: 'assets/eth-guji.svg'
   },
@@ -139,7 +140,7 @@ var PRODUCTS = [
       en: 'Red cherry, cane sugar and apple skin. Natural process — juicy and bright.',
       ar: 'كرز أحمر وسكر قصب وقشر تفاح. معالجة طبيعية — عصيرية ومنعشة.'
     },
-    about: {
+    desc: {
       en: 'Dried whole on raised beds for eighteen days, which pushes the fruit forward without tipping into ferment. Sweet enough to drink black all afternoon, and forgiving if your pour wanders. Brew it a degree cooler than the Ethiopian.',
       ar: 'تُجفَّف كاملة على أسِرَّة مرتفعة ثمانية عشر يوماً، فتبرز الفاكهة دون أن تنقلب إلى تخمّر. حلاوتها تكفي لشربها سادة طول العصر، وهي متسامحة إن تعثّر صبّك. حضّرها بدرجة أبرد من الإثيوبية.'
     },
@@ -157,6 +158,7 @@ var PRODUCTS = [
       total: '3:00',
       grind: { en: 'Medium', ar: 'وسط' }
     },
+    model: 'v60',
     stock: 20,
     image: 'assets/col-huila.svg'
   },
@@ -172,7 +174,7 @@ var PRODUCTS = [
       en: 'Dark chocolate, dried fig and warm spice. Deep and traditional — excellent as espresso.',
       ar: 'شوكولاتة داكنة وتين مجفف وبهار دافئ. عميقة وتقليدية — ممتازة كإسبريسو.'
     },
-    about: {
+    desc: {
       en: 'Terraced smallholder plots at 2200 m, sun-dried on rooftops the way they have been for centuries. Heavy in the mouth, low in acidity, and unmistakably Yemeni. Pulled as espresso it tastes of fig and cardamom; brewed as filter it turns into cocoa.',
       ar: 'مدرّجات صغيرة على ارتفاع ٢٢٠٠ متر، تُجفَّف شمساً على الأسطح كما جرت العادة منذ قرون. ثقيلة في الفم، قليلة الحموضة، ويمناوية بلا التباس. كإسبريسو تعطي التين والهيل، وكقطرة تتحوّل إلى كاكاو.'
     },
@@ -190,6 +192,7 @@ var PRODUCTS = [
       total: '3:10',
       grind: { en: 'Medium', ar: 'وسط' }
     },
+    model: 'v60',
     stock: 6,
     image: 'assets/yem-haraz.svg'
   },
@@ -208,7 +211,7 @@ var PRODUCTS = [
       en: 'V60 and flat-bottom cones in ceramic, glass or plastic.',
       ar: 'أقماع V60 ومسطحة القاعدة من السيراميك أو الزجاج أو البلاستيك.'
     },
-    about: {
+    desc: {
       en: 'A 60° cone with spiral ribs, so the paper never seals against the wall and the bed drains evenly. Ceramic holds heat best; plastic is the one to travel with.',
       ar: 'قمع بزاوية ٦٠° وأخاديد حلزونية، فلا تلتصق الورقة بالجدار ويصرّف القاع بانتظام. السيراميك يحفظ الحرارة أفضل، والبلاستيك أنسب للسفر.'
     },
@@ -217,6 +220,7 @@ var PRODUCTS = [
       size:     { en: '02 · 1–4 cups', ar: '٠٢ · 1–4 فناجين' },
       ribs:     { en: 'Spiral, 60° cone', ar: 'حلزونية، قمع 60°' }
     },
+    model: 'v60',
     stock: 30,
     image: 'assets/dripper.svg'
   },
@@ -233,7 +237,7 @@ var PRODUCTS = [
       en: 'Bleached and natural, sizes 01 and 02, 100-packs.',
       ar: 'مبيّضة وطبيعية، مقاسا ٠١ و٠٢، عبوات ١٠٠ ورقة.'
     },
-    about: {
+    desc: {
       en: 'Rinse them first, always — a dry paper tastes of paper and cools the cone. Bleached brews cleaner; natural adds a faint hint of card.',
       ar: 'اغسلها أولاً دائماً — الورقة الجافة تُشعر بطعم الورق وتبرّد القمع. المبيّضة أنقى في الكوب، والطبيعية تضيف لمسة كرتونية خفيفة.'
     },
@@ -258,7 +262,7 @@ var PRODUCTS = [
       en: 'Stainless burrs with click adjustment for filter and espresso.',
       ar: 'مطاحن ستانلس بتدريج نقري للتقطير والإسبريسو.'
     },
-    about: {
+    desc: {
       en: 'Conical steel burrs on a double bearing, so the shaft does not wobble and the grind stays even. Thirty clicks from espresso to French press; filter sits around click 18.',
       ar: 'مطاحن مخروطية من الفولاذ على محملين، فلا يتأرجح العمود ويبقى الطحن متساوياً. ثلاثون نقرة من الإسبريسو إلى الفرنسية، والتقطير عند النقرة ١٨ تقريباً.'
     },
@@ -267,6 +271,7 @@ var PRODUCTS = [
       steps:    { en: '30 clicks · 22 µm each', ar: '30 نقرة · 22 ميكرون لكل نقرة' },
       capacity: { en: '30 g', ar: '30 غم' }
     },
+    model: 'grinder',
     stock: 14,
     image: 'assets/grinder.svg'
   },
@@ -283,7 +288,7 @@ var PRODUCTS = [
       en: 'Variable temperature, slow controlled pour, 0.6–1 L.',
       ar: 'حرارة متغيّرة وصبّ بطيء محكوم، 0.6–1 لتر.'
     },
-    about: {
+    desc: {
       en: 'The narrow spout is the whole point: it turns your wrist into a flow-rate control. Set it to 93 °C and it holds there while you pour.',
       ar: 'الفوهة الضيقة هي الفكرة كلها: تحوّل معصمك إلى منظّم لسرعة الصبّ. اضبطها على 93 °م وتثبت عندها أثناء الصبّ.'
     },
@@ -292,6 +297,7 @@ var PRODUCTS = [
       range:    { en: '40–100 °C', ar: '40–100 °م' },
       hold:     { en: '±1 °C for 60 min', ar: '±1 °م لمدة 60 دقيقة' }
     },
+    model: 'kettle',
     stock: 9,
     image: 'assets/kettle.svg'
   },
@@ -308,7 +314,7 @@ var PRODUCTS = [
       en: '0.1 g accuracy with a built-in timer for the bloom.',
       ar: 'دقة 0.1 غم مع مؤقّت مدمج لمرحلة التفتّح.'
     },
-    about: {
+    desc: {
       en: 'Weigh the coffee, weigh the water, watch the clock — that is most of brewing. The timer starts itself at the first drop, which is exactly when the bloom begins.',
       ar: 'زِن البنّ، زِن الماء، وراقب الوقت — هذا معظم التحضير. يبدأ المؤقّت تلقائياً مع أول قطرة، وهي لحظة بدء التفتّح.'
     },
@@ -317,6 +323,7 @@ var PRODUCTS = [
       capacity: { en: '2000 g', ar: '2000 غم' },
       timer:    { en: 'Auto-start at first drop', ar: 'بدء تلقائي مع أول قطرة' }
     },
+    model: 'scale',
     stock: 18,
     image: 'assets/scale.svg'
   },
@@ -326,14 +333,14 @@ var PRODUCTS = [
     icon: 'thermometer',
     name:   { en: 'Probe thermometer', ar: 'ميزان حرارة' },
     origin: { en: 'Thermometer', ar: 'حرارة' },
-    price: 6.750,
+    price: 6.000,
     unit:  { en: '1 pc', ar: 'حبة' },
     tags: ['weighing'],
     notes: {
       en: 'Instant read, 0–100 °C — brew at 92–94 °C.',
       ar: 'قراءة فورية، 0–100 °م — حضّر عند 92–94 °م.'
     },
-    about: {
+    desc: {
       en: 'For any kettle without a thermostat. Boil, wait, probe: water off the boil drops roughly a degree every twenty seconds in a Kuwait kitchen.',
       ar: 'لأي غلاية بلا منظّم حرارة. اغلِ، انتظر، ثم اقرأ: الماء بعد الغليان ينزل درجة كل عشرين ثانية تقريباً في مطبخ كويتي.'
     },
@@ -351,14 +358,14 @@ var PRODUCTS = [
     icon: 'server',
     name:   { en: 'Glass server', ar: 'دورق زجاجي' },
     origin: { en: 'Server', ar: 'دورق' },
-    price: 8.000,
+    price: 7.500,
     unit:  { en: '600 ml', ar: '٦٠٠ مل' },
     tags: ['brewing'],
     notes: {
       en: 'Heat-proof glass carafes, 400 and 600 ml, with markings.',
       ar: 'دوارق زجاج مقاوم للحرارة، 400 و600 مل، بتدريجات.'
     },
-    about: {
+    desc: {
       en: 'Borosilicate, marked every 100 ml so you can read the brew without a scale. Warm it with the paper rinse and the cup lands hotter.',
       ar: 'زجاج بوروسيليكات مدرّج كل 100 مل، فتقرأ الكمية بلا ميزان. سخّنه بماء غسل الورقة ليصل الفنجان أسخن.'
     },
@@ -378,14 +385,14 @@ var PRODUCTS = [
     icon: 'espresso',
     name:   { en: 'Espresso machine', ar: 'مكينة إسبريسو' },
     origin: { en: 'Espresso', ar: 'إسبريسو' },
-    price: 285.000,
+    price: 185.000,
     unit:  { en: 'dual boiler', ar: 'سخّان مزدوج' },
     tags: ['espresso'],
     notes: {
       en: 'Single boiler to dual boiler, 9 bar, PID temperature control.',
       ar: 'من سخّان واحد إلى سخّانين، 9 بار، وتحكّم PID بالحرارة.'
     },
-    about: {
+    desc: {
       en: 'A 58 mm group and a real PID, which is what separates a repeatable shot from a lucky one. Brew and steam at once, and a 30-minute warm-up before the first cup.',
       ar: 'رأس 58 مم ومنظّم PID حقيقي، وهذا ما يفرق بين جرعة متكرّرة وجرعة محظوظة. تحضير وبخار في الوقت نفسه، مع تسخين 30 دقيقة قبل أول فنجان.'
     },
@@ -395,6 +402,7 @@ var PRODUCTS = [
       pid:      { en: '±0.3 °C', ar: '±0.3 °م' },
       group:    { en: '58 mm', ar: '58 مم' }
     },
+    model: 'espresso',
     stock: 4,
     image: 'assets/espresso.svg'
   },
@@ -404,14 +412,14 @@ var PRODUCTS = [
     icon: 'brewer',
     name:   { en: 'Batch brewer', ar: 'مكينة تقطير' },
     origin: { en: 'Filter brewer', ar: 'تقطير' },
-    price: 165.000,
+    price: 95.000,
     unit:  { en: '1.9 L', ar: '١٫٩ لتر' },
     tags: ['filter'],
     notes: {
       en: 'Batch brewers that hold 93 °C and shower evenly.',
       ar: 'مكائن دفعات تثبّت 93 °م وتوزّع الماء بانتظام.'
     },
-    about: {
+    desc: {
       en: 'What we run on the bar for filter by the cup. A six-jet shower head wets the whole bed at once, and the brew stays inside 92–96 °C for the full cycle.',
       ar: 'هذه ما نشغّلها على البار للتقطير بالفنجان. موزّع بستّ فتحات يبلّل القاع كله دفعة واحدة، وتبقى الحرارة بين 92 و96 °م طوال الدورة.'
     },
@@ -429,14 +437,14 @@ var PRODUCTS = [
     icon: 'burr',
     name:   { en: 'Electric burr grinder', ar: 'مطحنة كهربائية' },
     origin: { en: 'Grinder', ar: 'مطحنة' },
-    price: 145.000,
+    price: 68.000,
     unit:  { en: '64 mm flat', ar: 'مسطحة ٦٤ مم' },
     tags: ['grinding'],
     notes: {
       en: 'Flat and conical burrs, stepless from espresso to French press.',
       ar: 'مطاحن مسطحة ومخروطية، تدريج مستمر من الإسبريسو إلى الفرنسية.'
     },
-    about: {
+    desc: {
       en: 'Stepless adjustment, so you can chase a shot by a hair rather than a whole click. Single-dose it and it retains under half a gram.',
       ar: 'تدريج مستمر، فتضبط الجرعة بفروق دقيقة لا بنقرة كاملة. مع الجرعة المفردة يبقى فيها أقل من نصف غرام.'
     },
@@ -445,6 +453,7 @@ var PRODUCTS = [
       adjust: { en: 'Stepless', ar: 'مستمر' },
       rpm:    { en: '1350 rpm', ar: '1350 دورة/دقيقة' }
     },
+    model: 'grinder',
     stock: 7,
     image: 'assets/burr.svg'
   }

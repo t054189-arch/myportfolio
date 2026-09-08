@@ -31,7 +31,7 @@
 <!-- The header, footer and cart drawer are injected by js/main.js so that
      every page carries exactly the same one. -->
 <main id="main">
-  <!-- Hero: the wordmark, the tagline, and a working 30-second bloom timer -->
+  <!-- Hero: the wordmark and the bloom timer beside the scroll-driven rig -->
   <div class="wrap hero">
     <div class="stack stack-4">
       <p class="eyebrow" data-en="Specialty coffee · Salmiya, Kuwait" data-ar="قهوة مختصة · السالمية، الكويت">Specialty coffee · Salmiya, Kuwait</p>
@@ -41,9 +41,8 @@
         <a class="btn btn-primary" href="beans.html" data-en="Shop beans" data-ar="تسوّق الحبوب">Shop beans</a>
         <a class="btn btn-quiet" href="brew-guides.html" data-en="Brew guides" data-ar="طرق التحضير">Brew guides</a>
       </div>
-    </div>
 
-    <div class="timer" id="bloom-timer">
+      <div class="timer" id="bloom-timer">
       <div class="timer-figure">
         <svg viewBox="0 0 176 176" aria-hidden="true" focusable="false">
           <circle class="timer-track" cx="88" cy="88" r="76"></circle>
@@ -53,8 +52,14 @@
         <span class="timer-count" id="timer-count" role="timer" aria-live="off">30</span>
       </div>
       <button type="button" class="btn btn-primary" id="timer-btn" data-en="Start the bloom" data-ar="ابدأ التفتّح">Start the bloom</button>
-      <p class="timer-caption" id="timer-caption" data-en="30 seconds of swelling grounds, releasing CO₂." data-ar="٣٠ ثانية يتفتّح فيها البنّ ويطلق ثاني أكسيد الكربون.">30 seconds of swelling grounds, releasing CO₂.</p>
+        <p class="timer-caption" id="timer-caption" data-en="30 seconds of swelling grounds, releasing CO₂." data-ar="٣٠ ثانية يتفتّح فيها البنّ ويطلق ثاني أكسيد الكربون.">30 seconds of swelling grounds, releasing CO₂.</p>
+      </div>
     </div>
+
+    <!-- The V60 rig. The camera eases down toward the cup as you scroll;
+         with no WebGL this becomes the flat illustration instead. -->
+    <div class="scene hero-scene" id="hero-scene"
+         data-model="v60" data-mode="scroll" data-fallback="assets/v60-rig.svg"></div>
   </div>
 
   <!-- Three beans -->
@@ -117,10 +122,12 @@
   </section>
 </main>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/cart.js"></script>
+<script src="js/scene.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

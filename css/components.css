@@ -1164,3 +1164,10 @@
   max-height: none;
   width: auto;
 }
+
+/* The hero rig sits beside the wordmark and the timer. */
+.hero-scene {
+  min-height: 420px;
+  height: 100%;
+}
+@media (max-width: 860px) { .hero-scene { min-height: 320px; } }

@@ -161,6 +161,8 @@ var Theme = (function () {
     document.documentElement.setAttribute('data-theme', mode);
     write(mode);
     paintButton();
+    /* the 3D scene relights itself from this */
+    document.dispatchEvent(new CustomEvent('bloom:theme', { detail: { theme: mode } }));
   }
 
   function toggle() { set(effective() === 'dark' ? 'light' : 'dark'); }

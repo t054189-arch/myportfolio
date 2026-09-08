@@ -12,6 +12,13 @@ Open `index.html` in a browser. That is all it needs; there is nothing to
 install and nothing to compile. Deploying to GitHub Pages or Netlify means
 serving this directory as-is.
 
+### GitHub Pages
+
+Repository → Settings → Pages → Source "Deploy from a branch", pick this
+branch and the `/ (root)` folder. Every path in the site is relative, so it
+works from a project subpath such as `/myportfolio/` without changes, and
+`.nojekyll` keeps Jekyll from touching the static files.
+
 ## Layout
 
 | Path | What it is |

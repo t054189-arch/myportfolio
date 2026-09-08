@@ -681,7 +681,7 @@
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(36, 26, 20, .45);
+  background: var(--scrim);
   z-index: 190;
   opacity: 0;
   visibility: hidden;
@@ -1229,3 +1229,17 @@
    except a flip card, which sets its own height because both of its faces
    are absolutely positioned and would otherwise collapse to nothing. */
 .card-slot { display: grid; }
+
+/* Below 900px the bar has to hold six controls in 375px of screen: the
+   account name and the globe glyph give way, the icons stay. */
+@media (max-width: 899px) {
+  .account-name { display: none; }
+  .lang-globe { display: none; }
+  .icon-btn-wide { width: 40px; padding-inline: 0; }
+}
+
+/* Narrowest phones: the bar trades a little size for fitting at all. */
+@media (max-width: 380px) {
+  .wordmark { font-size: 1.25rem; }
+  .icon-btn, .icon-btn-wide { width: 36px; height: 36px; }
+}

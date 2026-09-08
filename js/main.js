@@ -247,7 +247,7 @@ function headerHTML(page) {
         '</nav>' +
         '<div class="header-actions">' +
           '<button type="button" class="icon-btn icon-btn-wide" id="lang-btn"' + biLabel(WORDS.langSwitch) + '>' +
-            icon('globe') +
+            icon('globe', 'lang-globe') +
             '<span class="lang-label"' + bi(WORDS.langLabel) + '>' + esc(t(WORDS.langLabel)) + '</span>' +
           '</button>' +
           '<button type="button" class="icon-btn" id="theme-btn"' + biLabel(WORDS.toDark) + '>' + icon('moon') + '</button>' +
@@ -1009,7 +1009,7 @@ function initBrewGuides() {
     for (var i = 0; i < BREW_GUIDES.length; i++) {
       var guide = BREW_GUIDES[i];
       html +=
-        '<section class="section block-tight" id="' + esc(guide.id) + '">' +
+        '<section class="section block-tight reveal" id="' + esc(guide.id) + '">' +
           '<div class="section-label">' +
             '<span class="eyebrow">' + esc(t(guide.methodName)) + '</span>' +
             '<h2>' + esc(t(guide.title)) + '</h2>' +
@@ -1020,6 +1020,7 @@ function initBrewGuides() {
     }
     host.innerHTML = html;
     I18N.apply(host);
+    Motion.observe(host);
   }
 
   document.addEventListener('bloom:lang', paint);
@@ -1391,7 +1392,7 @@ function initLogin() {
 function paintLoginControls() {
   var lang = el('lang-btn');
   if (!lang) return;
-  lang.innerHTML = icon('globe') +
+  lang.innerHTML = icon('lang-globe' && 'globe', 'lang-globe') +
     '<span class="lang-label"' + bi(WORDS.langLabel) + '>' + esc(t(WORDS.langLabel)) + '</span>';
   I18N.apply(lang);
   Theme.paintButton();

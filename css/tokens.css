@@ -68,9 +68,17 @@
   --t-reveal: 640ms;   /* scroll reveal                                 */
 
   /* --- Elevation — dropdowns and hovered cards only --------------------- */
+  --scrim: rgba(36, 26, 20, .45);   /* behind the cart drawer */
+
   --shadow-panel: 0 10px 24px -12px rgba(36, 26, 20, .28);
   --shadow-card:  0 10px 26px -14px rgba(36, 26, 20, .40);
   --shadow-login: 0 24px 60px -24px rgba(36, 26, 20, .45);
+}
+
+/* The gutter tightens on the narrowest phones so the header's six controls
+   still fit. Layout token, so it lives here with the others. */
+@media (max-width: 380px) {
+  :root { --gutter: 18px; }
 }
 
 /* --- Colour: dark, when the viewer's OS asks for it and no explicit
@@ -95,6 +103,8 @@
 
     --band:       var(--surface-2);
     --band-text:  var(--crema);
+
+    --scrim: rgba(0, 0, 0, .62);
 
     --shadow-panel: 0 10px 24px -12px rgba(0, 0, 0, .6);
     --shadow-card:  0 10px 26px -14px rgba(0, 0, 0, .7);
@@ -122,6 +132,8 @@
 
   --band:       var(--surface-2);
   --band-text:  var(--crema);
+
+  --scrim: rgba(0, 0, 0, .62);
 
   --shadow-panel: 0 10px 24px -12px rgba(0, 0, 0, .6);
   --shadow-card:  0 10px 26px -14px rgba(0, 0, 0, .7);

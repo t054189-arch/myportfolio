@@ -150,7 +150,7 @@ strong, b { font-weight: 600; }
 .lang-ar .brew-meta .value,
 .lang-ar .specs td,
 .lang-ar .bar-today .detail,
-.lang-ar .demo-box { font-family: var(--font-mono-ar); }
+
 
 /* One measurement, pinned left-to-right so the unit stays beside its number */
 .ltr { unicode-bidi: isolate; }

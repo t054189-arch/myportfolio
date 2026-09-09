@@ -64,6 +64,84 @@ function flipIcon(frontName, backName, cls) {
          '</span>';
 }
 
+
+/* --- Flavour notes -------------------------------------------------------
+   Every note has one glyph and one colour. Twelve base glyphs are reused
+   across the whole set, so the icons read as one family rather than thirty
+   unrelated drawings.
+
+   These colours are the one place the palette opens up past the five brand
+   colours. They belong to the fruit, not to the brand: they live inside the
+   discs of a flavour ring and never leak into a button, a tag or any type.
+   ------------------------------------------------------------------------ */
+
+var GLYPHS = {
+  /* solid shapes, drawn on a 24 grid, filled in the note's colour */
+  flower: '<path d="M12 3.4c1.5 0 2.6 1.2 2.6 2.7 0 .5-.1 1-.4 1.4 1.4-.5 3 .1 3.5 1.5.5 1.4-.2 3-1.6 3.5.4.3.8.7 1 1.2.6 1.4 0 3-1.4 3.6-1.3.6-2.9 0-3.6-1.3-.3.5-.7.9-1.2 1.1-1.4.6-3 0-3.6-1.4-.5-1.3.1-2.8 1.3-3.4-1.4-.4-2.2-1.9-1.8-3.3.4-1.4 1.9-2.3 3.3-1.9-.2-.4-.3-.8-.3-1.2 0-1.5 1.2-2.7 2.7-2.7z"/><circle cx="12" cy="12.4" r="2.1" fill="#fff" fill-opacity=".55"/>',
+  stone:  '<path d="M12 6.6c3.6 0 6.4 2.7 6.4 6.2S15.6 20 12 20s-6.4-2.7-6.4-7.2S8.4 6.6 12 6.6z"/><path d="M12.4 6.7c.2-1.8 1.7-3.2 3.6-3.4-.2 1.9-1.6 3.3-3.6 3.4z"/><path d="M11.4 12.6c-.7-1.5-.4-3.2.7-4.4" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2"/>',
+  berry:  '<circle cx="8.9" cy="14.6" r="4.3"/><circle cx="15.6" cy="15.6" r="3.5"/><path d="M9 10.4c0-2.4.9-4.4 2.6-5.8M15.7 12.1c.4-1.7 1.4-3 2.9-3.8" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.3" stroke-linecap="round"/>',
+  apple:  '<path d="M12 7.2c2 0 2.6-.9 4.1-.9 2.2 0 3.9 2.1 3.9 5.1 0 3.6-2.6 8-5.2 8-1.2 0-1.8-.6-2.8-.6s-1.6.6-2.8.6C6.6 19.4 4 15 4 11.4c0-3 1.7-5.1 3.9-5.1 1.5 0 2.1.9 4.1.9z"/><path d="M12 6.8c0-2 1.3-3.4 3.3-3.7" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.3" stroke-linecap="round"/>',
+  citrus: '<circle cx="12" cy="12" r="8"/><path d="M12 4v16M4 12h16M6.3 6.3l11.4 11.4M17.7 6.3L6.3 17.7" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.1"/>',
+  leaf:   '<path d="M19.4 4.4C10.6 4 4.6 8.2 4.6 14.4c0 2.4.9 4.2 2.2 5.2 1.1-4.9 4.3-8.5 9.2-10.4-3.6 2.3-6 5.6-7 9.8 6.6.6 10.6-4.3 10.4-14.6z"/>',
+  cube:   '<path d="M12 3.6l8 4.2v8.4L12 20.4 4 16.2V7.8z"/><path d="M4 7.8l8 4.2 8-4.2M12 12v8.4" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2"/>',
+  bar:    '<rect x="4.4" y="6.4" width="15.2" height="11.2" rx="1.4"/><path d="M9.5 6.4v11.2M14.5 6.4v11.2M4.4 12h15.2" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2"/>',
+  nib:    '<path d="M12 3.8c3.4 2.4 5.2 5.2 5.2 8.4 0 4-2.3 7-5.2 7s-5.2-3-5.2-7c0-3.2 1.8-6 5.2-8.4z"/><path d="M12 6.6v10.2" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.2"/>',
+  drop:   '<path d="M12 3.4c3.6 4.3 5.6 7.5 5.6 10.2a5.6 5.6 0 0 1-11.2 0c0-2.7 2-5.9 5.6-10.2z"/><path d="M9.6 13.8c0 1.5.9 2.7 2.2 3.2" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>',
+  nut:    '<path d="M12 4.2c4 0 6.8 3 6.8 7.4 0 4.6-3 8.2-6.8 8.2s-6.8-3.6-6.8-8.2C5.2 7.2 8 4.2 12 4.2z"/><path d="M12 6.4v11.4M9.2 8.6c-.9 1.6-1.2 3.4-.9 5.4" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2" stroke-linecap="round"/>',
+  star:   '<path d="M12 2.8l2.5 5.1 5.6.8-4 4 .9 5.6-5-2.7-5 2.7.9-5.6-4-4 5.6-.8z"/>',
+  fig:    '<path d="M12 6.4c3.8 0 6.6 3 6.6 6.6 0 3.9-3 6.8-6.6 6.8s-6.6-2.9-6.6-6.8c0-3.6 2.8-6.6 6.6-6.6z"/><path d="M12 6.5V3.2c1.8 0 3.1 1 3.6 2.8" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.3" stroke-linecap="round"/>'
+};
+
+var NOTES = {
+  'Jasmine':        { glyph: 'flower', colour: '#C9A83C', ar: 'ياسمين' },
+  'Rose':           { glyph: 'flower', colour: '#C1748A', ar: 'ورد' },
+  'Peach':          { glyph: 'stone',  colour: '#E0904F', ar: 'خوخ' },
+  'Ripe peach':     { glyph: 'stone',  colour: '#E0904F', ar: 'خوخ ناضج' },
+  'Plum':           { glyph: 'stone',  colour: '#7B4C7A', ar: 'برقوق' },
+  'Red cherry':     { glyph: 'berry',  colour: '#AF3540', ar: 'كرز أحمر' },
+  'Blackcurrant':   { glyph: 'berry',  colour: '#4E2B50', ar: 'كشمش أسود' },
+  'Red currant':    { glyph: 'berry',  colour: '#AF3540', ar: 'كشمش أحمر' },
+  'Apple skin':     { glyph: 'apple',  colour: '#8CA455', ar: 'قشر تفاح' },
+  'Red apple':      { glyph: 'apple',  colour: '#BC4630', ar: 'تفاح أحمر' },
+  'Citrus zest':    { glyph: 'citrus', colour: '#D79B26', ar: 'قشر حمضيات' },
+  'Grapefruit':     { glyph: 'citrus', colour: '#D77461', ar: 'جريب فروت' },
+  'Orange peel':    { glyph: 'citrus', colour: '#CE7C27', ar: 'قشر برتقال' },
+  'Lime':           { glyph: 'citrus', colour: '#7A9E3A', ar: 'ليمون أخضر' },
+  'Black tea':      { glyph: 'leaf',   colour: '#5A4A32', ar: 'شاي أسود' },
+  'Tobacco leaf':   { glyph: 'leaf',   colour: '#75663C', ar: 'ورق تبغ' },
+  'Cane sugar':     { glyph: 'cube',   colour: '#C6A870', ar: 'سكر قصب' },
+  'Brown sugar':    { glyph: 'cube',   colour: '#A97F4C', ar: 'سكر بني' },
+  'Dark chocolate': { glyph: 'bar',    colour: '#3E2418', ar: 'شوكولاتة داكنة' },
+  'Milk chocolate': { glyph: 'bar',    colour: '#74472A', ar: 'شوكولاتة بالحليب' },
+  'Cocoa':          { glyph: 'bar',    colour: '#5A3620', ar: 'كاكاو' },
+  'Cocoa nib':      { glyph: 'nib',    colour: '#5A3620', ar: 'حبّ كاكاو' },
+  'Honey':          { glyph: 'drop',   colour: '#D49B33', ar: 'عسل' },
+  'Caramel':        { glyph: 'drop',   colour: '#BB7C39', ar: 'كراميل' },
+  'Hazelnut':       { glyph: 'nut',    colour: '#A0734A', ar: 'بندق' },
+  'Almond':         { glyph: 'nut',    colour: '#A0734A', ar: 'لوز' },
+  'Warm spice':     { glyph: 'star',   colour: '#AE5B38', ar: 'بهار دافئ' },
+  'Dried fig':      { glyph: 'fig',    colour: '#6B475A', ar: 'تين مجفف' }
+};
+
+/* One note as its coloured disc plus its label. */
+function noteNode(name) {
+  var note = NOTES[name];
+  if (!note) return '';
+  var glyph = GLYPHS[note.glyph] || '';
+  return '' +
+    '<span class="disc" style="background: ' + note.colour + '26; border-color: ' + note.colour + '66">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="fill: ' + note.colour + '">' + glyph + '</svg>' +
+    '</span>' +
+    '<span class="lbl">' + esc(I18N.isArabic() ? note.ar : name) + '</span>';
+}
+
+/* The label alone, for the screen-reader summary. */
+function noteLabel(name) {
+  var note = NOTES[name];
+  if (!note) return name;
+  return I18N.isArabic() ? note.ar : name;
+}
+
 /* --- Tag vocabulary ----------------------------------------------------
    Green acts, clay describes flavour — so only taste-ish tags go clay.
    ----------------------------------------------------------------------- */
@@ -117,7 +195,7 @@ var SPEC_LABELS = {
    ----------------------------------------------------------------------- */
 var PRODUCTS = [
 
-  /* ---------- Beans ---------- */
+  /* ---------- Beans: eight origins, each with four notes ---------- */
   {
     id: 'eth-guji',
     category: 'beans',
@@ -127,19 +205,15 @@ var PRODUCTS = [
     unit:  { en: '250 g', ar: '٢٥٠ غم' },
     tags: ['classic', 'filter'],
     notes: {
-      en: 'Jasmine, peach and black tea. Light-roasted for filter — the clean, floral classic.',
-      ar: 'ياسمين وخوخ وشاي أسود. تحميص فاتح للتقطير — نظيف وزهري وكلاسيكي.'
+      en: 'Jasmine and ripe peach over black tea. Light-roasted for filter — the clean, floral classic.',
+      ar: 'ياسمين وخوخ ناضج فوق شاي أسود. تحميص فاتح للتقطير — النقي الزهري الكلاسيكي.'
     },
+    flavour: ['Jasmine', 'Ripe peach', 'Black tea', 'Citrus zest'],
+    bagColour: { body: '#57683F', top: '#3D4B2C' },
     desc: {
-      en: 'Grown at 2050 m in the Guji highlands and fully washed at the mill, so the cup arrives clear and tea-like. We roast it light on Tuesdays and rest it three days before it ships. It is the bean we hand to anyone brewing pour-over for the first time.',
-      ar: 'تُزرع على ارتفاع ٢٠٥٠ متراً في مرتفعات قوجي وتُغسل كاملاً في المعمل، فيأتي الفنجان صافياً قريباً من الشاي. نحمّصها تحميصاً فاتحاً كل ثلاثاء وتستريح ثلاثة أيام قبل الشحن. هذه أول حبة نرشّحها لمن يبدأ بالتقطير.'
+      en: 'Fully washed at the Hambela mill and dried on raised beds at 2050 m, which is why the cup arrives so clear. Jasmine on the nose, ripe peach in the body, and a black-tea dryness in the finish that keeps it drinkable to the last mouthful. We roast it light on Tuesdays and rest it three days. It is the bean we hand anyone brewing pour-over for the first time.',
+      ar: 'تُغسل كاملاً في معمل همبيلا وتُجفَّف على أسِرَّة مرتفعة عند 2050 متراً، ولهذا يأتي الفنجان بهذا الصفاء. ياسمين في الأنف، وخوخ ناضج في الجسم، وجفاف الشاي الأسود في النهاية يجعلها قابلة للشرب حتى آخر جرعة. نحمّصها فاتحة كل ثلاثاء وتستريح ثلاثة أيام. هذه أول حبة نرشّحها لمن يبدأ بالتقطير.'
     },
-    flavour: [
-      { en: 'Jasmine',      ar: 'ياسمين' },
-      { en: 'Ripe peach',   ar: 'خوخ ناضج' },
-      { en: 'Black tea',    ar: 'شاي أسود' },
-      { en: 'Citrus zest',  ar: 'قشر ليمون' }
-    ],
     specs: {
       process:  { en: 'Washed', ar: 'مغسولة' },
       altitude: { en: '2050 m', ar: '2050 م' },
@@ -148,10 +222,8 @@ var PRODUCTS = [
       harvest:  { en: 'Nov 2025', ar: 'نوفمبر 2025' }
     },
     recipe: {
-      method: 'filter',
-      methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
-      dose: 15, water: 250, temp: 93, bloom: 30, bloomTime: 30,
-      total: '2:45',
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 15, water: 250, temp: 93, bloom: 30, bloomTime: 30, total: '2:45',
       grind: { en: 'Medium-fine', ar: 'وسط ناعم' }
     },
     model: 'v60',
@@ -161,25 +233,21 @@ var PRODUCTS = [
   {
     id: 'col-huila',
     category: 'beans',
-    name:   { en: 'Huila Natural', ar: 'هويلا طبيعية' },
+    name:   { en: 'El Mirador Natural', ar: 'إل ميرادور طبيعية' },
     origin: { en: 'Colombia · Huila', ar: 'كولومبيا · هويلا' },
     price: 6.000,
     unit:  { en: '250 g', ar: '٢٥٠ غم' },
     tags: ['fruity', 'filter'],
     notes: {
-      en: 'Red cherry, cane sugar and apple skin. Natural process — juicy and bright.',
-      ar: 'كرز أحمر وسكر قصب وقشر تفاح. معالجة طبيعية — عصيرية ومنعشة.'
+      en: 'Red cherry and cane sugar with apple skin. Natural process — juicy, sweet and forgiving.',
+      ar: 'كرز أحمر وسكر قصب مع قشر تفاح. معالجة طبيعية — عصيرية وحلوة ومتسامحة.'
     },
+    flavour: ['Red cherry', 'Cane sugar', 'Apple skin', 'Cocoa nib'],
+    bagColour: { body: '#AC5334', top: '#7E3722' },
     desc: {
-      en: 'Dried whole on raised beds for eighteen days, which pushes the fruit forward without tipping into ferment. Sweet enough to drink black all afternoon, and forgiving if your pour wanders. Brew it a degree cooler than the Ethiopian.',
-      ar: 'تُجفَّف كاملة على أسِرَّة مرتفعة ثمانية عشر يوماً، فتبرز الفاكهة دون أن تنقلب إلى تخمّر. حلاوتها تكفي لشربها سادة طول العصر، وهي متسامحة إن تعثّر صبّك. حضّرها بدرجة أبرد من الإثيوبية.'
+      en: 'Picked ripe on a smallholding above Pitalito and dried whole for eighteen days, turned by hand every few hours. That slow drying is what pushes the red cherry forward without letting it tip into ferment. Sweet enough to drink black all afternoon, and it will forgive a pour that wanders. Brew it a degree cooler than the Ethiopian.',
+      ar: 'تُقطف ناضجة في حيازة صغيرة فوق بيتاليتو وتُجفَّف كاملة ثمانية عشر يوماً، وتُقلَّب يدوياً كل ساعات. هذا التجفيف البطيء هو ما يُبرز الكرز الأحمر دون أن ينقلب إلى تخمّر. حلاوتها تكفي لشربها سادة طول العصر، وهي تتسامح مع صبّ متعثّر. حضّرها بدرجة أبرد من الإثيوبية.'
     },
-    flavour: [
-      { en: 'Red cherry',   ar: 'كرز أحمر' },
-      { en: 'Cane sugar',   ar: 'سكر قصب' },
-      { en: 'Apple skin',   ar: 'قشر تفاح' },
-      { en: 'Cocoa nib',    ar: 'حبّ كاكاو' }
-    ],
     specs: {
       process:  { en: 'Natural', ar: 'طبيعية' },
       altitude: { en: '1750 m', ar: '1750 م' },
@@ -188,10 +256,8 @@ var PRODUCTS = [
       harvest:  { en: 'Oct 2025', ar: 'أكتوبر 2025' }
     },
     recipe: {
-      method: 'filter',
-      methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
-      dose: 15, water: 250, temp: 92, bloom: 30, bloomTime: 30,
-      total: '3:00',
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 15, water: 250, temp: 92, bloom: 30, bloomTime: 30, total: '3:00',
       grind: { en: 'Medium', ar: 'وسط' }
     },
     model: 'v60',
@@ -201,25 +267,21 @@ var PRODUCTS = [
   {
     id: 'yem-haraz',
     category: 'beans',
-    name:   { en: 'Haraz Natural', ar: 'حراز طبيعية' },
+    name:   { en: 'Haraz Terraces', ar: 'مدرّجات حراز' },
     origin: { en: 'Yemen · Haraz', ar: 'اليمن · حراز' },
     price: 14.000,
     unit:  { en: '250 g', ar: '٢٥٠ غم' },
     tags: ['classic', 'espresso'],
     notes: {
-      en: 'Dark chocolate, dried fig and warm spice. Deep and traditional — excellent as espresso.',
-      ar: 'شوكولاتة داكنة وتين مجفف وبهار دافئ. عميقة وتقليدية — ممتازة كإسبريسو.'
+      en: 'Dark chocolate and dried fig with warm spice. Deep and traditional — excellent as espresso.',
+      ar: 'شوكولاتة داكنة وتين مجفف مع بهار دافئ. عميقة وتقليدية — ممتازة كإسبريسو.'
     },
+    flavour: ['Dark chocolate', 'Dried fig', 'Warm spice', 'Tobacco leaf'],
+    bagColour: { body: '#241A14', top: '#0F0A07' },
     desc: {
-      en: 'Terraced smallholder plots at 2200 m, sun-dried on rooftops the way they have been for centuries. Heavy in the mouth, low in acidity, and unmistakably Yemeni. Pulled as espresso it tastes of fig and cardamom; brewed as filter it turns into cocoa.',
-      ar: 'مدرّجات صغيرة على ارتفاع ٢٢٠٠ متر، تُجفَّف شمساً على الأسطح كما جرت العادة منذ قرون. ثقيلة في الفم، قليلة الحموضة، ويمناوية بلا التباس. كإسبريسو تعطي التين والهيل، وكقطرة تتحوّل إلى كاكاو.'
+      en: 'Terraced smallholder plots at 2200 m in the Haraz mountains, sun-dried on rooftops the way they have been for centuries. Heavy in the mouth, low in acidity, and unmistakably Yemeni: dark chocolate first, then dried fig, then a long spiced finish. Pulled as espresso it tastes of fig and cardamom; brewed as filter it turns to cocoa.',
+      ar: 'مدرّجات صغيرة على ارتفاع 2200 متر في جبال حراز، تُجفَّف شمساً على الأسطح كما جرت العادة منذ قرون. ثقيلة في الفم، قليلة الحموضة، ويمنية بلا التباس: شوكولاتة داكنة أولاً، ثم تين مجفف، ثم نهاية طويلة مبهّرة. كإسبريسو تعطي التين والهيل، وكقطرة تتحوّل إلى كاكاو.'
     },
-    flavour: [
-      { en: 'Dark chocolate', ar: 'شوكولاتة' },
-      { en: 'Dried fig',      ar: 'تين مجفف' },
-      { en: 'Warm spice',     ar: 'بهار دافئ' },
-      { en: 'Tobacco leaf',   ar: 'ورق تبغ' }
-    ],
     specs: {
       process:  { en: 'Natural', ar: 'طبيعية' },
       altitude: { en: '2200 m', ar: '2200 م' },
@@ -228,15 +290,183 @@ var PRODUCTS = [
       harvest:  { en: 'Sep 2025', ar: 'سبتمبر 2025' }
     },
     recipe: {
-      method: 'filter',
-      methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
-      dose: 16, water: 250, temp: 94, bloom: 32, bloomTime: 30,
-      total: '3:10',
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 16, water: 250, temp: 94, bloom: 32, bloomTime: 30, total: '3:10',
       grind: { en: 'Medium', ar: 'وسط' }
     },
     model: 'v60',
     stock: 6,
     image: 'assets/yem-haraz.svg'
+  },
+  {
+    id: 'ken-nyeri',
+    category: 'beans',
+    name:   { en: 'Gichathaini AA', ar: 'جيتشاثايني AA' },
+    origin: { en: 'Kenya · Nyeri', ar: 'كينيا · نيري' },
+    price: 8.500,
+    unit:  { en: '250 g', ar: '٢٥٠ غم' },
+    tags: ['fruity', 'filter'],
+    notes: {
+      en: 'Blackcurrant and grapefruit over plum and brown sugar. Sharp, structured, unmistakably Kenyan.',
+      ar: 'كشمش أسود وجريب فروت فوق برقوق وسكر بني. حادّة ومتماسكة وكينية بلا التباس.'
+    },
+    flavour: ['Blackcurrant', 'Grapefruit', 'Plum', 'Brown sugar'],
+    bagColour: { body: '#8C3B44', top: '#5E252C' },
+    desc: {
+      en: 'AA screen from the Gichathaini factory in Nyeri, double-fermented in water and dried slowly on beds at 1800 m. Kenyan coffee at its most itself: blackcurrant that borders on savoury, grapefruit acidity with real structure behind it, and brown sugar underneath holding it together. Grind a touch coarser than you think — this one gets astringent if you over-extract it.',
+      ar: 'حجم AA من معمل جيتشاثايني في نيري، تُخمَّر مرتين في الماء وتُجفَّف ببطء على الأسِرَّة عند 1800 متر. القهوة الكينية في أصدق صورها: كشمش أسود يقارب المالح، وحموضة جريب فروت بهيكل حقيقي خلفها، وسكر بني تحتها يجمع الأمر. اطحن أخشن قليلاً مما تتوقّع — فهذه تصبح قابضة إن أفرطت في الاستخلاص.'
+    },
+    specs: {
+      process:  { en: 'Washed, double-fermented', ar: 'مغسولة، تخمير مزدوج' },
+      altitude: { en: '1800 m', ar: '1800 م' },
+      roast:    { en: 'Filter', ar: 'تقطير' },
+      varietal: { en: 'SL28 · SL34', ar: 'SL28 · SL34' },
+      harvest:  { en: 'Jan 2026', ar: 'يناير 2026' }
+    },
+    recipe: {
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 15, water: 250, temp: 94, bloom: 30, bloomTime: 30, total: '2:50',
+      grind: { en: 'Medium', ar: 'وسط' }
+    },
+    model: 'v60',
+    stock: 9,
+    image: 'assets/ken-nyeri.svg'
+  },
+  {
+    id: 'bra-cerrado',
+    category: 'beans',
+    name:   { en: 'Fazenda Rio Verde', ar: 'فازيندا ريو فيردي' },
+    origin: { en: 'Brazil · Cerrado', ar: 'البرازيل · سيرادو' },
+    price: 5.000,
+    unit:  { en: '250 g', ar: '٢٥٠ غم' },
+    tags: ['classic', 'espresso'],
+    notes: {
+      en: 'Hazelnut and milk chocolate with caramel. Low acidity, thick body — the everyday espresso.',
+      ar: 'بندق وشوكولاتة بالحليب مع كراميل. حموضة منخفضة وجسم سميك — إسبريسو كل يوم.'
+    },
+    flavour: ['Hazelnut', 'Milk chocolate', 'Caramel', 'Brown sugar'],
+    bagColour: { body: '#8A6A3F', top: '#5F4826' },
+    desc: {
+      en: 'Pulped natural from the Cerrado plateau at 1100 m, where the dry harvest lets the fruit come off cleanly and leaves the sugars behind. Hazelnut and milk chocolate, almost no acidity, and a body thick enough to carry milk without disappearing into it. This is the one we keep in the hopper: cheap enough to drink daily and sweet enough that you want to.',
+      ar: 'معالجة نصف طبيعية من هضبة سيرادو عند 1100 متر، حيث يسمح الحصاد الجاف بإزالة الفاكهة بنظافة ويُبقي السكريات. بندق وشوكولاتة بالحليب، بلا حموضة تقريباً، وجسم سميك يحمل الحليب دون أن يذوب فيه. هذه ما نُبقيها في القادوس: رخيصة تكفي لشربها يومياً وحلوة تكفي لترغب في ذلك.'
+    },
+    specs: {
+      process:  { en: 'Pulped natural', ar: 'نصف طبيعية' },
+      altitude: { en: '1100 m', ar: '1100 م' },
+      roast:    { en: 'Espresso', ar: 'إسبريسو' },
+      varietal: { en: 'Yellow Catuaí', ar: 'كاتواي أصفر' },
+      harvest:  { en: 'Aug 2025', ar: 'أغسطس 2025' }
+    },
+    recipe: {
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 16, water: 250, temp: 95, bloom: 32, bloomTime: 30, total: '3:15',
+      grind: { en: 'Medium-coarse', ar: 'وسط خشن' }
+    },
+    model: 'v60',
+    stock: 26,
+    image: 'assets/bra-cerrado.svg'
+  },
+  {
+    id: 'gua-huehue',
+    category: 'beans',
+    name:   { en: 'Finca La Bolsa', ar: 'فينكا لا بولسا' },
+    origin: { en: 'Guatemala · Huehuetenango', ar: 'غواتيمالا · ويويتينانغو' },
+    price: 7.000,
+    unit:  { en: '250 g', ar: '٢٥٠ غم' },
+    tags: ['classic', 'filter'],
+    notes: {
+      en: 'Caramel and red apple with cocoa and orange peel. Balanced, round, good every way you brew it.',
+      ar: 'كراميل وتفاح أحمر مع كاكاو وقشر برتقال. متوازنة وممتلئة، وجيدة بأي طريقة تحضّرها.'
+    },
+    flavour: ['Caramel', 'Red apple', 'Cocoa', 'Orange peel'],
+    bagColour: { body: '#6B4A2E', top: '#48301C' },
+    desc: {
+      en: 'Washed and sun-dried at 1900 m in the dry highland air of Huehuetenango, which lets the drying finish evenly and slowly. Caramel and red apple up front, cocoa underneath, and a twist of orange peel as it cools. The most even-tempered coffee on the shelf: it is good as filter, good as espresso, and good the next morning if you forgot about it.',
+      ar: 'مغسولة ومجفّفة شمساً عند 1900 متر في هواء مرتفعات ويويتينانغو الجاف، مما يجعل التجفيف يكتمل بانتظام وبطء. كراميل وتفاح أحمر في المقدّمة، وكاكاو تحتهما، ولمسة قشر برتقال حين تبرد. أكثر قهوة متوازنة على الرف: جيدة تقطيراً، وجيدة إسبريسو، وجيدة صباح الغد إن نسيتها.'
+    },
+    specs: {
+      process:  { en: 'Washed', ar: 'مغسولة' },
+      altitude: { en: '1900 m', ar: '1900 م' },
+      roast:    { en: 'Filter', ar: 'تقطير' },
+      varietal: { en: 'Bourbon · Caturra', ar: 'بوربون · كاتورا' },
+      harvest:  { en: 'Mar 2026', ar: 'مارس 2026' }
+    },
+    recipe: {
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 15, water: 250, temp: 93, bloom: 30, bloomTime: 30, total: '2:55',
+      grind: { en: 'Medium-fine', ar: 'وسط ناعم' }
+    },
+    model: 'v60',
+    stock: 15,
+    image: 'assets/gua-huehue.svg'
+  },
+  {
+    id: 'cri-tarrazu',
+    category: 'beans',
+    name:   { en: 'Las Lajas Honey', ar: 'لاس لاخاس هني' },
+    origin: { en: 'Costa Rica · Tarrazú', ar: 'كوستاريكا · تارّازو' },
+    price: 7.500,
+    unit:  { en: '250 g', ar: '٢٥٠ غم' },
+    tags: ['fruity', 'filter'],
+    notes: {
+      en: 'Honey and peach with plum and cane sugar. Syrupy sweetness from the honey process.',
+      ar: 'عسل وخوخ مع برقوق وسكر قصب. حلاوة كالشراب من المعالجة العسلية.'
+    },
+    flavour: ['Honey', 'Peach', 'Plum', 'Cane sugar'],
+    bagColour: { body: '#B07A3C', top: '#7E5322' },
+    desc: {
+      en: 'A yellow honey: the skin comes off but the sticky mucilage stays on through drying, so the sugars work their way back into the bean. The result is syrupy in a way washed coffee never is — honey and peach, plum as it cools, cane sugar all the way through. Dried twelve days at 1500 m in Tarrazú, turned every two hours.',
+      ar: 'عسلية صفراء: تُزال القشرة ويبقى اللبّ اللزج طوال التجفيف، فتعود السكريات إلى الحبة. والنتيجة قوامها كالشراب بشكل لا تصله المغسولة أبداً — عسل وخوخ، وبرقوق حين تبرد، وسكر قصب من البداية للنهاية. جُفِّفت اثني عشر يوماً عند 1500 متر في تارّازو، وقُلِّبت كل ساعتين.'
+    },
+    specs: {
+      process:  { en: 'Yellow honey', ar: 'عسلية صفراء' },
+      altitude: { en: '1500 m', ar: '1500 م' },
+      roast:    { en: 'Filter', ar: 'تقطير' },
+      varietal: { en: 'Caturra · Villalobos', ar: 'كاتورا · فيلالوبوس' },
+      harvest:  { en: 'Feb 2026', ar: 'فبراير 2026' }
+    },
+    recipe: {
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 15, water: 250, temp: 92, bloom: 30, bloomTime: 30, total: '3:05',
+      grind: { en: 'Medium', ar: 'وسط' }
+    },
+    model: 'v60',
+    stock: 11,
+    image: 'assets/cri-tarrazu.svg'
+  },
+  {
+    id: 'rwa-nyamasheke',
+    category: 'beans',
+    name:   { en: 'Kanzu Washed', ar: 'كانزو مغسولة' },
+    origin: { en: 'Rwanda · Nyamasheke', ar: 'رواندا · نياماشيكي' },
+    price: 7.000,
+    unit:  { en: '250 g', ar: '٢٥٠ غم' },
+    tags: ['fruity', 'filter'],
+    notes: {
+      en: 'Rose and lime over blackcurrant and honey. Delicate, floral, and very clean in the cup.',
+      ar: 'ورد وليمون أخضر فوق كشمش أسود وعسل. رقيقة وزهرية ونظيفة جداً في الفنجان.'
+    },
+    flavour: ['Rose', 'Lime', 'Blackcurrant', 'Honey'],
+    bagColour: { body: '#5E7060', top: '#3F4E42' },
+    desc: {
+      en: 'From the Kanzu washing station in Nyamasheke, on the hills above Lake Kivu at 1700 m. Fully washed and soaked overnight in clean water, which is what gives it that glassy clarity. Rose and lime arrive first, blackcurrant sits behind them, and honey rounds off the finish. Delicate enough that a coarse grind or cool water will hide it — brew this one carefully.',
+      ar: 'من محطة غسل كانزو في نياماشيكي، على التلال فوق بحيرة كيفو عند 1700 متر. تُغسل كاملاً وتُنقع ليلة في ماء نظيف، وهذا ما يمنحها صفاءً زجاجياً. يأتي الورد والليمون الأخضر أولاً، ويجلس الكشمش الأسود خلفهما، ويُدوّر العسل النهاية. رقيقة لدرجة أن طحناً خشناً أو ماءً بارداً سيخفيها — حضّر هذه بعناية.'
+    },
+    specs: {
+      process:  { en: 'Washed, overnight soak', ar: 'مغسولة، نقع ليلي' },
+      altitude: { en: '1700 m', ar: '1700 م' },
+      roast:    { en: 'Filter', ar: 'تقطير' },
+      varietal: { en: 'Red Bourbon', ar: 'بوربون أحمر' },
+      harvest:  { en: 'Dec 2025', ar: 'ديسمبر 2025' }
+    },
+    recipe: {
+      method: 'filter', methodName: { en: 'V60 pour-over', ar: 'تقطير V60' },
+      dose: 15, water: 250, temp: 93, bloom: 30, bloomTime: 30, total: '2:45',
+      grind: { en: 'Medium-fine', ar: 'وسط ناعم' }
+    },
+    model: 'v60',
+    stock: 13,
+    image: 'assets/rwa-nyamasheke.svg'
   },
 
   /* ---------- Tools ---------- */

@@ -119,8 +119,9 @@ var WORDS = {
   signOut:    { en: 'Sign out', ar: 'تسجيل الخروج' },
   signIn:     { en: 'Sign in', ar: 'تسجيل الدخول' },
   signingIn:  { en: 'Signing in…', ar: 'جارٍ الدخول…' },
-  emptyForm:  { en: 'Please fill in both the username and the password.', ar: 'الرجاء إدخال اسم المستخدم وكلمة المرور.' },
-  wrongForm:  { en: 'That username and password do not match. Try bloom / bloom123, or continue as guest.', ar: 'اسم المستخدم أو كلمة المرور غير صحيحة. جرّب bloom / bloom123، أو تابع كزائر.' },
+  noUser:     { en: 'Please enter a username — we use it to greet you.', ar: 'الرجاء إدخال اسم المستخدم — نستخدمه للترحيب بك.' },
+  noPassword: { en: 'Please enter a password.', ar: 'الرجاء إدخال كلمة المرور.' },
+  shortPass:  { en: 'That password is too short — four characters or more.', ar: 'كلمة المرور قصيرة جداً — أربعة أحرف أو أكثر.' },
   dragHint:   { en: 'Drag to rotate', ar: 'اسحب للتدوير' },
   rigAlt:     { en: 'A V60 cone with brass rib rings above a glass server of brewed coffee',
                 ar: 'قمع V60 بحلقات نحاسية فوق دورق زجاجي فيه قهوة محضّرة' },
@@ -1471,6 +1472,12 @@ function initLogin() {
     window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
   }
 
+  var MESSAGES = {
+    noUser: { words: WORDS.noUser, focus: 'username' },
+    noPassword: { words: WORDS.noPassword, focus: 'password' },
+    shortPassword: { words: WORDS.shortPass, focus: 'password' }
+  };
+
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     var result = Auth.signIn(el('username').value, el('password').value);
@@ -1479,8 +1486,9 @@ function initLogin() {
       leaveTo('index.html');
       return;
     }
-    showMessage(result.reason === 'empty' ? WORDS.emptyForm : WORDS.wrongForm);
-    el(result.reason === 'empty' ? 'username' : 'password').focus();
+    var problem = MESSAGES[result.reason] || MESSAGES.noUser;
+    showMessage(problem.words);
+    el(problem.focus).focus();
   });
 
   /* Guests get in too — same fade, no credentials. */

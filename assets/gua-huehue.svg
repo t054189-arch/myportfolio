@@ -1,19 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" width="200" height="260" role="img">
   <!-- 250 g bag in this origin's colours, from bagColour in js/data.js -->
-  <path fill="#AC5334" d="M30 48h140v182a10 10 0 0 1-10 10H40a10 10 0 0 1-10-10z"/>
-  <path fill="#7E3722" opacity=".55" d="M30 48h22v192H40a10 10 0 0 1-10-10z"/>
-  <rect fill="#7E3722" x="24" y="28" width="152" height="22" rx="3"/>
-  <rect fill="#AC5334" opacity=".45" x="24" y="38" width="152" height="3"/>
+  <path fill="#6B4A2E" d="M30 48h140v182a10 10 0 0 1-10 10H40a10 10 0 0 1-10-10z"/>
+  <path fill="#48301C" opacity=".55" d="M30 48h22v192H40a10 10 0 0 1-10-10z"/>
+  <rect fill="#48301C" x="24" y="28" width="152" height="22" rx="3"/>
+  <rect fill="#6B4A2E" opacity=".45" x="24" y="38" width="152" height="3"/>
   <circle fill="#E7C89B" cx="148" cy="74" r="9"/>
-  <circle fill="#7E3722" cx="148" cy="74" r="3.4"/>
+  <circle fill="#48301C" cx="148" cy="74" r="3.4"/>
   <rect fill="#FBF8F1" x="52" y="98" width="96" height="96" rx="4"/>
-  <circle fill="#AC5334" cx="70" cy="118" r="7"/>
+  <circle fill="#6B4A2E" cx="70" cy="118" r="7"/>
   <rect fill="#7C6754" opacity=".8"  x="86" y="115" width="44" height="5" rx="2.5"/>
   <rect fill="#7C6754" opacity=".9"  x="70" y="140" width="60" height="6" rx="3"/>
   <rect fill="#7C6754" opacity=".55" x="70" y="154" width="42" height="4" rx="2"/>
   <rect fill="#7C6754" opacity=".35" x="70" y="166" width="52" height="4" rx="2"/>
-  <rect fill="#AC5334" x="70" y="180" width="26" height="4" rx="2"/>
+  <rect fill="#6B4A2E" x="70" y="180" width="26" height="4" rx="2"/>
   <ellipse fill="#E7C89B" cx="100" cy="216" rx="20" ry="13" transform="rotate(-18 100 216)"/>
-  <path fill="none" stroke="#7E3722" stroke-width="3" stroke-linecap="round"
+  <path fill="none" stroke="#48301C" stroke-width="3" stroke-linecap="round"
         d="M84 219c8-8 24-8 32-6" transform="rotate(-18 100 216)"/>
 </svg>

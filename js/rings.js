@@ -5,6 +5,11 @@
    only question a customer actually has — what does it taste like? — before
    they read a word of description.
 
+   Each node is an icon, not a word: a disc washed in the note's own colour
+   holding a solid glyph in that colour, with the name underneath. Twelve
+   base glyphs are reused across the whole note set, so the ring reads at a
+   glance and across a language barrier.
+
    Pure CSS 3D: a stage holds a tilted plane, the plane holds a spinning
    ring, the ring holds one node per note. This module only builds the
    markup and hands the angles and delays to CSS; every frame after that is
@@ -26,7 +31,7 @@
 
 var Rings = (function () {
 
-  var DURATION = 22;   /* seconds — must match --ring-spin in the CSS */
+  var DURATION = 24;   /* seconds — must match --t-ring in the CSS */
 
   /* Build one ring. `size` is 'full' for listings and product pages, or
      'half' for the mega-dropdown. */
@@ -40,8 +45,6 @@ var Rings = (function () {
     for (var i = 0; i < n; i++) {
       var theta = (360 / n) * i;
       var delay = (-(i / n) * DURATION).toFixed(2) + 's';
-      var label = t(notes[i]);
-
       nodes +=
         '<span class="node" style="transform: rotateY(' + theta + 'deg) translateZ(var(--ring-r))">' +
           /* cancels this node's own placement angle */
@@ -49,12 +52,14 @@ var Rings = (function () {
             /* cancels the ring's rotation, so the text always faces front */
             /* Two animations, two delays, and the split matters.
                unspin must cancel the ring exactly, so it runs with no
-               delay: give it the node's negative delay and every chip ends
+               delay: give it the node's negative delay and every icon ends
                up permanently yawed by its own placement angle, which is
-               how notes end up edge-on. The fade takes the negative delay
+               how they end up edge-on. The fade takes the negative delay
                instead, so it still lines up with where this node is in
                the orbit. */
-            '<span class="face" style="animation-delay: 0s, ' + delay + '">' + esc(label) + '</span>' +
+            '<span class="face" style="animation-delay: 0s, ' + delay + '">' +
+              noteNode(notes[i]) +
+            '</span>' +
           '</span>' +
         '</span>';
     }
@@ -71,7 +76,7 @@ var Rings = (function () {
         /* The notes are decorative motion, but the information is not, so
            it is also present as plain text for a screen reader. */
         '<span class="visually-hidden">' + esc(t(WORDS.tasting)) + ': ' +
-          esc(notes.map(function (note) { return t(note); }).join(', ')) + '</span>' +
+          esc(notes.map(noteLabel).join(', ')) + '</span>' +
       '</div>';
   }
 

@@ -1039,17 +1039,7 @@
 }
 .guest-link:hover { color: var(--clay); border-bottom-color: var(--clay); }
 
-.demo-box {
-  display: grid;
-  gap: 2px;
-  padding: var(--s-3);
-  border: 1px dashed var(--line);
-  border-radius: var(--r-control);
-  font-family: var(--font-mono);
-  font-size: .75rem;
-  color: var(--ink-3);
-}
-.demo-box b { color: var(--ink-2); font-weight: 500; }
+/* (the demo-account box is gone: no example credentials on the door) */
 
 /* --- 15. Account menu in the header ------------------------------------ */
 
@@ -1272,25 +1262,28 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 }
 
 /* --- 20. Flavour rings --------------------------------------------------
-   The tasting notes orbit the bag on a tilted ring. Everything here is CSS
-   3D; js/rings.js only writes the angles and the negative delays.
+   The tasting notes orbit the bag as coloured fruit icons. Everything here
+   is CSS 3D; js/rings.js only writes the angles and the negative delays.
 
    Read this before changing any of it: the ring spins, the .bb wrapper
    cancels each node's placement angle, and the .face cancels the spin. Take
-   away either cancellation and the notes turn edge-on. Every animation
-   shares --t-ring and linear timing, or the fade drifts out of step with
-   the orbit.
+   away either cancellation and the icons turn edge-on and vanish. Every
+   animation shares --t-ring and linear timing, or the fade drifts out of
+   step with the orbit.
+
+   The note colours arrive inline from the NOTES table in js/data.js. They
+   belong to the fruit, not the brand, and they never leave these discs.
    ----------------------------------------------------------------------- */
 
 .ringstage {
-  --ring-r: 78px;
+  --ring-r: 58px;
   position: relative;
   height: 208px;
-  perspective: 760px;
+  perspective: 700px;
   display: grid;
   place-items: center;
 }
-.ringstage-half { --ring-r: 42px; height: 118px; perspective: 520px; }
+.ringstage-half { --ring-r: 34px; height: 124px; perspective: 520px; }
 
 .ringcore {
   position: absolute;
@@ -1299,16 +1292,16 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   width: 100%;
   height: 100%;
 }
-.ringcore img { height: 116px; width: auto; }
-.ringstage-half .ringcore img { height: 62px; }
+.ringcore img { height: 104px; width: auto; }
+.ringstage-half .ringcore img { height: 52px; }
 
 .ringtilt {
   position: absolute;
   inset: 0;
-  transform: rotateX(-17deg) translateY(26px);
+  transform: rotateX(-16deg) translateY(20px);
   transform-style: preserve-3d;
 }
-.ringstage-half .ringtilt { transform: rotateX(-17deg) translateY(14px); }
+.ringstage-half .ringtilt { transform: rotateX(-16deg) translateY(12px); }
 
 .ringspin {
   position: absolute;
@@ -1332,7 +1325,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   transform-style: preserve-3d;
   /* No opacity here, deliberately. Any opacity below 1 is a grouping
      property: it forces this element's preserve-3d context to flatten, and
-     then the face's counter-rotation composites in 2D and every chip
+     then the face's counter-rotation composites in 2D and every icon
      squashes edge-on. The depth fade therefore rides on .face, the leaf,
      where flattening costs nothing. */
 }
@@ -1341,7 +1334,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 @keyframes ringdepth {
   0%   { opacity: 1; }
   25%  { opacity: .5; }
-  50%  { opacity: .2; }
+  50%  { opacity: .22; }
   75%  { opacity: .5; }
   100% { opacity: 1; }
 }
@@ -1349,41 +1342,52 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 .bb { display: block; transform-style: preserve-3d; }
 
 .face {
-  display: block;
-  width: 108px;
-  /* Physical margins here, deliberately: the chip is centred on its orbit
-     node, and a node has no inline direction. margin-inline-start flips in
-     Arabic and pushes every chip off the side of the page. */
-  margin-left: -54px;
-  margin-top: -11px;
-  padding: 4px 6px;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r-control);
-  font-family: var(--font-mono);
-  font-size: .5875rem;
-  line-height: 1.25;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  text-align: center;
-  white-space: nowrap;
-  color: var(--ink-2);
-  /* Two animations, one clock: the counter-rotation that keeps the text
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  width: 78px;
+  /* Physical margins here, deliberately: the node is a point on an orbit
+     and has no inline direction. margin-inline-start flips in Arabic and
+     pushes every icon off the side of the page. */
+  margin-left: -39px;
+  margin-top: -32px;
+  /* Two animations, one clock: the counter-rotation that keeps the icon
      facing front, and the depth fade that would flatten the ring if it sat
-     on the node. Both share the node's negative delay. */
+     on the node. */
   animation: unspin var(--t-ring) linear infinite,
              ringdepth var(--t-ring) linear infinite;
 }
 @keyframes unspin { to { transform: rotateY(-360deg); } }
-.lang-ar .face {
-  animation-name: unspin-rtl, ringdepth;
-  font-family: var(--font-arabic);
-  letter-spacing: 0;
-  font-size: .625rem;
-}
+.lang-ar .face { animation-name: unspin-rtl, ringdepth; }
 @keyframes unspin-rtl { to { transform: rotateY(360deg); } }
 
-.ringstage-half .face { width: 74px; margin-left: -37px; font-size: .5rem; padding: 2px 4px; }
+/* The coloured disc and its glyph. */
+.disc {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid;
+  border-radius: 50%;
+}
+.disc svg { width: 23px; height: 23px; display: block; }
+
+.lbl {
+  font-family: var(--font-mono);
+  font-size: .5375rem;
+  line-height: 1.2;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.lang-ar .lbl { font-family: var(--font-arabic); letter-spacing: 0; font-size: .625rem; }
+
+.ringstage-half .disc { width: 30px; height: 30px; }
+.ringstage-half .disc svg { width: 17px; height: 17px; }
+.ringstage-half .face { width: 62px; margin-left: -31px; margin-top: -24px; }
+.ringstage-half .lbl { font-size: .5rem; }
 
 /* Contact shadow, so the bag sits on something. */
 .ringbase {
@@ -1391,11 +1395,11 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   bottom: 6px;
   /* Physical centring, deliberately: inset-inline-start flips to the right
      edge in Arabic while translateX(-50%) keeps pulling the same way, so
-     the two stack and shove this 150px shadow off the side of the page. */
+     the two stack and shove this shadow off the side of the page. */
   left: 50%;
   transform: translateX(-50%);
-  width: 150px;
-  height: 20px;
+  width: 140px;
+  height: 18px;
   background: radial-gradient(50% 50% at 50% 50%, var(--surface-2), transparent 70%);
   opacity: .9;
 }
@@ -1412,7 +1416,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 .ringstage.is-idle .ringspin * { animation-play-state: paused; }
 
 /* Reduced motion: no perspective, no orbit — the same notes as a row of
-   pills. Same information, no movement. */
+   icon chips. Same information, no movement. */
 @media (prefers-reduced-motion: reduce) {
   .ringstage { height: auto; perspective: none; display: block; }
   .ringcore { position: static; width: auto; height: auto; }
@@ -1423,7 +1427,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
     height: auto;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--s-2);
+    gap: var(--s-3);
     justify-content: center;
     animation: none;
     transform: none;
@@ -1431,48 +1435,9 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   }
   .node { position: static; animation: none; transform: none !important; opacity: 1 !important; }
   .bb { transform: none !important; }
-  .face {
-    animation: none;
-    transform: none !important;
-    width: auto;
-    margin: 0;
-  }
+  .face { animation: none; transform: none !important; margin: 0; }
   .ringbase { display: none; }
 }
-
-
-/* Ring placements: beneath a listing card, inside a bean's gallery, and at
-   half size in the Beans dropdown. */
-.ringcard { display: grid; gap: 0; }
-.ring-holder { display: block; }
-
-/* On a listing the card above already shows the bag, so the ring's hub is
-   small — it is the centre of the orbit, not a second product shot. */
-.card-slot .ringstage { height: 208px; }
-.card-slot .ringcore img { height: 74px; }
-
-.product-ring {
-  padding: var(--s-4);
-  min-height: 340px;
-  display: grid;
-  align-content: center;
-  /* not place-items:center — centring the item shrinks it to zero width
-     and the stage, sized at 100%, then has no box to orbit inside */
-  justify-items: stretch;
-}
-.product-ring .ring-holder { width: 100%; }
-.product-ring .ringstage { --ring-r: 96px; height: 260px; width: 100%; }
-.product-ring .ringcore img { height: 150px; }
-
-.panel-link-ring {
-  grid-template-columns: 1fr;
-  gap: var(--s-1);
-  text-align: center;
-  justify-items: center;
-}
-.panel-link-ring .panel-link-desc { max-width: 24ch; }
-.panel-link-ring .panel-link-name { justify-content: center; }
-.panel-grid-beans { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
 
 /* --- 21. The V60 brew unit ---------------------------------------------
    An animated cross-section beside the four recipe steps. Everything the
@@ -1582,3 +1547,42 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   .brewsvg .stream, .brewsvg .drip, .brewsvg .bubbles { transition: none; }
   .brewprogress span { transition: none; }
 }
+
+/* --- 22. Ring placements -----------------------------------------------
+   Three sizes of the same ring: beneath a listing card, as a bean's
+   gallery object, and half size in the Beans dropdown.
+   ----------------------------------------------------------------------- */
+
+.ringcard { display: grid; gap: 0; }
+.ring-holder { display: block; }
+
+/* The hub has to sit inside the orbit. At --ring-r 58 with 42px discs the
+   inner edge of the ring is 37px from centre, so a bag wider than about
+   70px collides with the icons instead of being circled by them. */
+.card-slot .ringcore img { height: 72px; }
+
+.product-ring {
+  padding: var(--s-4);
+  min-height: 340px;
+  display: grid;
+  align-content: center;
+  /* not place-items:center — centring the item shrinks it to zero width
+     and the stage, sized at 100%, then has no box to orbit inside */
+  justify-items: stretch;
+}
+.product-ring .ring-holder { width: 100%; }
+.product-ring .ringstage { --ring-r: 92px; height: 280px; width: 100%; }
+.product-ring .ringcore img { height: 128px; }
+.product-ring .disc { width: 46px; height: 46px; }
+.product-ring .disc svg { width: 25px; height: 25px; }
+.product-ring .lbl { font-size: .5875rem; }
+
+.panel-link-ring {
+  grid-template-columns: 1fr;
+  gap: var(--s-1);
+  text-align: center;
+  justify-items: center;
+}
+.panel-link-ring .panel-link-desc { max-width: 24ch; }
+.panel-link-ring .panel-link-name { justify-content: center; }
+.panel-grid-beans { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }

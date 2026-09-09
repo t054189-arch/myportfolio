@@ -1,18 +1,20 @@
 /* ==========================================================================
-   Bloom — demo sign-in
+   Bloom — the sign-in shell
    ==========================================================================
-   BE CLEAR ABOUT WHAT THIS IS. This is a front-end demo and nothing more:
+   BE CLEAR ABOUT WHAT THIS IS. This is a front-end shell, not
+   authentication. Nothing is verified:
 
-     - the credentials below are hardcoded in a file the browser downloads,
-       so they are public to anyone who opens devtools or View Source;
-     - the "session" is a single localStorage flag, which any visitor can set
-       by hand in the console to walk straight past this screen;
-     - there is no server, no password hashing, no token, no expiry, and no
-       check of any kind once the flag exists.
+     - there is no server, no account record, no password check;
+     - the form validates shape only — a username must be present and a
+       password must be at least four characters. Anything that passes
+       those two checks is accepted;
+     - the "session" is a single localStorage flag, which anyone can set by
+       hand from devtools and walk straight past this screen.
 
-   It must never be used to protect real customer data, real orders, or
-   anything private. Real authentication has to be enforced by a server that
-   never trusts the client. Treat this as a stage prop.
+   It exists to give the shop a door and a name to greet, nothing more. A
+   real backend has to go behind it before a single real account exists —
+   before that point there is no account to protect, and afterwards the
+   server must be the thing that decides, never this file.
 
    "Continue as guest" is therefore always visible and always works. A
    visitor who cannot get past a login screen is a lost customer, not a
@@ -22,10 +24,7 @@
 var Auth = (function () {
 
   var KEY = 'bloomUser';
-
-  /* The demo account, shown on the login card in a dashed box. */
-  var DEMO_USER = 'bloom';
-  var DEMO_PASS = 'bloom123';
+  var MIN_PASSWORD = 4;   /* a shape check, not a security policy */
 
   function read() {
     try { return window.localStorage.getItem(KEY); } catch (e) { return null; }
@@ -45,36 +44,35 @@ var Auth = (function () {
 
   function isGuest() { return current() === 'guest'; }
 
-  /* Returns { ok: true } or { ok: false, reason: 'empty' | 'wrong' }. */
+  /* Shape only. Returns { ok: true } or { ok: false, reason }.
+     reason: 'noUser' | 'noPassword' | 'shortPassword' */
   function signIn(username, password) {
     var user = (username || '').trim();
     var pass = password || '';
 
-    if (!user || !pass) return { ok: false, reason: 'empty' };
-    if (user.toLowerCase() !== DEMO_USER || pass !== DEMO_PASS) {
-      return { ok: false, reason: 'wrong' };
-    }
-    write(user.toLowerCase());
-    return { ok: true };
+    if (!user) return { ok: false, reason: 'noUser' };
+    if (!pass) return { ok: false, reason: 'noPassword' };
+    if (pass.length < MIN_PASSWORD) return { ok: false, reason: 'shortPassword' };
+
+    write(user);
+    return { ok: true, name: user };
   }
 
   function signInAsGuest() {
     write('guest');
-    return { ok: true };
+    return { ok: true, name: 'guest' };
   }
 
-  function signOut() {
-    clear();
-  }
+  function signOut() { clear(); }
 
   /* Send a visitor with no session to the front door. Called at the top of
-     every page except login.html itself. Uses replace() so the back button
+     every page except login.html itself. replace() so the back button
      cannot bounce between the two. */
   function guard() {
     if (document.body && document.body.getAttribute('data-page') === 'login') return false;
     if (current()) return false;
     window.location.replace('login.html');
-    return true;   /* caller stops booting the page */
+    return true;
   }
 
   return {
@@ -84,6 +82,6 @@ var Auth = (function () {
     signInAsGuest: signInAsGuest,
     signOut: signOut,
     guard: guard,
-    demo: { user: DEMO_USER, pass: DEMO_PASS }
+    minPassword: MIN_PASSWORD
   };
 })();

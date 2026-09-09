@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 260" width="200" height="260" role="img">
-  <!-- 250 g bag. Flat palette colours, legible on cream and on roast. -->
+  <!-- 250 g bag in this origin's colours, from bagColour in js/data.js -->
   <path fill="#57683F" d="M30 48h140v182a10 10 0 0 1-10 10H40a10 10 0 0 1-10-10z"/>
   <path fill="#3D4B2C" opacity=".55" d="M30 48h22v192H40a10 10 0 0 1-10-10z"/>
   <rect fill="#3D4B2C" x="24" y="28" width="152" height="22" rx="3"/>

@@ -134,6 +134,12 @@ var PRODUCTS = [
       en: 'Grown at 2050 m in the Guji highlands and fully washed at the mill, so the cup arrives clear and tea-like. We roast it light on Tuesdays and rest it three days before it ships. It is the bean we hand to anyone brewing pour-over for the first time.',
       ar: 'تُزرع على ارتفاع ٢٠٥٠ متراً في مرتفعات قوجي وتُغسل كاملاً في المعمل، فيأتي الفنجان صافياً قريباً من الشاي. نحمّصها تحميصاً فاتحاً كل ثلاثاء وتستريح ثلاثة أيام قبل الشحن. هذه أول حبة نرشّحها لمن يبدأ بالتقطير.'
     },
+    flavour: [
+      { en: 'Jasmine',      ar: 'ياسمين' },
+      { en: 'Ripe peach',   ar: 'خوخ ناضج' },
+      { en: 'Black tea',    ar: 'شاي أسود' },
+      { en: 'Citrus zest',  ar: 'قشر ليمون' }
+    ],
     specs: {
       process:  { en: 'Washed', ar: 'مغسولة' },
       altitude: { en: '2050 m', ar: '2050 م' },
@@ -168,6 +174,12 @@ var PRODUCTS = [
       en: 'Dried whole on raised beds for eighteen days, which pushes the fruit forward without tipping into ferment. Sweet enough to drink black all afternoon, and forgiving if your pour wanders. Brew it a degree cooler than the Ethiopian.',
       ar: 'تُجفَّف كاملة على أسِرَّة مرتفعة ثمانية عشر يوماً، فتبرز الفاكهة دون أن تنقلب إلى تخمّر. حلاوتها تكفي لشربها سادة طول العصر، وهي متسامحة إن تعثّر صبّك. حضّرها بدرجة أبرد من الإثيوبية.'
     },
+    flavour: [
+      { en: 'Red cherry',   ar: 'كرز أحمر' },
+      { en: 'Cane sugar',   ar: 'سكر قصب' },
+      { en: 'Apple skin',   ar: 'قشر تفاح' },
+      { en: 'Cocoa nib',    ar: 'حبّ كاكاو' }
+    ],
     specs: {
       process:  { en: 'Natural', ar: 'طبيعية' },
       altitude: { en: '1750 m', ar: '1750 م' },
@@ -202,6 +214,12 @@ var PRODUCTS = [
       en: 'Terraced smallholder plots at 2200 m, sun-dried on rooftops the way they have been for centuries. Heavy in the mouth, low in acidity, and unmistakably Yemeni. Pulled as espresso it tastes of fig and cardamom; brewed as filter it turns into cocoa.',
       ar: 'مدرّجات صغيرة على ارتفاع ٢٢٠٠ متر، تُجفَّف شمساً على الأسطح كما جرت العادة منذ قرون. ثقيلة في الفم، قليلة الحموضة، ويمناوية بلا التباس. كإسبريسو تعطي التين والهيل، وكقطرة تتحوّل إلى كاكاو.'
     },
+    flavour: [
+      { en: 'Dark chocolate', ar: 'شوكولاتة' },
+      { en: 'Dried fig',      ar: 'تين مجفف' },
+      { en: 'Warm spice',     ar: 'بهار دافئ' },
+      { en: 'Tobacco leaf',   ar: 'ورق تبغ' }
+    ],
     specs: {
       process:  { en: 'Natural', ar: 'طبيعية' },
       altitude: { en: '2200 m', ar: '2200 م' },

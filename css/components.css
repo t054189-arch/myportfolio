@@ -903,68 +903,10 @@
 .card:hover, .card:focus-visible,
 .strip-tile:hover, .strip-tile:focus-visible { --lift: -6px; }
 
-/* Bean cards flip instead of tilting — one subject in motion at a time. */
-.card-flip { position: relative; height: 356px; overflow: visible; }
-.card-flip .flip-inner {
-  position: absolute;
-  inset: 0;
-  transform-style: preserve-3d;
-  transition: transform var(--t-slow) var(--e-in-out);
-  border-radius: var(--r-card);
-}
-.card-flip:hover .flip-inner,
-.card-flip:focus-visible .flip-inner { transform: rotateY(180deg); }
-
-.flip-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: var(--r-card);
-  overflow: hidden;
-  display: grid;
-  grid-template-rows: 158px 1fr;
-  background: var(--surface);
-}
-.flip-back {
-  transform: rotateY(180deg);
-  grid-template-rows: auto;
-  align-content: start;
-  gap: var(--s-3);
-  padding: var(--s-4);
-  background: var(--surface-2);
-}
-.flip-back .eyebrow { color: var(--ink-3); }
-.flip-back .flip-note {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  line-height: 1.25;
-  color: var(--ink);
-}
-.lang-ar .flip-back .flip-note { font-family: var(--font-arabic); font-weight: 600; }
-.flip-recipe {
-  display: grid;
-  gap: 2px;
-  font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums;
-  font-size: .8125rem;
-  color: var(--ink-2);
-}
-.lang-ar .flip-recipe { font-family: var(--font-mono-ar); }
-.flip-cta {
-  font-family: var(--font-mono);
-  font-size: .6875rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--clay);
-}
-.lang-ar .flip-cta { font-family: var(--font-arabic); letter-spacing: 0; }
-
 @media (prefers-reduced-motion: reduce) {
   .card, .strip-tile { transform: none; will-change: auto; }
   .card:hover, .card:focus-visible,
   .strip-tile:hover, .strip-tile:focus-visible { --lift: 0px; }
-  .card-flip .flip-inner { transition: none; }
 }
 
 /* --- 13. The 3D layer --------------------------------------------------- */
@@ -1328,3 +1270,195 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   .ico-flip .back { display: none; }
   .pill { transform: none; }
 }
+
+/* --- 20. Flavour rings --------------------------------------------------
+   The tasting notes orbit the bag on a tilted ring. Everything here is CSS
+   3D; js/rings.js only writes the angles and the negative delays.
+
+   Read this before changing any of it: the ring spins, the .bb wrapper
+   cancels each node's placement angle, and the .face cancels the spin. Take
+   away either cancellation and the notes turn edge-on. Every animation
+   shares --t-ring and linear timing, or the fade drifts out of step with
+   the orbit.
+   ----------------------------------------------------------------------- */
+
+.ringstage {
+  --ring-r: 78px;
+  position: relative;
+  height: 208px;
+  perspective: 760px;
+  display: grid;
+  place-items: center;
+}
+.ringstage-half { --ring-r: 42px; height: 118px; perspective: 520px; }
+
+.ringcore {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+}
+.ringcore img { height: 116px; width: auto; }
+.ringstage-half .ringcore img { height: 62px; }
+
+.ringtilt {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(-17deg) translateY(26px);
+  transform-style: preserve-3d;
+}
+.ringstage-half .ringtilt { transform: rotateX(-17deg) translateY(14px); }
+
+.ringspin {
+  position: absolute;
+  inset-inline-start: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+  animation: ringspin var(--t-ring) linear infinite;
+}
+@keyframes ringspin { to { transform: rotateY(360deg); } }
+
+/* In Arabic the ring turns the other way, so it reads with the text. */
+.lang-ar .ringspin { animation-name: ringspin-rtl; }
+@keyframes ringspin-rtl { to { transform: rotateY(-360deg); } }
+
+.node {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  transform-style: preserve-3d;
+  /* No opacity here, deliberately. Any opacity below 1 is a grouping
+     property: it forces this element's preserve-3d context to flatten, and
+     then the face's counter-rotation composites in 2D and every chip
+     squashes edge-on. The depth fade therefore rides on .face, the leaf,
+     where flattening costs nothing. */
+}
+
+/* Fades as it passes behind the bag. */
+@keyframes ringdepth {
+  0%   { opacity: 1; }
+  25%  { opacity: .5; }
+  50%  { opacity: .2; }
+  75%  { opacity: .5; }
+  100% { opacity: 1; }
+}
+
+.bb { display: block; transform-style: preserve-3d; }
+
+.face {
+  display: block;
+  width: 108px;
+  margin-inline-start: -54px;
+  margin-top: -11px;
+  padding: 4px 6px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  font-family: var(--font-mono);
+  font-size: .5875rem;
+  line-height: 1.25;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--ink-2);
+  /* Two animations, one clock: the counter-rotation that keeps the text
+     facing front, and the depth fade that would flatten the ring if it sat
+     on the node. Both share the node's negative delay. */
+  animation: unspin var(--t-ring) linear infinite,
+             ringdepth var(--t-ring) linear infinite;
+}
+@keyframes unspin { to { transform: rotateY(-360deg); } }
+.lang-ar .face {
+  animation-name: unspin-rtl, ringdepth;
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  font-size: .625rem;
+}
+@keyframes unspin-rtl { to { transform: rotateY(360deg); } }
+
+.ringstage-half .face { width: 74px; margin-inline-start: -37px; font-size: .5rem; padding: 2px 4px; }
+
+/* Contact shadow, so the bag sits on something. */
+.ringbase {
+  position: absolute;
+  bottom: 6px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 20px;
+  background: radial-gradient(50% 50% at 50% 50%, var(--surface-2), transparent 70%);
+  opacity: .9;
+}
+
+/* Hovering or tabbing to the card stops the orbit so the notes can be read. */
+.ringcard:hover .ringspin,
+.ringcard:focus-within .ringspin,
+.ringcard:hover .ringspin *,
+.ringcard:focus-within .ringspin * { animation-play-state: paused; }
+
+/* Reduced motion: no perspective, no orbit — the same notes as a row of
+   pills. Same information, no movement. */
+@media (prefers-reduced-motion: reduce) {
+  .ringstage { height: auto; perspective: none; display: block; }
+  .ringcore { position: static; width: auto; height: auto; }
+  .ringtilt { position: static; transform: none; }
+  .ringspin {
+    position: static;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    justify-content: center;
+    animation: none;
+    transform: none;
+    padding-top: var(--s-3);
+  }
+  .node { position: static; animation: none; transform: none !important; opacity: 1 !important; }
+  .bb { transform: none !important; }
+  .face {
+    animation: none;
+    transform: none !important;
+    width: auto;
+    margin: 0;
+  }
+  .ringbase { display: none; }
+}
+
+
+/* Ring placements: beneath a listing card, inside a bean's gallery, and at
+   half size in the Beans dropdown. */
+.ringcard { display: grid; gap: 0; }
+.ring-holder { display: block; }
+
+/* On a listing the card above already shows the bag, so the ring's hub is
+   small — it is the centre of the orbit, not a second product shot. */
+.card-slot .ringstage { height: 208px; }
+.card-slot .ringcore img { height: 74px; }
+
+.product-ring {
+  padding: var(--s-4);
+  min-height: 340px;
+  display: grid;
+  align-content: center;
+  /* not place-items:center — centring the item shrinks it to zero width
+     and the stage, sized at 100%, then has no box to orbit inside */
+  justify-items: stretch;
+}
+.product-ring .ring-holder { width: 100%; }
+.product-ring .ringstage { --ring-r: 96px; height: 260px; width: 100%; }
+.product-ring .ringcore img { height: 150px; }
+
+.panel-link-ring {
+  grid-template-columns: 1fr;
+  gap: var(--s-1);
+  text-align: center;
+  justify-items: center;
+}
+.panel-link-ring .panel-link-desc { max-width: 24ch; }
+.panel-link-ring .panel-link-name { justify-content: center; }
+.panel-grid-beans { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }

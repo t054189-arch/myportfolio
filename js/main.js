@@ -201,6 +201,24 @@ function headerHTML(page) {
 
     for (var j = 0; j < menu.links.length; j++) {
       var link = menu.links[j];
+
+      /* Beans are chosen by taste, so their rows show the notes turning
+         rather than a generic icon. */
+      if (menu.key === 'beans') {
+        var beanId = (link.href.split('id=')[1] || '').split('&')[0];
+        links +=
+          '<a class="panel-link panel-link-ring ringcard" href="' + esc(link.href) + '">' +
+            '<span class="ring-holder" data-ring="' + esc(beanId) + '" data-ring-size="half"></span>' +
+            '<span class="panel-link-body">' +
+              '<span class="panel-link-name"><span' + bi(link.name) + '>' + esc(t(link.name)) + '</span>' +
+                (link.tag ? tagChip(link.tag) : '') +
+              '</span>' +
+              '<span class="panel-link-desc"' + bi(link.desc) + '>' + esc(t(link.desc)) + '</span>' +
+            '</span>' +
+          '</a>';
+        continue;
+      }
+
       links +=
         '<a class="panel-link" href="' + esc(link.href) + '">' +
           '<span class="tile">' + icon(link.icon) + '</span>' +
@@ -225,7 +243,7 @@ function headerHTML(page) {
             '<span class="eyebrow"' + bi(menu.eyebrow) + '>' + esc(t(menu.eyebrow)) + '</span>' +
             '<a class="panel-all" href="' + esc(menu.href) + '"' + bi(menu.all) + '>' + esc(t(menu.all)) + '</a>' +
           '</div>' +
-          '<div class="panel-grid">' + links + '</div>' +
+          '<div class="panel-grid' + (menu.key === 'beans' ? ' panel-grid-beans' : '') + '">' + links + '</div>' +
         '</div>' +
       '</li>';
   }
@@ -605,37 +623,20 @@ function cardFaceHTML(product) {
     '</span>';
 }
 
-/* Beans flip to their tasting notes; tools and machines tilt toward the
-   cursor. One subject in motion per card, never both. */
+/* Every card tilts toward the cursor and lifts 6px. A bean also carries
+   its flavour ring beneath, wrapped so hovering or tabbing to either the
+   card or the ring pauses the orbit. */
 function cardHTML(product) {
   var href = 'product.html?id=' + esc(product.id);
+  var card = '<a class="card" data-tilt href="' + href + '">' + cardFaceHTML(product) + '</a>';
 
-  if (product.category === 'beans' && product.recipe) {
-    var r = product.recipe;
-    var ratio = '1:' + (Math.floor((r.water / r.dose) * 10) / 10).toFixed(1);
-    return '' +
-      '<div class="reveal card-slot">' +
-      '<a class="card card-flip" href="' + href + '">' +
-        '<span class="flip-inner">' +
-          '<span class="flip-face flip-front">' + cardFaceHTML(product) + '</span>' +
-          '<span class="flip-face flip-back">' +
-            '<span class="eyebrow">' + esc(t(WORDS.tasting)) + '</span>' +
-            '<span class="flip-note">' + esc(t(product.notes)) + '</span>' +
-            '<span class="flip-recipe">' +
-              '<span>' + esc(r.dose + ' ' + t(WORDS.grams) + ' / ' + r.water + ' ' + t(WORDS.grams)) + '</span>' +
-              '<span>' + esc(r.temp + ' ' + t(WORDS.degrees) + ' · ' + t(r.grind)) + '</span>' +
-              '<span>' + esc(t(WORDS.ratio) + ' ' + ratio + ' · ' + r.total) + '</span>' +
-            '</span>' +
-            '<span class="flip-cta">' + esc(t(WORDS.viewBean)) + '</span>' +
-          '</span>' +
-        '</span>' +
-      '</a>' +
-      '</div>';
+  if (product.flavour) {
+    return '<div class="reveal card-slot ringcard">' +
+             card +
+             '<div class="ring-holder" data-ring="' + esc(product.id) + '"></div>' +
+           '</div>';
   }
-
-  return '<div class="reveal card-slot">' +
-           '<a class="card" data-tilt href="' + href + '">' + cardFaceHTML(product) + '</a>' +
-         '</div>';
+  return '<div class="reveal card-slot">' + card + '</div>';
 }
 
 var FILTER_SETS = {
@@ -692,6 +693,7 @@ function initListing(category) {
       Motion.observe(grid);
     }
     initTilt(grid);
+    Rings.mount(grid);
   }
 
   function paint(settled) {
@@ -758,12 +760,21 @@ function initProductPage() {
       ? product.stock + ' ' + t(WORDS.inStock)
       : product.stock + ' ' + t(WORDS.lowStock);
 
-    /* The gallery slot: a drag-to-rotate viewer when this product has a
-       build, the flat illustration when it does not. */
-    var gallery = product.model
-      ? '<div class="scene product-scene" data-model="' + esc(product.model) + '" data-mode="drag"' +
-        ' data-fallback="' + esc(product.image) + '"></div>'
-      : '<div class="product-art">' + productArt(product) + '</div>';
+    /* The gallery slot. A bean's own object is its flavour ring — the
+       notes turning around the bag answer the only question a customer
+       has. Gear gets its drag-to-rotate build, and anything without a
+       build falls back to the flat illustration. */
+    var gallery;
+    if (product.flavour) {
+      gallery = '<div class="product-art product-ring ringcard">' +
+                  '<div class="ring-holder" data-ring="' + esc(product.id) + '"></div>' +
+                '</div>';
+    } else if (product.model) {
+      gallery = '<div class="scene product-scene" data-model="' + esc(product.model) + '" data-mode="drag"' +
+                ' data-fallback="' + esc(product.image) + '"></div>';
+    } else {
+      gallery = '<div class="product-art">' + productArt(product) + '</div>';
+    }
 
     host.innerHTML =
       '<div class="product">' +
@@ -811,6 +822,7 @@ function initProductPage() {
     Motion.observe(host);
     initTilt(host);
     initScenes(host);
+    Rings.mount(host);
   }
 
   document.addEventListener('bloom:lang', paint);
@@ -1517,6 +1529,7 @@ function initHome() {
     I18N.apply(el('main'));
     Motion.observe(el('main'));
     initTilt(el('main'));
+    Rings.mount(el('main'));
   }
 
   document.addEventListener('bloom:lang', paint);
@@ -1547,10 +1560,12 @@ function boot() {
     document.addEventListener('bloom:cart', function () { syncBadge(); Drawer.render(); });
     document.addEventListener('bloom:lang', function () {
       syncBadge(); syncAccount(); Drawer.render(); Theme.paintButton();
+      Rings.mount(document);
     });
   }
 
   Motion.init();
+  Rings.mount(document);   /* the header's bean rows carry rings too */
 
   initLogin();
   initHome();

@@ -66,6 +66,8 @@
   --t-base:   200ms;   /* card lift, filter fade                        */
   --t-slow:   320ms;   /* drawer, menus, page transition, card flip     */
   --t-reveal: 640ms;   /* scroll reveal                                 */
+  --t-ring:   22s;     /* one turn of a flavour ring                    */
+  --t-flip:   520ms;   /* the theme icon turning over                   */
 
   /* --- Elevation — dropdowns and hovered cards only --------------------- */
   --scrim: rgba(36, 26, 20, .45);   /* behind the cart drawer */

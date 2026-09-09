@@ -632,7 +632,7 @@ function cardFaceHTML(product) {
       '<span class="card-note">' + esc(t(product.notes)) + '</span>' +
       '<span class="card-foot">' +
         tagChip(product.tags[0]) +
-        '<span>' + money(product.price) + '</span>' +
+        '<span data-live-price="' + esc(product.id) + '">' + money(product.price) + '</span>' +
       '</span>' +
     '</span>';
 }
@@ -770,9 +770,7 @@ function initProductPage() {
     var tags = '';
     for (var i = 0; i < product.tags.length; i++) tags += tagChip(product.tags[i]);
 
-    var stockLine = product.stock > 8
-      ? product.stock + ' ' + t(WORDS.inStock)
-      : product.stock + ' ' + t(WORDS.lowStock);
+    var stockLine = stockText(product);
 
     /* The gallery slot. A bean's own object is its flavour ring — the
        notes turning around the bag answer the only question a customer
@@ -796,7 +794,7 @@ function initProductPage() {
         '<div class="product-info">' +
           '<p class="eyebrow">' + esc(t(product.origin)) + '</p>' +
           '<h1>' + esc(t(product.name)) + '</h1>' +
-          '<p class="product-price">' + money(product.price) +
+          '<p class="product-price" data-live-price="' + esc(product.id) + '">' + money(product.price) +
             '<span class="note">/ ' + esc(t(product.unit)) + '</span></p>' +
           '<div class="row">' + tags + '</div>' +
           '<p class="product-desc">' + esc(t(product.desc)) + '</p>' +
@@ -808,7 +806,7 @@ function initProductPage() {
               '<button type="button" id="qty-more"' + biLabel(WORDS.more) + '>+</button>' +
             '</span>' +
             '<button type="button" class="btn btn-primary btn-sheen" id="add-to-cart"' + bi(WORDS.addToCart) + '>' + esc(t(WORDS.addToCart)) + '</button>' +
-            '<span class="stock-note">' + esc(stockLine) + '</span>' +
+            '<span class="stock-note" data-live-stock="' + esc(product.id) + '">' + esc(stockLine) + '</span>' +
           '</div>' +
           '<p class="notice" id="added-notice" hidden' + bi(WORDS.added) + '></p>' +
         '</div>' +
@@ -1139,6 +1137,7 @@ function initCartPage() {
 
   document.addEventListener('bloom:cart', paint);
   document.addEventListener('bloom:lang', paint);
+  document.addEventListener('bloom:catalogue', paint);
   paint();
 }
 
@@ -1537,7 +1536,7 @@ function initHome() {
         '<div class="reveal card-slot"><a class="strip-tile" data-tilt href="product.html?id=' + esc(tools[j].id) + '">' +
           '<span class="tile">' + icon(tools[j].icon) + '</span>' +
           '<span class="strip-tile-name">' + esc(t(tools[j].name)) + '</span>' +
-          '<span>' + money(tools[j].price) + '</span>' +
+          '<span data-live-price="' + esc(tools[j].id) + '">' + money(tools[j].price) + '</span>' +
         '</a></div>';
     }
     el('tools-strip').innerHTML = strip;
@@ -1559,6 +1558,68 @@ function initHome() {
 }
 
 /* --- 13. Boot ---------------------------------------------------------- */
+
+/* ------------------------------------------------------------------
+   The catalogue's second pass.
+
+   js/db.js asks Supabase for current prices and stock after the page is
+   already drawn, then fires bloom:catalogue if anything moved. This is
+   what listens. It rewrites the numbers in place and nothing else — it
+   does not re-render a card, a listing or a product page.
+
+   That restraint is the whole design. Re-rendering would tear down the
+   3D scenes, restart every flavour ring mid-orbit and cancel reveals
+   that are still running, which is a visible glitch in exchange for
+   nothing. A price is a few characters; replace the few characters. */
+function stockText(product) {
+  return product.stock > 8
+    ? product.stock + ' ' + t(WORDS.inStock)
+    : product.stock + ' ' + t(WORDS.lowStock);
+}
+
+function syncCatalogue() {
+  var nodes = document.querySelectorAll('[data-live-price]'), i, product;
+
+  for (i = 0; i < nodes.length; i++) {
+    /* The product page's own price carries a unit after it and is
+       rebuilt whole a few lines down. */
+    if (nodes[i].className.indexOf('product-price') > -1) continue;
+    product = productById(nodes[i].getAttribute('data-live-price'));
+    if (!product) continue;
+    /* Only touch the DOM if the number actually differs, so a sync that
+       changed one bean does not repaint eighteen prices. */
+    if (nodes[i].innerHTML.indexOf(Number(product.price).toFixed(3)) === -1) {
+      nodes[i].innerHTML = money(product.price);
+    }
+  }
+
+  /* The product page carries a unit after its price and a stock
+     sentence under it; both are rebuilt from the same helpers the first
+     render used, then handed back to I18N so the Arabic copy of the
+     number is correct too. */
+  nodes = document.querySelectorAll('.product-price[data-live-price]');
+  for (i = 0; i < nodes.length; i++) {
+    product = productById(nodes[i].getAttribute('data-live-price'));
+    if (!product) continue;
+    nodes[i].innerHTML = money(product.price) +
+      '<span class="note">/ ' + esc(t(product.unit)) + '</span>';
+  }
+
+  nodes = document.querySelectorAll('[data-live-stock]');
+  for (i = 0; i < nodes.length; i++) {
+    product = productById(nodes[i].getAttribute('data-live-stock'));
+    if (product) nodes[i].textContent = stockText(product);
+  }
+
+  /* The cart holds ids and quantities only and prices them from
+     PRODUCTS at render time, so it needs redrawing rather than
+     patching — and it must be redrawn, or a bean would be one price on
+     its own page and another in the drawer. Its own guard returns
+     early when there is no drawer, as on the login page. */
+  Drawer.render();
+
+  I18N.apply();
+}
 
 function boot() {
   var page = document.body.getAttribute('data-page') || '';
@@ -1608,6 +1669,14 @@ function boot() {
   syncBadge();
   syncAccount();
   initTilt(document);
+
+  /* Last, and deliberately not awaited: ask the database whether these
+     prices are still true. Everything above has already rendered from
+     the catalogue shipped in js/data.js, so a slow or absent network
+     costs the visitor nothing. */
+  document.addEventListener('bloom:catalogue', syncCatalogue);
+  document.addEventListener('bloom:lang', syncCatalogue);
+  if (window.DB) DB.sync();
 }
 
 if (document.readyState === 'loading') {

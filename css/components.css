@@ -153,12 +153,8 @@
   color: var(--ink);
   border-bottom-color: var(--clay);   /* 2px clay underline while open */
 }
-.nav-chevron {
-  width: 12px; height: 12px;
-  stroke: currentColor;
-  transition: transform var(--t-fast) var(--e-out);
-}
-.nav-item.is-open .nav-chevron { transform: rotate(180deg); }
+.nav-chevron { width: 12px; height: 12px; }
+.nav-chevron svg { stroke-width: 2.4; }
 
 /* Icon buttons, pinned to the inline end */
 .header-actions {
@@ -181,7 +177,7 @@
               color var(--t-fast) linear;
 }
 .icon-btn:hover { background: var(--surface-2); color: var(--ink); border-color: var(--line); }
-.icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; }
+.icon-btn .ico3d { width: 20px; height: 20px; }
 .icon-btn-wide {
   width: auto;
   padding-inline: var(--s-2);
@@ -305,16 +301,9 @@
   border-radius: var(--r-control);
   flex: none;
 }
-.tile svg {
-  width: 22px; height: 22px;
-  stroke: var(--brass);
-  stroke-width: 2.2;
-  fill: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
+.tile .ico3d { width: 22px; height: 22px; }
 .tile-lg { width: 56px; height: 56px; }
-.tile-lg svg { width: 32px; height: 32px; stroke-width: 2.2; }
+.tile-lg .ico3d { width: 32px; height: 32px; }
 
 /* Mobile header: hamburger, in-flow accordions */
 @media (max-width: 899px) {
@@ -807,6 +796,7 @@
   padding: var(--s-4);
 }
 .map-placeholder svg { width: 28px; height: 28px; stroke: var(--brass); stroke-width: 2.2; fill: none; }
+.map-placeholder .ico3d { width: 28px; height: 28px; }
 
 .bar-today { display: grid; gap: var(--s-2); }
 .bar-today li {
@@ -1242,4 +1232,99 @@
 @media (max-width: 380px) {
   .wordmark { font-size: 1.25rem; }
   .icon-btn, .icon-btn-wide { width: 36px; height: 36px; }
+}
+
+/* --- 19. The 3D icon ----------------------------------------------------
+   One component for every icon on the site. Three plates of the same line
+   art on separate Z planes: the parting layers give real parallax, not a
+   painted shadow. Pure CSS transforms — no WebGL, no library, no cost.
+   ----------------------------------------------------------------------- */
+
+.ico3d {
+  perspective: 460px;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+}
+.ico3d .layers {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--t-slow) var(--e-out);
+}
+.ico3d svg {
+  grid-area: 1 / 1;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: var(--brass);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ico3d .l1 { transform: translateZ(0);    opacity: .28; }
+.ico3d .l2 { transform: translateZ(6px);  opacity: .55; }
+.ico3d .l3 { transform: translateZ(12px); }
+
+/* Product and menu icons: parallax tilt on hover and on keyboard focus */
+.ico3d:hover .layers,
+.ico3d:focus-visible .layers,
+a:hover .ico3d .layers,
+button:hover .ico3d .layers,
+a:focus-visible .ico3d .layers,
+button:focus-visible .ico3d .layers { transform: rotateY(30deg) rotateX(-14deg); }
+
+/* Menu tiles carry the heavier 2.2 stroke the header spec asks for */
+.tile .ico3d svg { stroke-width: 2.2; }
+.tile .ico3d { width: 22px; height: 22px; }
+
+/* Language globe — a full turn on Y while the strings swap */
+@keyframes ico-spin { from { transform: rotateY(0); } to { transform: rotateY(360deg); } }
+.ico3d.is-spinning .layers { animation: ico-spin var(--t-slow) var(--e-in-out) 1; }
+
+/* Theme sun and moon — two faces on one tile, swapping mid-turn */
+.ico-flip .layers { transition: transform 520ms var(--e-in-out); }
+.ico-flip .face {
+  grid-area: 1 / 1;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.ico-flip .back { transform: rotateY(180deg); }
+.ico-flip.is-flipped .layers { transform: rotateY(180deg); }
+
+/* Shopping bag — a coin flip on X when something is added */
+@keyframes ico-coin { from { transform: rotateX(0); } to { transform: rotateX(360deg); } }
+.ico3d.is-coin .layers { animation: ico-coin var(--t-slow) var(--e-in-out) 1; }
+
+/* Chevrons — 180° on X while the dropdown is open */
+.nav-chevron .layers { transition: transform var(--t-fast) var(--e-out); }
+.nav-item.is-open .nav-chevron .layers { transform: rotateX(180deg); }
+
+/* Close buttons — 90° in the plane on hover */
+.ico-close .layers { transition: transform var(--t-fast) linear; }
+button:hover .ico-close .layers { transform: rotate(90deg); }
+
+/* Filter pills — an 8° tilt toward the cursor */
+.pill {
+  perspective: 460px;
+  transform: perspective(460px) rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+  transform-style: preserve-3d;
+}
+
+/* Reduced motion: one flat plate, and nothing turns. */
+@media (prefers-reduced-motion: reduce) {
+  .ico3d .l1, .ico3d .l2 { display: none; }
+  .ico3d .layers,
+  .ico-flip .layers,
+  .nav-chevron .layers,
+  .ico-close .layers { transition: none; animation: none; transform: none !important; }
+  .ico-flip .back { display: none; }
+  .pill { transform: none; }
 }

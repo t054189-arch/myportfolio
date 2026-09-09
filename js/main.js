@@ -154,7 +154,10 @@ var Theme = (function () {
     var button = el('theme-btn');
     if (!button) return;
     var dark = effective() === 'dark';
-    button.innerHTML = icon(dark ? 'sun' : 'moon');
+    /* Built once, then flipped: the two faces swap mid-turn on separate
+       backfaces, so the icon turns instead of being replaced. */
+    if (!button.querySelector('.ico-flip')) button.innerHTML = flipIcon('moon', 'sun');
+    button.querySelector('.ico-flip').classList.toggle('is-flipped', dark);
     var words = dark ? WORDS.toLight : WORDS.toDark;
     button.setAttribute('data-en-label', words.en);
     button.setAttribute('data-ar-label', words.ar);
@@ -372,7 +375,10 @@ function initHeader() {
   });
 
   el('theme-btn').addEventListener('click', function () { Theme.toggle(); });
-  el('lang-btn').addEventListener('click', function () { I18N.toggle(); });
+  el('lang-btn').addEventListener('click', function () {
+    spinIcon(this);
+    I18N.toggle();
+  });
   el('bag-btn').addEventListener('click', function () { Drawer.open(); });
 
   Theme.paintButton();
@@ -455,7 +461,7 @@ function drawerHTML() {
     '<aside class="drawer" id="cart-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">' +
       '<div class="drawer-head">' +
         '<h2 id="drawer-title" class="drawer-title"' + bi(WORDS.yourBag) + '>' + esc(t(WORDS.yourBag)) + '</h2>' +
-        '<button type="button" class="icon-btn" id="drawer-close"' + biLabel(WORDS.close) + '>' + icon('close') + '</button>' +
+        '<button type="button" class="icon-btn" id="drawer-close"' + biLabel(WORDS.close) + '>' + icon('close', 'ico-close') + '</button>' +
       '</div>' +
       '<div class="drawer-body" id="drawer-body"></div>' +
       '<div class="drawer-foot">' +
@@ -652,7 +658,7 @@ function initListing(category) {
     for (var i = 0; i < keys.length; i++) {
       var key = keys[i];
       var label = key === 'all' ? WORDS.all : TAGS[key];
-      html += '<button type="button" class="pill" data-filter="' + key + '"' +
+      html += '<button type="button" class="pill" data-tilt="8" data-filter="' + key + '"' +
               ' aria-pressed="' + (active === key ? 'true' : 'false') + '"' +
               bi(label) + '>' + esc(t(label)) + '</button>';
     }
@@ -688,7 +694,12 @@ function initListing(category) {
     initTilt(grid);
   }
 
-  function paint(settled) { paintFilters(); paintGrid(settled); I18N.apply(el('main')); }
+  function paint(settled) {
+    paintFilters();
+    paintGrid(settled);
+    I18N.apply(el('main'));
+    initTilt(filters);
+  }
 
   filters.addEventListener('click', function (event) {
     var pill = event.target.closest ? event.target.closest('[data-filter]') : null;
@@ -849,12 +860,29 @@ function relatedHTML(product) {
   '</section>';
 }
 
-/* One sweep of light across a button, and one pop of the bag badge. */
+/* Restart a one-shot icon animation, whatever state it was left in. */
+function replayIcon(node, className) {
+  if (!node || prefersReducedMotion()) return;
+  node.classList.remove(className);
+  void node.offsetWidth;
+  node.classList.add(className);
+}
+
+/* The language globe turns a full circle while the strings swap. */
+function spinIcon(button) {
+  replayIcon(button.querySelector('.ico3d'), 'is-spinning');
+}
+
+/* Adding to cart: a sheen across the button, a coin flip of the bag, and
+   the badge popping to 1.45x. One gesture, three parts of the same beat. */
 function sweep(button) {
   if (prefersReducedMotion()) return;
   button.classList.remove('is-sweeping');
   void button.offsetWidth;
   button.classList.add('is-sweeping');
+
+  var bagBtn = el('bag-btn');
+  if (bagBtn) replayIcon(bagBtn.querySelector('.ico3d'), 'is-coin');
 
   var badge = el('bag-badge');
   if (badge) {
@@ -1283,17 +1311,18 @@ function initTilt(root) {
   if (prefersReducedMotion()) return;
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  var MAX = 14;   /* degrees */
   var nodes = (root || document).querySelectorAll('[data-tilt]');
 
   for (var i = 0; i < nodes.length; i++) {
     (function (node) {
+      /* data-tilt carries the maximum angle: 14deg for cards, 8 for pills */
+      var max = parseFloat(node.getAttribute('data-tilt')) || 14;
       node.addEventListener('pointermove', function (event) {
         var box = node.getBoundingClientRect();
         var px = (event.clientX - box.left) / box.width - 0.5;
         var py = (event.clientY - box.top) / box.height - 0.5;
-        node.style.setProperty('--tilt-y', (px * MAX).toFixed(2) + 'deg');
-        node.style.setProperty('--tilt-x', (-py * MAX).toFixed(2) + 'deg');
+        node.style.setProperty('--tilt-y', (px * max).toFixed(2) + 'deg');
+        node.style.setProperty('--tilt-x', (-py * max).toFixed(2) + 'deg');
       });
       node.addEventListener('pointerleave', function () {
         node.style.setProperty('--tilt-y', '0deg');
@@ -1438,7 +1467,10 @@ function initLogin() {
 
   /* The login page has no header, so it carries its own two controls. */
   el('theme-btn').addEventListener('click', function () { Theme.toggle(); });
-  el('lang-btn').addEventListener('click', function () { I18N.toggle(); });
+  el('lang-btn').addEventListener('click', function () {
+    spinIcon(this);
+    I18N.toggle();
+  });
   paintLoginControls();
   document.addEventListener('bloom:lang', paintLoginControls);
 }

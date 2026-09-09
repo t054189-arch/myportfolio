@@ -34,10 +34,34 @@ var ICONS = {
   drop        : '<path d="M12 3.2s6 6.4 6 10.4a6 6 0 0 1-12 0c0-4 6-10.4 6-10.4z"/>'
 };
 
-/* Build an inline SVG for one icon. Decorative by default. */
+/* --- The 3D icon ---------------------------------------------------------
+   No icon on this site is a flat sticker. Each is the same line art drawn
+   three times on separate Z planes inside a preserve-3d tile, so a hover
+   parts the plates and gives real parallax rather than a painted shadow.
+   Pure CSS transforms: no WebGL, no library, no download.
+   ------------------------------------------------------------------------ */
 function icon(name, cls) {
   var d = ICONS[name] || '';
-  return '<svg viewBox="0 0 24 24" class="' + (cls || '') + '" aria-hidden="true" focusable="false">' + d + '</svg>';
+  var plate = function (layer) {
+    return '<svg viewBox="0 0 24 24" class="' + layer + '" aria-hidden="true" focusable="false">' + d + '</svg>';
+  };
+  return '<span class="ico3d ' + (cls || '') + '" aria-hidden="true">' +
+           '<span class="layers">' + plate('l1') + plate('l2') + plate('l3') + '</span>' +
+         '</span>';
+}
+
+/* The theme control needs two faces on one tile, swapping mid-turn. */
+function flipIcon(frontName, backName, cls) {
+  var face = function (name, side) {
+    return '<span class="face ' + side + '">' +
+             '<svg viewBox="0 0 24 24" class="l1" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>' +
+             '<svg viewBox="0 0 24 24" class="l2" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>' +
+             '<svg viewBox="0 0 24 24" class="l3" aria-hidden="true" focusable="false">' + (ICONS[name] || '') + '</svg>' +
+           '</span>';
+  };
+  return '<span class="ico3d ico-flip ' + (cls || '') + '" aria-hidden="true">' +
+           '<span class="layers">' + face(frontName, 'front') + face(backName, 'back') + '</span>' +
+         '</span>';
 }
 
 /* --- Tag vocabulary ----------------------------------------------------

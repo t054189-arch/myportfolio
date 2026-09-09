@@ -274,7 +274,383 @@ var Scene = (function () {
     espresso: buildEspresso
   };
 
-  /* --- Mount ------------------------------------------------------------- */
+
+  /* ======================================================================
+     THE ROOM
+     ======================================================================
+     One continuous space the visitor moves through. Every page is a camera
+     station in the same room, not a new scene: the camera position is
+     handed forward through sessionStorage, so a navigation reads as the
+     room turning rather than a page reloading.
+     ====================================================================== */
+
+  /* Colours come out of the stylesheet so tokens stay the single source. */
+  function cssHex(token, fallback) {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+    var m = /^#([0-9a-f]{6})$/i.exec(raw);
+    if (m) return parseInt(m[1], 16);
+    m = /^#([0-9a-f]{3})$/i.exec(raw);
+    if (m) return parseInt(m[1].replace(/(.)/g, '$1$1'), 16);
+    return fallback;
+  }
+
+  /* Parse the easing token so the JS flight and the CSS transitions cannot
+     drift apart, then evaluate it by bisection. */
+  function bezierFromToken(token) {
+    var raw = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+    var nums = raw.replace(/[^0-9.,\-]/g, '').split(',').map(Number);
+    var p = nums.length === 4 && nums.every(function (n) { return isFinite(n); })
+      ? nums : [0.6, 0, 0.25, 1];
+
+    return function (t) {
+      if (t <= 0) return 0;
+      if (t >= 1) return 1;
+      var lo = 0, hi = 1, mid = t, x;
+      function bez(a, b, u) {
+        var v = 1 - u;
+        return 3 * v * v * u * a + 3 * v * u * u * b + u * u * u;
+      }
+      for (var i = 0; i < 18; i++) {
+        mid = (lo + hi) / 2;
+        x = bez(p[0], p[2], mid);
+        if (x < t) lo = mid; else hi = mid;
+      }
+      return bez(p[1], p[3], mid);
+    };
+  }
+
+  /* Where each page stands in the room. */
+  var STATIONS = {
+    login:        { x: 0,    y: -0.6, z: 4.2, ry: 0 },
+    index:        { x: 0,    y: 0,    z: 8,   ry: 0 },
+    beans:        { x: -3.5, y: 0,    z: 8,   ry: 0.209 },   /*  12deg */
+    tools:        { x: 3.5,  y: 0,    z: 8,   ry: -0.209 },  /* -12deg */
+    machines:     { x: 3.5,  y: 1.2,  z: 8,   ry: -0.209 },
+    product:      { x: 0,    y: 0,    z: 5,   ry: 0 },
+    cart:         { x: 0,    y: 2.5,  z: 7,   ry: 0 },
+    /* Not in the brief's table, so these two keep the room coherent:
+       the guides sit just off centre, the cafe faces the bean shelf. */
+    'brew-guides': { x: -1.2, y: 0.4, z: 7.2, ry: 0.07 },
+    cafe:          { x: -2.5, y: 0.8, z: 7.6, ry: 0.13 }
+  };
+
+  var CAM_KEY = 'bloom.camera';
+
+  function readCamera() {
+    try {
+      var raw = window.sessionStorage.getItem(CAM_KEY);
+      if (!raw) return null;
+      var c = JSON.parse(raw);
+      return (c && isFinite(c.x) && isFinite(c.y) && isFinite(c.z)) ? c : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeCamera(camera) {
+    try {
+      window.sessionStorage.setItem(CAM_KEY, JSON.stringify({
+        x: camera.position.x, y: camera.position.y, z: camera.position.z,
+        ry: camera.rotation.y
+      }));
+    } catch (e) { /* private mode: the room simply starts fresh */ }
+  }
+
+  /* Build the room into #bgfx. Returns null if WebGL is unavailable, and
+     the two CSS gradients carry the background on their own. */
+  function room(canvas, options) {
+    if (!supported() || !canvas) return null;
+
+    var opts = options || {};
+    var stationName = STATIONS[opts.station] ? opts.station : 'index';
+    var renderer;
+
+    try {
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    } catch (e) {
+      return null;
+    }
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    renderer.setClearColor(0x000000, 0);
+    if (THREE.sRGBEncoding !== undefined) renderer.outputEncoding = THREE.sRGBEncoding;
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 60);
+
+    var hemi = new THREE.HemisphereLight(0xF6EFE3, 0x302016, 0.9);
+    var key = new THREE.DirectionalLight(0xFFE7C4, 0.8);
+    key.position.set(2, 4, 5);
+    scene.add(hemi, key);
+
+    /* Far beans dissolve into the ground colour instead of cluttering. */
+    scene.fog = new THREE.Fog(cssHex('--paper', 0xF4EEE3), 6, 26);
+
+    /* --- the bean field: 54 ellipsoids on three depth tiers ------------
+       Exactly three materials, one per tier. The opacity split is what
+       reads as depth, so it is worth more than any extra geometry. */
+    var TIERS = [
+      { z: -6,   opacity: 0.52 },
+      { z: -2.8, opacity: 0.30 },
+      { z: 0.4,  opacity: 0.16 }
+    ];
+    var beanColor = cssHex('--scene-bean', 0x3B281C);
+    var tierMaterials = TIERS.map(function (tier) {
+      return new THREE.MeshStandardMaterial({
+        color: beanColor,
+        roughness: 0.75,
+        metalness: 0.05,
+        transparent: true,
+        opacity: tier.opacity,
+        fog: true
+      });
+    });
+
+    var beanGeometry = new THREE.SphereGeometry(0.12, 12, 10);
+    var beans = [];
+    for (var i = 0; i < 54; i++) {
+      var tier = i % 3;
+      var bean = new THREE.Mesh(beanGeometry, tierMaterials[tier]);
+      bean.scale.set(1, 0.6, 0.78);
+      bean.position.set(
+        -8 + Math.random() * 16,
+        -5.5 + Math.random() * 11,
+        TIERS[tier].z + (Math.random() - 0.5) * 0.6
+      );
+      bean.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+      bean.userData = {
+        rise: 0.014 + Math.random() * 0.05,      /* 0.014 - 0.064 per frame */
+        seed: Math.random() * Math.PI * 2,
+        spin: 0.002 + Math.random() * 0.006
+      };
+      beans.push(bean);
+      scene.add(bean);
+    }
+
+    /* --- theme: recolour the three materials in place, never rebuild --- */
+    function applyTheme() {
+      var color = cssHex('--scene-bean', 0x3B281C);
+      for (var m = 0; m < tierMaterials.length; m++) tierMaterials[m].color.setHex(color);
+      if (scene.fog) scene.fog.color.setHex(cssHex('--paper', 0xF4EEE3));
+      draw();
+    }
+
+    /* --- camera: the pointer gives parallax, the station gives place --- */
+    var station = STATIONS[stationName];
+    var pointer = { x: 0, y: 0 };
+    var parallax = { x: 0, y: 0 };
+
+    /* Where the flight starts: exactly where the last page left off, or
+       1.5 units back on a first visit. */
+    var stored = readCamera();
+    var from = stored || { x: station.x, y: station.y, z: station.z + 1.5, ry: station.ry };
+    var flight = { t: 0, ms: 700, active: true, ease: bezierFromToken('--e-in-out') };
+
+    camera.position.set(from.x, from.y, from.z);
+
+    function placeCamera(fraction) {
+      var e = flight.ease(fraction);
+      var cx = from.x + (station.x - from.x) * e;
+      var cy = from.y + (station.y - from.y) * e;
+      var cz = from.z + (station.z - from.z) * e;
+      var ry = (from.ry || 0) + (station.ry - (from.ry || 0)) * e;
+
+      camera.position.set(cx + parallax.x, cy + parallax.y, cz);
+      camera.lookAt(0, 0, 0);
+      if (ry) camera.rotateY(ry);
+    }
+
+    function onPointerMove(event) {
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = (event.clientY / window.innerHeight) * 2 - 1;
+    }
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+
+    function size() {
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / Math.max(h, 1);
+      camera.updateProjectionMatrix();
+    }
+
+    function draw() { renderer.render(scene, camera); }
+
+    /* --- the loop ---------------------------------------------------- */
+    var frame = 0;
+    var running = false;
+    var still = reducedMotion();
+    var startedAt = 0;
+    var frameCount = 0;
+
+    /* Adaptive density. The brief says to cut beans before anything else
+       if the room cannot hold its frame rate — so rather than guessing a
+       number for every device, measure the first two seconds on the real
+       machine and thin the field only if it is actually struggling. Never
+       adds beans back, so it cannot oscillate. */
+    var tune = { since: 0, frames: 0, checks: 0, shown: beans.length };
+
+    function autoTune(now) {
+      if (tune.checks >= 2 || reducedMotion()) return;
+      if (!tune.since) { tune.since = now; tune.frames = 0; return; }
+      tune.frames++;
+      var elapsed = now - tune.since;
+      if (elapsed < 2000) return;
+
+      var measured = tune.frames * 1000 / elapsed;
+      tune.checks++;
+      tune.since = now;
+      tune.frames = 0;
+
+      if (measured >= 40 || tune.shown <= 18) { tune.checks = 2; return; }
+      tune.shown = tune.checks === 1 ? Math.round(beans.length / 2) : 18;
+      for (var i = 0; i < beans.length; i++) beans[i].visible = i < tune.shown;
+    }
+
+    function tick(now) {
+      frame = window.requestAnimationFrame(tick);
+      frameCount++;
+      if (!startedAt) startedAt = now;
+      autoTune(now);
+
+      /* pointer parallax, lerped so it glides */
+      parallax.x += (pointer.x * 0.35 - parallax.x) * 0.06;
+      parallax.y += (-pointer.y * 0.25 - parallax.y) * 0.06;
+
+      if (flight.active) {
+        flight.t = Math.min((now - startedAt) / flight.ms, 1);
+        if (flight.t >= 1) flight.active = false;
+      }
+      placeCamera(flight.active ? flight.t : 1);
+
+      var t = now / 1000;
+      for (var i = 0; i < beans.length; i++) {
+        var b = beans[i];
+        var d = b.userData;
+        b.position.y += d.rise;
+        b.position.x += Math.sin(t * 0.5 + d.seed) * 0.0015;
+        b.rotation.y += d.spin;
+        /* wrap below the frame, never mid-view */
+        if (b.position.y > 6) {
+          b.position.y = -6;
+          b.position.x = -8 + Math.random() * 16;
+        }
+      }
+
+      draw();
+    }
+
+    function start() {
+      if (running || still) return;
+      running = true;
+      startedAt = 0;
+      frame = window.requestAnimationFrame(tick);
+    }
+
+    function stop() {
+      running = false;
+      if (frame) window.cancelAnimationFrame(frame);
+      frame = 0;
+    }
+
+    /* Pause when the canvas is off-screen. It is fixed to the viewport, so
+       this fires when the tab is hidden or the element is removed. */
+    var io = null;
+    if ('IntersectionObserver' in window) {
+      io = new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) start(); else stop();
+      }, { threshold: 0.01 });
+      io.observe(canvas);
+    }
+
+    var onResize = function () { size(); draw(); };
+    window.addEventListener('resize', onResize);
+    document.addEventListener('bloom:theme', applyTheme);
+
+    /* The OS preference can change while the page is open. */
+    var osDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+    if (osDark && osDark.addEventListener) osDark.addEventListener('change', applyTheme);
+
+    size();
+    placeCamera(0);
+    draw();
+
+    if (still) {
+      /* One still frame at the station, then nothing moves. */
+      flight.active = false;
+      placeCamera(1);
+      draw();
+    } else if (!io) {
+      start();
+    }
+
+    /* Hand the camera to the next page before this one goes away. */
+    function handOff() { writeCamera(camera); }
+    window.addEventListener('pagehide', handOff);
+
+    function dispose() {
+      stop();
+      handOff();
+      if (io) io.disconnect();
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pagehide', handOff);
+      document.removeEventListener('bloom:theme', applyTheme);
+      if (osDark && osDark.removeEventListener) osDark.removeEventListener('change', applyTheme);
+
+      beanGeometry.dispose();
+      tierMaterials.forEach(function (m) { m.dispose(); });
+      renderer.dispose();
+      if (renderer.forceContextLoss) renderer.forceContextLoss();
+    }
+
+    /* Begin the flight to another station without navigating yet — the
+       page transition calls this so the room is already turning while the
+       old view fades out. */
+    function flyTo(name) {
+      if (!STATIONS[name] || still) return;
+      from = {
+        x: camera.position.x - parallax.x,
+        y: camera.position.y - parallax.y,
+        z: camera.position.z,
+        ry: station.ry
+      };
+      station = STATIONS[name];
+      flight.t = 0;
+      flight.active = true;
+      startedAt = 0;
+    }
+
+    /* Measured frames per second, for the performance report. */
+    function fps(windowMs) {
+      var ms = windowMs || 1000;
+      var before = frameCount;
+      return new Promise(function (resolve) {
+        window.setTimeout(function () {
+          resolve(Math.round((frameCount - before) * 1000 / ms));
+        }, ms);
+      });
+    }
+
+    var instance = {
+      dispose: dispose, start: start, stop: stop, flyTo: flyTo, fps: fps,
+      applyTheme: applyTheme,
+      camera: camera,
+      beans: beans,            /* exposed so density can be measured and tuned */
+      beanCount: beans.length,
+      visibleBeans: function () { return tune.shown; },
+      isRunning: function () { return running; }
+    };
+    instances.push(instance);
+
+    if (!unloadBound) {
+      unloadBound = true;
+      window.addEventListener('pagehide', disposeAll);
+    }
+    return instance;
+  }
+
+  /* --- Mount: the foreground rig ----------------------------------------- */
 
   function mount(host, options) {
     if (!supported()) return null;
@@ -528,6 +904,8 @@ var Scene = (function () {
 
   return {
     supported: supported,
+    room: room,
+    stations: STATIONS,
     mount: mount,
     disposeAll: disposeAll,
     themeName: themeName

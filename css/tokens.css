@@ -70,6 +70,16 @@
   /* --- Elevation — dropdowns and hovered cards only --------------------- */
   --scrim: rgba(36, 26, 20, .45);   /* behind the cart drawer */
 
+  /* --- The background room ----------------------------------------------
+     The veil is the legibility control: it sits over the moving canvas and
+     under all content. Raise it, never lower it. The two gradients are the
+     warm light from above and the green floor below.
+     --------------------------------------------------------------------- */
+  --veil:       rgba(244, 238, 227, .90);
+  --veil-warm:  rgba(231, 200, 155, .20);
+  --veil-floor: rgba(87, 104, 63, .10);
+  --scene-bean: #3B281C;   /* the drifting bean field, read by js/scene.js */
+
   --shadow-panel: 0 10px 24px -12px rgba(36, 26, 20, .28);
   --shadow-card:  0 10px 26px -14px rgba(36, 26, 20, .40);
   --shadow-login: 0 24px 60px -24px rgba(36, 26, 20, .45);
@@ -106,6 +116,11 @@
 
     --scrim: rgba(0, 0, 0, .62);
 
+    --veil:       rgba(22, 16, 13, .86);
+    --veil-warm:  rgba(231, 200, 155, .14);
+    --veil-floor: rgba(163, 181, 131, .10);
+    --scene-bean: #D2A662;
+
     --shadow-panel: 0 10px 24px -12px rgba(0, 0, 0, .6);
     --shadow-card:  0 10px 26px -14px rgba(0, 0, 0, .7);
     --shadow-login: 0 24px 60px -24px rgba(0, 0, 0, .8);
@@ -134,6 +149,11 @@
   --band-text:  var(--crema);
 
   --scrim: rgba(0, 0, 0, .62);
+
+  --veil:       rgba(22, 16, 13, .86);
+  --veil-warm:  rgba(231, 200, 155, .14);
+  --veil-floor: rgba(163, 181, 131, .10);
+  --scene-bean: #D2A662;
 
   --shadow-panel: 0 10px 24px -12px rgba(0, 0, 0, .6);
   --shadow-card:  0 10px 26px -14px rgba(0, 0, 0, .7);

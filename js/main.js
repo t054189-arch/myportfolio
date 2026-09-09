@@ -1252,8 +1252,11 @@ var Motion = (function () {
       if (/^[a-z]+:/i.test(href) && href.indexOf('.html') === -1) return;
       if (link.origin && link.origin !== window.location.origin) return;
 
-      /* Same page, only the query changing, is still a navigation we animate. */
+      /* Same page, only the query changing, is still a navigation we
+         animate. The room starts turning now, over 700ms, while the old
+         view fades out over 320ms — so the next page opens mid-flight. */
       event.preventDefault();
+      Room.flyTo(href);
       var main = document.querySelector('main');
       if (main) main.classList.add('is-leaving');
       window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
@@ -1297,7 +1300,52 @@ function initTilt(root) {
   }
 }
 
-/* --- 14. The 3D layer ---------------------------------------------------
+/* --- 13b. The background room -------------------------------------------
+   Injected before anything else so it is behind everything else. The
+   canvas takes no pointer events; the veil carries legibility; every page
+   is a station in the same room.
+   ----------------------------------------------------------------------- */
+
+var Room = (function () {
+  var instance = null;
+
+  function backgroundHTML() {
+    return '<canvas id="bgfx" aria-hidden="true"></canvas>' +
+           '<div class="veil" aria-hidden="true"></div>';
+  }
+
+  /* Which station a link leads to, so the room can start turning before
+     the navigation happens. */
+  function stationFor(href) {
+    var file = String(href).split('?')[0].split('#')[0].split('/').pop() || 'index.html';
+    var key = file.replace(/\.html$/, '');
+    if (!key) key = 'index';
+    return Scene.stations && Scene.stations[key] ? key : 'index';
+  }
+
+  function init(page) {
+    document.body.insertAdjacentHTML('afterbegin', backgroundHTML());
+    var canvas = el('bgfx');
+    if (!canvas || !window.Scene) return;
+
+    /* No WebGL, no problem: the canvas stays empty and the two gradients
+       in .veil carry the background on their own. */
+    instance = Scene.room(canvas, { station: Scene.stations[page] ? page : 'index' });
+  }
+
+  function flyTo(href) {
+    if (instance) instance.flyTo(stationFor(href));
+  }
+
+  return {
+    init: init,
+    flyTo: flyTo,
+    stationFor: stationFor,
+    get current() { return instance; }
+  };
+})();
+
+/* --- 14. The foreground rigs --------------------------------------------
    Every canvas host is a .scene element carrying data-model, data-mode and
    data-fallback. If Three.js or WebGL is missing, the flat illustration
    named by data-fallback takes its place and the page stays fully usable.
@@ -1358,7 +1406,10 @@ function initLogin() {
     I18N.apply(msg);
   }
 
+  /* The card fades while the camera pushes forward through the dripper,
+     and the home page rises into place at the far end of that move. */
   function leaveTo(href) {
+    Room.flyTo(href);
     card.classList.add('is-leaving');
     window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
   }
@@ -1444,6 +1495,9 @@ function boot() {
 
   /* No session? Straight to the front door, before anything else renders. */
   if (Auth.guard()) return;
+
+  /* The background room comes first, because everything else sits on it. */
+  Room.init(page);
 
   /* The login page is full-screen and deliberately has no header, footer
      or cart drawer. Every other page gets all three, built right here so

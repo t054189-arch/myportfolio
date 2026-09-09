@@ -75,6 +75,24 @@ var Rings = (function () {
       '</div>';
   }
 
+  /* One observer for every ring on the page: a ring nobody can see stops
+     turning. Motion needs a subject, and an off-screen ring has no
+     audience — this is also the cheapest frame budget on the page. */
+  var idleObserver = null;
+
+  function watch(stage) {
+    if (!('IntersectionObserver' in window)) return;
+    if (!idleObserver) {
+      idleObserver = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          entries[i].target.classList.toggle('is-idle', !entries[i].isIntersecting);
+        }
+      }, { threshold: 0.05 });
+    }
+    stage.classList.add('is-idle');   /* until the observer says otherwise */
+    idleObserver.observe(stage);
+  }
+
   /* Render into every placeholder that names a product. */
   function mount(root) {
     var hosts = (root || document).querySelectorAll('[data-ring]');
@@ -83,6 +101,8 @@ var Rings = (function () {
       var product = productById(host.getAttribute('data-ring'));
       if (!product) continue;
       host.innerHTML = ringHTML(product, host.getAttribute('data-ring-size') || 'full');
+      var stage = host.querySelector('.ringstage');
+      if (stage) watch(stage);
     }
   }
 

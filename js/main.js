@@ -128,6 +128,19 @@ var WORDS = {
   viewBean:   { en: 'View the bean →', ar: 'عرض الحبة →' },
   brewsWith:  { en: 'Brews well with', ar: 'يُستحسن معه' },
   restOfKit:  { en: 'The rest of the kit', ar: 'بقية العدّة' },
+
+  /* the brew unit */
+  time:       { en: 'Time', ar: 'الوقت' },
+  water:      { en: 'Water', ar: 'الماء' },
+  prep:       { en: 'prep', ar: 'تحضير' },
+  brewIt:     { en: 'Brew it', ar: 'حضّرها' },
+  pause:      { en: 'Pause', ar: 'إيقاف' },
+  resume:     { en: 'Resume', ar: 'متابعة' },
+  brewAgain:  { en: 'Brew again', ar: 'حضّر مرة أخرى' },
+  speed:      { en: '7× speed', ar: 'بسرعة ٧×' },
+  howToV60:   { en: 'How to make a V60', ar: 'كيف تحضّر V60' },
+  howToNote:  { en: 'One clock drives the kettle, the bed, the server and the scale. Scrub to any step.',
+                ar: 'ساعة واحدة تحرّك الغلاية والقاع والدورق والميزان. انتقل إلى أي خطوة.' },
   relatedNote:{ en: 'What we reach for alongside it on the bar.', ar: 'ما نستخدمه معه على البار.' }
 };
 
@@ -1576,6 +1589,7 @@ function boot() {
   initCartPage();
   initTimer();
   initScenes();
+  if (window.Brew) window.__brew = Brew.init(el('brew-unit'));
 
   I18N.apply();
   syncBadge();

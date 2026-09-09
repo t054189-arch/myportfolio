@@ -933,7 +933,7 @@
 
 .scene-hint {
   position: absolute;
-  inset-inline-start: 50%;
+  left: 50%;      /* physical, for the same reason as .ringbase */
   bottom: var(--s-2);
   transform: translateX(-50%);
   font-family: var(--font-mono);
@@ -1312,7 +1312,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 
 .ringspin {
   position: absolute;
-  inset-inline-start: 50%;
+  left: 50%;      /* a point, not an inline edge — see .ringbase below */
   top: 50%;
   width: 0;
   height: 0;
@@ -1327,7 +1327,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 
 .node {
   position: absolute;
-  inset-inline-start: 0;
+  left: 0;
   top: 0;
   transform-style: preserve-3d;
   /* No opacity here, deliberately. Any opacity below 1 is a grouping
@@ -1351,7 +1351,10 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 .face {
   display: block;
   width: 108px;
-  margin-inline-start: -54px;
+  /* Physical margins here, deliberately: the chip is centred on its orbit
+     node, and a node has no inline direction. margin-inline-start flips in
+     Arabic and pushes every chip off the side of the page. */
+  margin-left: -54px;
   margin-top: -11px;
   padding: 4px 6px;
   background: var(--paper);
@@ -1380,13 +1383,16 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 }
 @keyframes unspin-rtl { to { transform: rotateY(360deg); } }
 
-.ringstage-half .face { width: 74px; margin-inline-start: -37px; font-size: .5rem; padding: 2px 4px; }
+.ringstage-half .face { width: 74px; margin-left: -37px; font-size: .5rem; padding: 2px 4px; }
 
 /* Contact shadow, so the bag sits on something. */
 .ringbase {
   position: absolute;
   bottom: 6px;
-  inset-inline-start: 50%;
+  /* Physical centring, deliberately: inset-inline-start flips to the right
+     edge in Arabic while translateX(-50%) keeps pulling the same way, so
+     the two stack and shove this 150px shadow off the side of the page. */
+  left: 50%;
   transform: translateX(-50%);
   width: 150px;
   height: 20px;
@@ -1399,6 +1405,11 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 .ringcard:focus-within .ringspin,
 .ringcard:hover .ringspin *,
 .ringcard:focus-within .ringspin * { animation-play-state: paused; }
+
+/* A ring that has scrolled out of view is not a subject in anyone's
+   viewport, so it stops. js/rings.js adds this from an observer. */
+.ringstage.is-idle .ringspin,
+.ringstage.is-idle .ringspin * { animation-play-state: paused; }
 
 /* Reduced motion: no perspective, no orbit — the same notes as a row of
    pills. Same information, no movement. */
@@ -1462,3 +1473,112 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 .panel-link-ring .panel-link-desc { max-width: 24ch; }
 .panel-link-ring .panel-link-name { justify-content: center; }
 .panel-grid-beans { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+
+/* --- 21. The V60 brew unit ---------------------------------------------
+   An animated cross-section beside the four recipe steps. Everything the
+   illustration does is driven from one simulated clock in js/brew.js, so
+   the parts can never disagree with each other.
+   ----------------------------------------------------------------------- */
+
+.brewunit {
+  display: grid;
+  grid-template-columns: minmax(0, 290px) 1fr;
+  gap: var(--s-5);
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+@media (max-width: 820px) {
+  .brewunit { grid-template-columns: 1fr; gap: var(--s-4); }
+}
+
+.brewfigure { display: grid; gap: var(--s-3); align-content: start; }
+
+.brewsvg { width: 100%; height: auto; border-radius: var(--r-control); }
+.brewsvg .g0 { stop-color: var(--surface-2); }
+.brewsvg .g1 { stop-color: var(--surface); }
+.brewsvg .ln {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.brewsvg .rib { fill: none; stroke: var(--brass); stroke-width: 1.2; }
+.brewsvg .stream { stroke-dasharray: 9 9; transition: opacity var(--t-fast) linear; }
+.brewsvg .drip { transition: opacity var(--t-fast) linear; }
+.brewsvg .slurry { fill: var(--clay); opacity: .38; }
+.brewsvg .bed { fill: var(--ink); opacity: .82; }
+.brewsvg .bubbles { fill: var(--crema); transition: opacity var(--t-base) linear; }
+.brewsvg .coffee { fill: var(--coffee-fill); }
+.brewsvg .scalebar { fill: var(--leaf); }
+
+/* Three readouts. Tabular numerals, so they cannot jitter. */
+.brewreadout { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s-2); }
+.tile-read {
+  display: grid;
+  gap: 2px;
+  padding: var(--s-2);
+  background: var(--paper);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r-control);
+}
+.tile-read .value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: .9375rem;
+  color: var(--ink);
+}
+
+.brewside { display: grid; gap: var(--s-3); align-content: start; }
+.brewsteps { display: grid; gap: var(--s-2); }
+
+.brewstep {
+  display: grid;
+  gap: 2px;
+  text-align: start;
+  padding: var(--s-2) var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid transparent;
+  border-radius: var(--r-control);
+  transition: background-color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+.brewstep:hover { background: var(--surface-2); }
+.brewstep.is-active { border-inline-start-color: var(--leaf); background: var(--surface-2); }
+.brewstep-time {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: .6875rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--clay);
+}
+.lang-ar .brewstep-time { font-family: var(--font-mono-ar); letter-spacing: 0; }
+.brewstep-title { font-family: var(--font-display); font-size: 1.125rem; line-height: 1.2; color: var(--ink); }
+.lang-ar .brewstep-title { font-family: var(--font-arabic); font-weight: 600; }
+.brewstep-body { font-size: .8125rem; line-height: 1.5; color: var(--ink-3); max-width: 60ch; }
+
+.brewcontrols { display: flex; align-items: center; gap: var(--s-3); flex-wrap: wrap; }
+.brewprogress {
+  flex: 1 1 120px;
+  height: 3px;
+  background: var(--line-soft);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.brewprogress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--leaf);
+}
+.brewspeed { font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.lang-ar .brewspeed { font-family: var(--font-arabic); letter-spacing: 0; }
+.brewgear a { color: var(--leaf); }
+
+@media (prefers-reduced-motion: reduce) {
+  .brewsvg .stream, .brewsvg .drip, .brewsvg .bubbles { transition: none; }
+  .brewprogress span { transition: none; }
+}

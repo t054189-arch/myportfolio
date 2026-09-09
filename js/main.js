@@ -1464,9 +1464,10 @@ function initLogin() {
     I18N.apply(msg);
   }
 
-  /* The card fades while the camera pushes forward through the dripper,
-     and the home page rises into place at the far end of that move. */
+  /* The card fades while the camera pushes forward through the dripper.
+     The film then plays over the home page as it arrives. */
   function leaveTo(href) {
+    if (window.Film) Film.setPending();
     Room.flyTo(href);
     card.classList.add('is-leaving');
     window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
@@ -1587,6 +1588,10 @@ function boot() {
 
   Motion.init();
   Rings.mount(document);   /* the header's bean rows carry rings too */
+
+  /* The opening film, over the home page as it arrives — once per session,
+     never under reduced motion, always skippable. */
+  if (page === 'home' && window.Film && Film.takePending()) Film.play();
 
   initLogin();
   initHome();

@@ -1586,3 +1586,174 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 .panel-link-ring .panel-link-desc { max-width: 24ch; }
 .panel-link-ring .panel-link-name { justify-content: center; }
 .panel-grid-beans { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+
+/* --- 23. The opening film ----------------------------------------------
+   Six and a half seconds over a roast ground. Two elements per bean: the
+   outer .fpos holds the static placement, the inner .fbean animates. One
+   element for both and the keyframe overwrites the placement, piling every
+   bean in the centre.
+   ----------------------------------------------------------------------- */
+
+.film {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(120% 100% at 50% 40%, var(--film-near), var(--film-far));
+  opacity: 1;
+  transition: opacity 680ms var(--e-in-out);
+}
+.film.is-leaving { opacity: 0; }
+
+.film-skip {
+  position: absolute;
+  z-index: 3;
+  top: var(--s-4);
+  inset-inline-end: var(--s-4);
+  padding: var(--s-2) var(--s-3);
+  background: transparent;
+  border: 1px solid rgba(231, 200, 155, .35);
+  border-radius: var(--r-control);
+  color: var(--crema);
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: background-color var(--t-fast) linear, border-color var(--t-fast) linear;
+}
+.film-skip:hover { background: rgba(231, 200, 155, .12); border-color: var(--crema); }
+.film-skip:focus-visible { outline: 2px solid var(--crema); outline-offset: 2px; }
+.lang-ar .film-skip { font-family: var(--font-arabic); letter-spacing: 0; }
+
+.film-inner {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  transform: scale(1);
+  opacity: 1;
+}
+.film.is-running .film-inner { animation: film-exit 1400ms var(--e-in-out) 5000ms both; }
+@keyframes film-exit {
+  from { transform: scale(1);    opacity: 1; }
+  to   { transform: scale(1.09); opacity: 0; }
+}
+
+/* the bean field */
+.film-field {
+  position: absolute;
+  inset: 0;
+  perspective: 900px;
+  display: grid;
+  place-items: center;
+}
+.film-group {
+  position: relative;
+  width: 0;
+  height: 0;
+  transform-style: preserve-3d;
+}
+.film.is-running .film-group { animation: film-turn 28s linear infinite; }
+@keyframes film-turn {
+  from { transform: rotateX(10deg) rotateY(0); }
+  to   { transform: rotateX(10deg) rotateY(360deg); }
+}
+
+/* the static placement — never animated */
+.fpos { position: absolute; transform-style: preserve-3d; }
+
+/* the animated bean itself */
+.fbean {
+  display: block;
+  width: 24px;
+  height: 15px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--film-bean-lit), var(--film-bean-dark));
+  box-shadow: inset 0 0 0 1px rgba(231, 200, 155, .16);
+  opacity: 0;
+  transform: scale(.15);
+  position: relative;
+}
+.film.is-running .fbean { animation: film-bean 1100ms var(--e-out) both; }
+@keyframes film-bean {
+  from { opacity: 0; transform: scale(.15); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.fbean::after {
+  content: "";
+  position: absolute;
+  inset: 3px 4px;
+  border-radius: 50%;
+  border-top: 1px solid rgba(231, 200, 155, .22);
+}
+
+/* the mark */
+.film-mark {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-3);
+}
+.film-word {
+  display: flex;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 11vw, 7rem);
+  line-height: 1;
+  color: #F2E9DB;
+}
+.fl {
+  display: block;
+  opacity: 0;
+  transform: translateY(34px);
+  filter: blur(16px);
+}
+.fl-o { font-style: italic; color: var(--leaf); }
+.film.is-running .fl { animation: film-letter 950ms var(--e-out) both; }
+@keyframes film-letter {
+  from { opacity: 0; transform: translateY(34px); filter: blur(16px); }
+  to   { opacity: 1; transform: none;             filter: blur(0); }
+}
+
+.film-rule {
+  display: block;
+  width: 0;
+  height: 1px;
+  background: var(--crema);
+  opacity: .8;
+}
+.film.is-running .film-rule { animation: film-rule 900ms var(--e-out) 2500ms both; }
+@keyframes film-rule { from { width: 0; } to { width: 260px; } }
+
+.film-tag {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--crema);
+  opacity: 0;
+}
+.lang-ar .film-tag { font-family: var(--font-arabic); letter-spacing: .05em; }
+.film.is-running .film-tag { animation: film-tag 800ms var(--e-out) 3000ms both; }
+@keyframes film-tag {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: .9; transform: none; }
+}
+
+/* It never plays under reduced motion, but if it is ever forced open there,
+   it must not move. */
+@media (prefers-reduced-motion: reduce) {
+  .film.is-running .film-inner,
+  .film.is-running .film-group,
+  .film.is-running .fbean,
+  .film.is-running .fl,
+  .film.is-running .film-rule,
+  .film.is-running .film-tag { animation: none; }
+  .fbean { opacity: 1; transform: none; }
+  .fl { opacity: 1; transform: none; filter: none; }
+  .film-rule { width: 260px; }
+  .film-tag { opacity: .9; }
+}

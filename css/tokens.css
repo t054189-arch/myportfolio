@@ -83,6 +83,13 @@
   --scene-bean: #3B281C;   /* the drifting bean field, read by js/scene.js */
   --coffee-fill: #4A2C1B;  /* brewed coffee in the V60 cross-section      */
 
+  /* The opening film's roast ground. Fixed in both themes: it is a film,
+     not a page, and it always plays on roasted dark. */
+  --film-near: #2B1E16;
+  --film-far:  #120C09;
+  --film-bean-lit: #6B462C;
+  --film-bean-dark: #2C1A11;
+
   --shadow-panel: 0 10px 24px -12px rgba(36, 26, 20, .28);
   --shadow-card:  0 10px 26px -14px rgba(36, 26, 20, .40);
   --shadow-login: 0 24px 60px -24px rgba(36, 26, 20, .45);

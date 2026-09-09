@@ -9,7 +9,16 @@ nothing. This directory is the beginning of a real back end behind it.
 
 ## What is wired up right now
 
-Only the catalogue. `js/db.js` asks Postgres for current prices and stock
+**Accounts.** `js/auth.js` talks to Supabase Auth. An account exists only
+once someone creates one on the sign-up panel, and only that email and
+password will sign in — the old behaviour, where any username with any
+four characters was accepted, is gone, and any session left over from it
+is cleared on first load. What sits in `localStorage` is an access token
+issued by the server, not a flag claiming to be signed in, and every page
+load asks `/auth/v1/user` whether that token is still real, so a
+hand-written one is thrown out rather than believed.
+
+**The catalogue.** `js/db.js` asks Postgres for current prices and stock
 *after* the page has already been drawn from `js/data.js`, then patches the
 numbers in place. That ordering is the whole point:
 
@@ -23,13 +32,33 @@ numbers in place. That ordering is the whole point:
 So **changing a price no longer means editing JavaScript.** Edit the
 `products` row in the Supabase dashboard and it is live on the next load.
 
+## One setting to check before anyone signs up
+
+**Authentication → Sign In / Providers → Email → Confirm email**, in the
+Supabase dashboard. It decides which of two paths a new customer takes,
+and both are handled in the code:
+
+| Confirm email | What happens on sign-up |
+|---|---|
+| **off** | The server returns a session; the customer is signed in immediately and lands on the home page. |
+| **on** (the default) | No session. The card says "Account created. Confirm your email address, then sign in," switches to the sign-in panel, and carries the address across. Signing in before confirming is refused with its own message. |
+
+For this shop, **off** is the sensible setting, for two practical reasons
+rather than one of principle: the confirmation link is sent to whatever
+**Site URL** the project has configured, which for a new project is still
+`localhost:3000` and would land nowhere useful; and the built-in email
+service is rate-limited to a couple of messages an hour, which is a poor
+way to meet a customer. If you would rather keep confirmation on, set the
+Site URL to the deployed address first and the flow works as the table
+describes.
+
 ## What is not wired up
 
-`profiles`, `orders` and `order_items` exist, are tested, and are empty.
-`js/auth.js` is still the front-end shell it says it is — the honest
-comment at the top of that file is still true, and will stay true until
-sign-in actually goes through Supabase Auth. Nothing here has made the
-login page any more real than it was.
+`orders` and `order_items` exist, are tested, and are empty — checkout
+still ends at a notice rather than a row. `profiles` fills itself on
+sign-up and is read for the name to greet, but the `lang` and `theme`
+columns in it are not yet used; those preferences still live in
+`localStorage` on each device.
 
 ## Tables
 
@@ -37,7 +66,7 @@ login page any more real than it was.
 |---|---|---|
 | `products` | 18 | The catalogue, mirroring `PRODUCTS` in `js/data.js` |
 | `product_flavours` | 32 | The tasting notes that orbit each bean bag |
-| `profiles` | 0 | Display name, language and theme, one per account |
+| `profiles` | 0 | Display name, language and theme — created by a trigger on sign-up |
 | `orders` | 0 | A placed order. `user_id` is nullable — guests must be able to buy |
 | `order_items` | 0 | Lines on an order, with the price frozen at checkout |
 
@@ -52,7 +81,7 @@ Two conventions worth knowing before editing anything:
 
 ## Security
 
-The publishable key sits in `js/db.js` in plain sight. That is correct —
+The publishable key sits in `js/config.js` in plain sight. That is correct —
 a publishable key is designed to be in front-end source, and there is
 nowhere to hide one in a static site anyway. What actually protects the
 data is row-level security, declared in the migrations here and verified

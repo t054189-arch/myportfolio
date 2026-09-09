@@ -967,6 +967,7 @@
   position: relative;
   z-index: 1;
   width: min(400px, 100%);
+  min-width: 0;              /* never let a child widen the card */
   display: grid;
   gap: var(--s-3);
   padding: var(--s-5);
@@ -1001,6 +1002,15 @@
 }
 .lang-ar .field label { font-family: var(--font-arabic); letter-spacing: 0; }
 .field input {
+  /* An input carries an intrinsic width of about twenty characters in
+     whatever font it is set in, and it refuses to shrink below it. The
+     Arabic face is far wider than the Latin one, so on a 375px phone
+     that floor was 331px — which, once the card's padding was added,
+     made the card 397px wide and pushed its left edge 33px off the
+     screen. The page's overflow:hidden meant no scrollbar appeared, so
+     it looked fine and simply cut the card off. Zero the automatic
+     minimum and the grid can size the field to the card again. */
+  min-width: 0;
   height: 44px;
   padding-inline: var(--s-3);
   background: var(--paper);
@@ -1040,6 +1050,95 @@
 .guest-link:hover { color: var(--clay); border-bottom-color: var(--clay); }
 
 /* (the demo-account box is gone: no example credentials on the door) */
+
+/* Two doors in one card. The underline slides between them rather than
+   appearing under the new one, so the eye follows a single object — and
+   it is the only thing that moves, because the panel swap happens in the
+   same moment and two animations in one viewport is one too many. */
+.auth-tabs {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--line);
+}
+.auth-tab {
+  padding: var(--s-2) var(--s-1) var(--s-3);
+  background: none;
+  border: 0;
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: color var(--t-base) var(--e-out);
+}
+.lang-ar .auth-tab { font-family: var(--font-arabic); letter-spacing: 0; font-size: .8125rem; }
+.auth-tab:hover { color: var(--ink-2); }
+.auth-tab[aria-selected="true"] { color: var(--ink); }
+
+/* The sliding rule. Logical start plus a direction-aware translate:
+   `inset-inline-start: 0` parks it under the first tab in either script,
+   and the slide then has to go whichever way "forward" means — right in
+   English, left in Arabic. (This is not the flavour-ring case, where a
+   50% inset and a -50% translate would both flip and cancel out; with a
+   zero offset there is nothing to cancel, so logical is correct here.) */
+.auth-tabs::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  inset-inline-start: 0;
+  width: 50%;
+  height: 2px;
+  background: var(--leaf);
+  transition: transform var(--t-base) var(--e-in-out);
+}
+.auth-tabs[data-showing="signup"]::after { transform: translateX(100%); }
+:root[dir="rtl"] .auth-tabs[data-showing="signup"]::after { transform: translateX(-100%); }
+
+.auth-panel { display: grid; gap: var(--s-3); }
+.auth-panel[hidden] { display: none; }
+
+.field-hint {
+  font-size: .8125rem;
+  color: var(--ink-3);
+}
+
+.auth-swap {
+  justify-self: center;
+  font-size: .875rem;
+  color: var(--ink-3);
+  text-align: center;
+}
+.linkish {
+  padding: 0;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  color: var(--leaf);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color var(--t-fast) linear;
+}
+.linkish:hover { border-bottom-color: var(--leaf); }
+
+/* The same inline message box, in the one case where the news is good:
+   an account was created. Green, because a red box saying "you are all
+   set" reads as a failure for half a second before you finish it. */
+.form-msg.is-good {
+  border-color: var(--leaf);
+  background: var(--leaf-wash);
+  color: var(--leaf-deep);
+}
+
+/* A submit that is waiting on the network. Not a spinner — the label
+   changes to "Signing in…" and the button stops taking clicks, which is
+   the whole of what a visitor needs to know. */
+.btn[aria-busy="true"] {
+  opacity: .72;
+  pointer-events: none;
+}
 
 /* --- 15. Account menu in the header ------------------------------------ */
 
@@ -1341,7 +1440,15 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
 
 .bb { display: block; transform-style: preserve-3d; }
 
-.face {
+/* Scoped to .node deliberately. `.face` is also the class on the three
+   stacked plates inside every .ico3d, and while this rule was unscoped it
+   reached them: each icon plate was being given the orbit's 78px width,
+   its negative centring margins, and both 24-second ring animations. On
+   the login page that pushed the theme icon's plate to 70x54 inside a
+   40x40 button and let it drift above the top of the page. Ring chips
+   contain .disc and .lbl, never an .ico3d, so scoping by .node hits
+   exactly the intended elements and nothing else. */
+.node .face {
   display: grid;
   justify-items: center;
   gap: 3px;
@@ -1358,7 +1465,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
              ringdepth var(--t-ring) linear infinite;
 }
 @keyframes unspin { to { transform: rotateY(-360deg); } }
-.lang-ar .face { animation-name: unspin-rtl, ringdepth; }
+.lang-ar .node .face { animation-name: unspin-rtl, ringdepth; }
 @keyframes unspin-rtl { to { transform: rotateY(360deg); } }
 
 /* The coloured disc and its glyph. */
@@ -1435,7 +1542,7 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   }
   .node { position: static; animation: none; transform: none !important; opacity: 1 !important; }
   .bb { transform: none !important; }
-  .face { animation: none; transform: none !important; margin: 0; }
+  .node .face { animation: none; transform: none !important; margin: 0; }
   .ringbase { display: none; }
 }
 

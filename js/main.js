@@ -119,9 +119,32 @@ var WORDS = {
   signOut:    { en: 'Sign out', ar: 'تسجيل الخروج' },
   signIn:     { en: 'Sign in', ar: 'تسجيل الدخول' },
   signingIn:  { en: 'Signing in…', ar: 'جارٍ الدخول…' },
-  noUser:     { en: 'Please enter a username — we use it to greet you.', ar: 'الرجاء إدخال اسم المستخدم — نستخدمه للترحيب بك.' },
+  createAcct: { en: 'Create account', ar: 'إنشاء حساب' },
+  creating:   { en: 'Creating your account…', ar: 'جارٍ إنشاء حسابك…' },
+
+  /* Every message a visitor can be shown at the door. Written here rather
+     than passed through from the auth server, so they are ours, they are
+     bilingual, and they say what to do next instead of only what went
+     wrong. */
+  noName:     { en: 'Please enter a name — we use it to greet you.', ar: 'الرجاء إدخال الاسم — نستخدمه للترحيب بك.' },
+  noEmail:    { en: 'Please enter your email address.', ar: 'الرجاء إدخال بريدك الإلكتروني.' },
+  badEmail:   { en: 'That does not look like an email address.', ar: 'هذا لا يبدو بريداً إلكترونياً.' },
   noPassword: { en: 'Please enter a password.', ar: 'الرجاء إدخال كلمة المرور.' },
-  shortPass:  { en: 'That password is too short — four characters or more.', ar: 'كلمة المرور قصيرة جداً — أربعة أحرف أو أكثر.' },
+  shortPass:  { en: 'That password is too short — eight characters or more.', ar: 'كلمة المرور قصيرة جداً — ثمانية أحرف أو أكثر.' },
+  badCreds:   { en: 'That email and password do not match an account. Check them, or create an account.',
+                ar: 'البريد وكلمة المرور لا يطابقان أي حساب. تحقّق منهما أو أنشئ حساباً.' },
+  notConfirm: { en: 'Confirm your email address first — the link is in your inbox.',
+                ar: 'أكّد بريدك الإلكتروني أولاً — الرابط في صندوق بريدك.' },
+  acctExists: { en: 'There is already an account with that email. Sign in instead.',
+                ar: 'يوجد حساب بهذا البريد بالفعل. سجّل الدخول بدلاً من ذلك.' },
+  rateLimit:  { en: 'Too many attempts just now. Wait a minute and try again.',
+                ar: 'محاولات كثيرة الآن. انتظر دقيقة ثم أعد المحاولة.' },
+  offlineMsg: { en: 'We cannot reach the shop right now. Check your connection, or continue as a guest.',
+                ar: 'لا يمكننا الوصول إلى المتجر الآن. تحقّق من اتصالك أو تابع كزائر.' },
+  authFailed: { en: 'Something went wrong. Please try again.', ar: 'حدث خطأ ما. الرجاء المحاولة مرة أخرى.' },
+  noSignups:  { en: 'New accounts are closed at the moment.', ar: 'إنشاء الحسابات مغلق حالياً.' },
+  checkEmail: { en: 'Account created. Confirm your email address, then sign in.',
+                ar: 'تم إنشاء الحساب. أكّد بريدك الإلكتروني ثم سجّل الدخول.' },
   dragHint:   { en: 'Drag to rotate', ar: 'اسحب للتدوير' },
   rigAlt:     { en: 'A V60 cone with brass rib rings above a glass server of brewed coffee',
                 ar: 'قمع V60 بحلقات نحاسية فوق دورق زجاجي فيه قهوة محضّرة' },
@@ -602,7 +625,7 @@ function syncAccount() {
   var nameEl = el('account-name');
   if (!nameEl) return;
   var user = Auth.current();
-  var label = !user ? t(WORDS.signIn) : (user === 'guest' ? t(WORDS.guest) : user);
+  var label = !user ? t(WORDS.signIn) : (Auth.isGuest() ? t(WORDS.guest) : user);
   nameEl.textContent = label;
   el('account-who').innerHTML = esc(t(WORDS.signedIn)) + ' <b>' + esc(label) + '</b>';
   el('account-btn').setAttribute('aria-label', t(WORDS.account) + ' — ' + label);
@@ -1445,16 +1468,47 @@ function initScenes(root) {
 
 /* --- 15. Login page ----------------------------------------------------- */
 
+/* --- The door: sign in, or create an account ---------------------------
+   Both panels live in one card and share one leaving animation. Every
+   message is inline and bilingual — no alert(), ever.
+
+   The important change from the first version of this file: nothing here
+   decides whether a password is right. It asks the server, waits, and
+   reports what came back. A typo and a wrong password are now genuinely
+   different outcomes, because there is finally something to be wrong
+   against. */
 function initLogin() {
-  var form = el('login-form');
-  if (!form) return;
+  var card = el('login-card');
+  if (!card) return;
 
-  var msg = el('login-msg');
-  var card = form;
+  var tabs   = card.querySelector('.auth-tabs');
+  var panel  = { signin: el('signin-form'), signup: el('signup-form') };
+  var tab    = { signin: el('tab-signin'),  signup: el('tab-signup') };
+  var msgFor = { signin: el('signin-msg'),  signup: el('signup-msg') };
 
-  function showMessage(words) {
+  /* One map from an Auth reason to what the visitor reads and where the
+     cursor lands. Keeping it in one place means a reason can never be
+     handled in sign-in and forgotten in sign-up. */
+  var MESSAGES = {
+    noName:        { words: WORDS.noName,     focus: 'signup-name' },
+    noEmail:       { words: WORDS.noEmail,    focus: '-email' },
+    badEmail:      { words: WORDS.badEmail,   focus: '-email' },
+    noPassword:    { words: WORDS.noPassword, focus: '-password' },
+    shortPassword: { words: WORDS.shortPass,  focus: '-password' },
+    badCredentials:{ words: WORDS.badCreds,   focus: '-password' },
+    notConfirmed:  { words: WORDS.notConfirm, focus: '-email' },
+    exists:        { words: WORDS.acctExists, focus: '-email' },
+    rateLimit:     { words: WORDS.rateLimit,  focus: null },
+    offline:       { words: WORDS.offlineMsg, focus: null },
+    noSignups:     { words: WORDS.noSignups,  focus: null },
+    failed:        { words: WORDS.authFailed, focus: null }
+  };
+
+  function showMessage(which, words, good) {
+    var msg = msgFor[which];
     msg.setAttribute('data-en', words.en);
     msg.setAttribute('data-ar', words.ar);
+    msg.classList.toggle('is-good', !!good);
     msg.hidden = false;
     /* restart the rise animation on a repeat failure */
     msg.style.animation = 'none';
@@ -1462,6 +1516,43 @@ function initLogin() {
     msg.style.animation = '';
     I18N.apply(msg);
   }
+
+  function clearMessage(which) { msgFor[which].hidden = true; }
+
+  /* Switch panels. The tabs are real tabs, so aria-selected and the
+     roving tabindex move with them. */
+  function show(which, moveFocus) {
+    ['signin', 'signup'].forEach(function (key) {
+      var on = key === which;
+      panel[key].hidden = !on;
+      tab[key].setAttribute('aria-selected', on ? 'true' : 'false');
+      tab[key].tabIndex = on ? 0 : -1;
+    });
+    tabs.setAttribute('data-showing', which);
+    if (moveFocus) tab[which].focus();
+  }
+
+  ['signin', 'signup'].forEach(function (key) {
+    tab[key].addEventListener('click', function () { show(key, false); });
+  });
+
+  /* Left and right arrows move between tabs, as a tablist should. */
+  tabs.addEventListener('keydown', function (event) {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    var showing = tabs.getAttribute('data-showing') === 'signup' ? 'signup' : 'signin';
+    show(showing === 'signin' ? 'signup' : 'signin', true);
+    event.preventDefault();
+  });
+
+  /* The "no account yet? / already a customer?" links under each form. */
+  card.addEventListener('click', function (event) {
+    var swap = event.target.closest ? event.target.closest('[data-goto]') : null;
+    if (!swap) return;
+    var which = swap.getAttribute('data-goto');
+    show(which, false);
+    var first = el(which === 'signup' ? 'signup-name' : 'signin-email');
+    if (first) first.focus();
+  });
 
   /* The card fades while the camera pushes forward through the dripper.
      The film then plays over the home page as it arrives. */
@@ -1472,26 +1563,91 @@ function initLogin() {
     window.setTimeout(function () { window.location.href = href; }, ms('--t-slow'));
   }
 
-  var MESSAGES = {
-    noUser: { words: WORDS.noUser, focus: 'username' },
-    noPassword: { words: WORDS.noPassword, focus: 'password' },
-    shortPassword: { words: WORDS.shortPass, focus: 'password' }
-  };
+  /* A submit that has to wait for a network round trip. The label says
+     so and the button stops taking clicks, which is all a visitor needs
+     — a spinner here would be a second thing moving on a screen that
+     already has a dripper turning behind it. */
+  function busy(button, words) {
+    button.setAttribute('aria-busy', 'true');
+    button.setAttribute('data-en', words.en);
+    button.setAttribute('data-ar', words.ar);
+    I18N.apply(button);
+  }
+  function idle(button, words) {
+    button.removeAttribute('aria-busy');
+    button.setAttribute('data-en', words.en);
+    button.setAttribute('data-ar', words.ar);
+    I18N.apply(button);
+  }
 
-  form.addEventListener('submit', function (event) {
+  function fail(which, reason) {
+    var problem = MESSAGES[reason] || MESSAGES.failed;
+    showMessage(which, problem.words);
+    if (!problem.focus) return;
+    /* A focus target starting with "-" belongs to whichever panel is
+       showing, so one entry covers both forms. */
+    var target = el(problem.focus.charAt(0) === '-' ? which + problem.focus : problem.focus);
+    if (target) target.focus();
+  }
+
+  /* ---- sign in ---- */
+  panel.signin.addEventListener('submit', function (event) {
     event.preventDefault();
-    var result = Auth.signIn(el('username').value, el('password').value);
-    if (result.ok) {
-      msg.hidden = true;
-      leaveTo('index.html');
-      return;
-    }
-    var problem = MESSAGES[result.reason] || MESSAGES.noUser;
-    showMessage(problem.words);
-    el(problem.focus).focus();
+    var button = el('signin-submit');
+    if (button.getAttribute('aria-busy') === 'true') return;
+
+    clearMessage('signin');
+    busy(button, WORDS.signingIn);
+
+    Auth.signIn(el('signin-email').value, el('signin-password').value)
+      .then(function (result) {
+        if (result.ok) { leaveTo('index.html'); return; }
+        idle(button, WORDS.signIn);
+        fail('signin', result.reason);
+      });
   });
 
-  /* Guests get in too — same fade, no credentials. */
+  /* ---- create an account ---- */
+  panel.signup.addEventListener('submit', function (event) {
+    event.preventDefault();
+    var button = el('signup-submit');
+    if (button.getAttribute('aria-busy') === 'true') return;
+
+    clearMessage('signup');
+    busy(button, WORDS.creating);
+
+    Auth.signUp(el('signup-name').value, el('signup-email').value, el('signup-password').value)
+      .then(function (result) {
+        if (result.ok && result.signedIn) { leaveTo('index.html'); return; }
+
+        idle(button, WORDS.createAcct);
+
+        if (result.ok) {
+          /* Created, but the project is set to confirm the address
+             first. Say so on the sign-in panel, carrying the email
+             across, because that is where they have to come back to. */
+          el('signin-email').value = el('signup-email').value;
+          el('signup-password').value = '';
+          show('signin', false);
+          showMessage('signin', WORDS.checkEmail, true);
+          return;
+        }
+
+        /* An address that is already taken belongs on the other panel:
+           the next thing to do is sign in, not fix the form. */
+        if (result.reason === 'exists') {
+          el('signin-email').value = el('signup-email').value;
+          show('signin', false);
+          showMessage('signin', WORDS.acctExists);
+          el('signin-password').focus();
+          return;
+        }
+
+        fail('signup', result.reason);
+      });
+  });
+
+  /* Guests get in too — same fade, no account, no network. */
   el('guest-link').addEventListener('click', function (event) {
     event.preventDefault();
     Auth.signInAsGuest();
@@ -1506,6 +1662,8 @@ function initLogin() {
   });
   paintLoginControls();
   document.addEventListener('bloom:lang', paintLoginControls);
+
+  show('signin', false);
 }
 
 function paintLoginControls() {
@@ -1677,6 +1835,17 @@ function boot() {
   document.addEventListener('bloom:catalogue', syncCatalogue);
   document.addEventListener('bloom:lang', syncCatalogue);
   if (window.DB) DB.sync();
+
+  /* And ask the auth server whether this session is still a session.
+     guard() above only checked that one exists, which is all it can do
+     synchronously; this renews a stale token, and sends the visitor back
+     to the door if the server has actually rejected it. */
+  if (page !== 'login') {
+    Auth.verify().then(function (valid) {
+      if (!valid) window.location.replace('login.html');
+      else syncAccount();
+    });
+  }
 }
 
 if (document.readyState === 'loading') {

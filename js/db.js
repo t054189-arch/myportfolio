@@ -15,20 +15,19 @@
    thing that can be edited without touching JavaScript. A price change
    is now a row update in the Supabase dashboard, live on the next load.
 
-   ABOUT THE KEY BELOW. It is public on purpose — a publishable key is
-   meant to sit in front-end source, and there is no way to hide one in
-   a static site anyway. It is not what keeps the database safe. That
-   job belongs to row-level security, which is declared in
-   supabase/migrations/: the catalogue is readable by everybody and
-   writable by nobody holding this key. Anyone can read the shop
-   window; nobody can reprice it from the browser.
+   The project URL and key live in js/config.js, which explains why the
+   key being public is fine: row-level security, declared in
+   supabase/migrations/, makes the catalogue readable by everybody and
+   writable by nobody holding it. Anyone can read the shop window;
+   nobody can reprice it from the browser.
    ------------------------------------------------------------------ */
 
 var DB = (function () {
   'use strict';
 
-  var URL = 'https://amejrcyvjbaepglimnal.supabase.co';
-  var KEY = 'sb_publishable_Fnoec4qtrKX045pvCmSgrw_fh-ACiLp';
+  function conf() { return window.BLOOM || {}; }
+  var URL = conf().url;
+  var KEY = conf().key;
 
   /* If the network is slow, the shop does not wait for it. The built-in
      catalogue is already on screen; a late answer is worth nothing. */

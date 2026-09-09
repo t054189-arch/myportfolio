@@ -675,10 +675,13 @@ function initListing(category) {
     count.textContent = shown.length + ' ' + t(WORDS.results);
 
     if (settled) {
-      /* A filter change is its own animation: the cards arrive already
-         revealed so the grid fade is the only thing moving. */
+      /* A filter change is its own animation: the cards come back in
+         staggered 40ms apart, and nothing else in the view moves. */
       var cards = grid.querySelectorAll('.reveal');
-      for (var k = 0; k < cards.length; k++) cards[k].classList.add('is-revealed');
+      for (var k = 0; k < cards.length; k++) {
+        cards[k].style.transitionDelay = (Math.min(k, 8) * 40) + 'ms';
+        cards[k].classList.add('is-revealed');
+      }
     } else {
       Motion.observe(grid);
     }

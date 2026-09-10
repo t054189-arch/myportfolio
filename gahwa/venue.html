@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-g-theme="warm">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Venue — gahwa</title>
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="gahwa.css">
+</head>
+<body class="g">
+<div class="g-wrap g-stack" id="root"></div>
+
+<script src="gahwa.js"></script>
+<script>
+(function () {
+  'use strict';
+  var G = gahwa._internal, t = G.t, esc = G.esc;
+  var P = G.readParams();
+  G.applyChrome();
+
+  var root = document.getElementById('root');
+
+  /* The URL the printed QR encodes. Built from where this page is served
+     from, so the same card generator works on localhost and in
+     production without anything being configured. */
+  function checkinURL(venueId) {
+    var base = window.location.href.replace(/\/venue\.html.*$/, '');
+    return base + '/checkin.html?venue=' + encodeURIComponent(venueId) + '&src=qr';
+  }
+
+  function cardHTML(v) {
+    var url = checkinURL(v.id);
+    /* Black on white, always — a QR printed in the module's theme
+       colours is a QR that some phones refuse to read. */
+    var svg = gahwa.qrSVG(url, { fg: '#000', bg: '#fff', label: t('scanToCheckIn') });
+    return '<div class="g-card-print" id="card">' +
+        '<div><h2>' + esc(v.name_en) + '</h2>' +
+          '<h2 dir="rtl" style="font-size:17px">' + esc(v.name_ar) + '</h2></div>' +
+        '<div class="g-qr">' + svg + '</div>' +
+        '<div><p><strong>' + esc(t('scanToCheckIn')) + '</strong></p>' +
+          '<p>' + esc(t('cardLine')) + '</p></div>' +
+      '</div>';
+  }
+
+  function render(v, board) {
+    if (!v) {
+      root.innerHTML = '<p class="g-msg">' + esc(t('offline')) + '</p>';
+      return;
+    }
+    var embedSnippet =
+      '<div id="gahwa"></div>\n' +
+      '<script src="' + window.location.href.replace(/\/venue\.html.*$/, '') + '/embed.js"\n' +
+      '        data-venue="' + v.id + '"\n' +
+      '        data-theme="warm"\n' +
+      '        data-lang="en"\n' +
+      '        data-mount="#gahwa"\n' +
+      '        async><\/script>';
+
+    root.innerHTML =
+      '<div><p class="g-eyebrow">' + esc(G.govLabel(v.governorate) || t('poweredBy')) + '</p>' +
+        '<h1 style="font-size:30px">' + esc(G.venueName(v)) + '</h1>' +
+        '<p class="g-muted">' + esc([v.area, G.govLabel(v.governorate)].filter(Boolean).join(' · ')) +
+        '</p></div>' +
+
+      '<div class="g-card g-stack">' +
+        '<p class="g-eyebrow">' + esc(t('board')) + '</p>' +
+        G.boardHTML(board) +
+      '</div>' +
+
+      '<div class="g-row" style="align-items:flex-start;gap:20px">' +
+        '<div class="g-stack" style="flex:1 1 300px;min-width:0">' +
+          '<p class="g-eyebrow g-noprint">' + esc(t('printCard')) + '</p>' +
+          cardHTML(v) +
+          '<div class="g-row g-noprint">' +
+            '<button type="button" class="g-btn" id="print">' + esc(t('printCard')) + '</button>' +
+            '<a class="g-btn g-btn-quiet" href="' + esc(checkinURL(v.id)) + '">' +
+              esc(t('checkIn')) + '</a>' +
+          '</div>' +
+        '</div>' +
+        '<div class="g-stack g-noprint" style="flex:1 1 320px;min-width:0">' +
+          '<p class="g-eyebrow">Embed</p>' +
+          '<pre class="g-card g-small g-mono" style="overflow:auto;white-space:pre-wrap">' +
+            esc(embedSnippet) + '</pre>' +
+          '<p class="g-muted g-small">' +
+            esc('The widget renders on any origin. Counts only cross back.') + '</p>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById('print').addEventListener('click', function () { window.print(); });
+  }
+
+  var id = P.venue || 'riwaq-jabriya';
+  Promise.all([gahwa.venue(id), gahwa.board(id)]).then(function (r) {
+    render(r[0], r[1]);
+  }, function () {
+    root.innerHTML = '<p class="g-msg">' + esc(t('offline')) + '</p>';
+  });
+})();
+</script>
+</body>
+</html>

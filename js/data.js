@@ -930,7 +930,7 @@ var MENUS = [
 /* Plain links that sit beside the menus in the bar. */
 var NAV_LINKS = [
   { href: 'brew-guides.html', label: { en: 'Brew guides', ar: 'طرق التحضير' } },
-  { href: 'gahwa-log.html',   label: { en: 'Gahwa log', ar: 'سجل القهوة' } },
+  { href: 'gahwa/log.html',   label: { en: 'Gahwa log', ar: 'سجل القهوة' } },
   { href: 'cafe.html',        label: { en: 'Café', ar: 'المقهى' } }
 ];
 
@@ -1034,7 +1034,7 @@ var FOOTER = [
       { href: 'cafe.html',          label: { en: 'The café', ar: 'المقهى' } },
       { href: 'cafe.html#hours',    label: { en: 'Opening hours', ar: 'أوقات العمل' } },
       { href: 'cafe.html#find-us',  label: { en: 'Find us', ar: 'كيف تجدنا' } },
-      { href: 'gahwa-log.html',     label: { en: 'Gahwa log', ar: 'سجل القهوة' } },
+      { href: 'gahwa/log.html',     label: { en: 'Gahwa log', ar: 'سجل القهوة' } },
       { href: 'index.html',         label: { en: 'Home', ar: 'الرئيسية' } }
     ]
   }

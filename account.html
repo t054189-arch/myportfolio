@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>My account — Bloom</title>
-<meta name="description" content="Your Bloom account: your gahwa log at a glance, a copy of your own data to download, and the button that deletes it.">
+<meta name="description" content="Your Bloom account, and the way through to your gahwa check-in log.">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="referrer" content="no-referrer">
 <!-- Restore theme and reading direction before the first paint. -->
@@ -40,8 +40,9 @@
     <!-- The gahwa log's own numbers, repeated here, linking through. -->
     <div id="account-gahwa"></div>
 
-    <!-- Export and delete. Both are the customer's, not the shop's. -->
-    <div id="account-data"></div>
+    <!-- Export and delete used to be here. They moved into gahwa/, next
+         to the data they act on: a host site should not be the thing that
+         offers to delete a log it cannot read. -->
   </section>
 </main>
 
@@ -54,8 +55,9 @@
 <script src="js/scene.js"></script>
 <script src="js/rings.js"></script>
 <script src="js/db.js"></script>
-<script src="js/gahwa.js"></script>
-<script src="js/gahwa-page.js"></script>
+<!-- The module, loaded for its public API only. Bloom calls
+     gahwa.myCheckIns() and nothing else. -->
+<script src="gahwa/gahwa.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

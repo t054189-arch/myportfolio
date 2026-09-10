@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-g-theme="warm">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My log — gahwa</title>
+<!-- One person's diary. Never indexed, never previewed, no referrer out. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="gahwa.css">
+</head>
+<body class="g">
+<div class="g-wrap g-stack" id="root"></div>
+
+<script src="gahwa.js"></script>
+<script>
+(function () {
+  'use strict';
+  var G = gahwa._internal, t = G.t, esc = G.esc;
+  var P = G.readParams();
+  G.applyChrome();
+
+  var root = document.getElementById('root');
+  var data = null;
+  var filter = 'all';
+
+  function head() {
+    return '<div><p class="g-eyebrow">' + esc(t('poweredBy')) + '</p>' +
+      '<h1 style="font-size:30px">' + esc(t('myLog')) + '</h1>' +
+      '<p class="g-muted">' + esc(t('mapNote')) + '</p></div>';
+  }
+
+  function statsHTML() {
+    var s = data.summary, k = data.streak;
+    var dash = '<span class="g-muted">&mdash;</span>';
+    var streak = (k && k.current_streak) || 0;
+    function tile(value, label, sub) {
+      return '<div class="g-stat"><b>' + value + '</b>' +
+        (sub ? '<span>' + sub + '</span>' : '') +
+        '<span>' + esc(label) + '</span></div>';
+    }
+    return '<div class="g-stats">' +
+      tile(s && s.total_cups ? s.total_cups : dash, t('cups')) +
+      tile(s && s.venues_visited ? s.venues_visited : dash, t('venues')) +
+      tile(streak || dash, t('streak'), streak ? esc(G.plural(streak, t('day'), t('days'))) : '') +
+      tile(s && s.verified_cups ? s.verified_cups : dash, t('verifiedCups')) +
+    '</div>';
+  }
+
+  function timelineHTML() {
+    var rows = data.entries;
+    if (filter === 'verified') rows = rows.filter(function (r) { return r.verified; });
+    if (!rows.length) return '<p class="g-muted">' + esc(t('empty')) + '</p>';
+    var out = '', month = null;
+    rows.forEach(function (r) {
+      var m = G.monthLabel(r.had_at);
+      if (m !== month) { month = m; out += '<p class="g-month">' + esc(m) + '</p>'; }
+      out += G.cupHTML(r);
+    });
+    return '<div class="g-cups">' + out + '</div>';
+  }
+
+  function render() {
+    root.innerHTML = head() + statsHTML() +
+      '<div class="g-row">' +
+        '<a class="g-btn" href="checkin.html">' + esc(t('checkIn')) + '</a>' +
+        '<button type="button" class="g-chip" data-filter="all" aria-pressed="' +
+          (filter === 'all') + '">' + esc(t('timeline')) + '</button>' +
+        '<button type="button" class="g-chip" data-filter="verified" aria-pressed="' +
+          (filter === 'verified') + '">' + esc(t('verified')) + '</button>' +
+      '</div>' +
+      '<div class="g-row" style="align-items:flex-start;gap:20px">' +
+        '<div style="flex:2 1 320px;min-width:0" id="timeline">' + timelineHTML() + '</div>' +
+        '<div style="flex:1 1 260px;min-width:0" class="g-stack">' +
+          '<div class="g-card">' + G.mapHTML(data.map) + '</div>' +
+          '<div class="g-card">' + G.stickersHTML(data.stickers) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="g-card g-stack">' +
+        '<p class="g-eyebrow">' + esc(t('exportLog')) + '</p>' +
+        '<div class="g-row">' +
+          '<button type="button" class="g-btn g-btn-quiet" id="csv">CSV</button>' +
+          '<button type="button" class="g-btn g-btn-quiet" id="json">JSON</button>' +
+        '</div>' +
+        '<p class="g-eyebrow">' + esc(t('deleteAll')) + '</p>' +
+        '<p class="g-muted g-small">' + esc(t('deleteWarn')) + '</p>' +
+        '<div class="g-row"><button type="button" class="g-btn g-btn-danger" id="wipe">' +
+          esc(t('deleteAll')) + '</button></div>' +
+        '<p class="g-msg" id="dmsg" hidden role="status"></p>' +
+      '</div>' +
+      '<p class="g-row" style="justify-content:space-between">' +
+        '<span class="g-muted g-small">' + esc(gahwa.session() ? gahwa.session().name : '') + '</span>' +
+        '<button type="button" class="g-btn g-btn-quiet g-small" id="out" style="min-height:30px">' +
+          esc(t('signOut')) + '</button></p>';
+
+    root.addEventListener('click', onClick);
+    document.getElementById('csv').addEventListener('click', function () { download('csv'); });
+    document.getElementById('json').addEventListener('click', function () { download('json'); });
+    document.getElementById('wipe').addEventListener('click', wipe);
+    document.getElementById('out').addEventListener('click', function () {
+      gahwa.signOut();
+      window.location.href = 'checkin.html';
+    });
+  }
+
+  function onClick(e) {
+    var f = e.target.closest && e.target.closest('[data-filter]');
+    if (f) {
+      filter = f.getAttribute('data-filter');
+      var all = root.querySelectorAll('[data-filter]');
+      for (var i = 0; i < all.length; i++) {
+        all[i].setAttribute('aria-pressed', String(all[i].getAttribute('data-filter') === filter));
+      }
+      document.getElementById('timeline').innerHTML = timelineHTML();
+      return;
+    }
+    var rm = e.target.closest && e.target.closest('[data-remove]');
+    if (rm) confirmRemove(rm.getAttribute('data-remove'));
+  }
+
+  /* Confirmed where it happens, never with a browser dialog, and with no
+     undo — an undo would mean keeping the row after saying it was gone. */
+  function confirmRemove(id) {
+    var card = root.querySelector('[data-cup="' + id + '"]');
+    if (!card || card.querySelector('.g-confirm')) return;
+    var entry = null;
+    data.entries.forEach(function (r) { if (r.id === id) entry = r; });
+
+    var box = document.createElement('div');
+    box.className = 'g-confirm g-row';
+    box.style.cssText = 'grid-column:1/-1;padding-top:10px;border-top:1px solid var(--g-line)';
+    box.innerHTML = '<span class="g-small">' + esc(t('really')) + '</span>' +
+      '<button type="button" class="g-btn g-btn-quiet g-small" data-keep="1" style="min-height:30px">' +
+        esc(t('keep')) + '</button>' +
+      '<button type="button" class="g-btn g-btn-danger g-small" data-yes="1" style="min-height:30px">' +
+        esc(t('remove')) + '</button>';
+    card.appendChild(box);
+    box.querySelector('[data-yes]').focus();
+
+    box.addEventListener('click', function (e) {
+      if (e.target.closest('[data-keep]')) { box.remove(); return; }
+      if (!e.target.closest('[data-yes]')) return;
+      box.textContent = '…';
+      gahwa.deleteCheckIn(id, entry && entry.photo_path).then(load, function () {
+        box.textContent = t('offline');
+      });
+    });
+  }
+
+  function download(kind) {
+    var text = kind === 'csv' ? gahwa.exportCSV(data.entries) : gahwa.exportJSON(data.entries);
+    var type = kind === 'csv' ? 'text/csv;charset=utf-8' : 'application/json';
+    var blob = new Blob([text], { type: type });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'gahwa-log-' + new Date().toISOString().slice(0, 10) + '.' + kind;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function wipe() {
+    var button = document.getElementById('wipe');
+    var msg = document.getElementById('dmsg');
+    button.setAttribute('aria-busy', 'true');
+    gahwa.deleteEverything().then(function (r) {
+      button.removeAttribute('aria-busy');
+      msg.hidden = false;
+      msg.className = 'g-msg g-msg-good';
+      msg.textContent = r.entries
+        ? t('deleted') + ' ' + r.entries + ' + ' + r.photos
+        : t('nothingToDelete');
+      /* Reload the numbers, but leave this message standing — someone who
+         just erased their diary should be told what went. */
+      gahwa.stats().then(function (fresh) {
+        data = fresh;
+        document.getElementById('timeline').innerHTML = timelineHTML();
+      });
+    }, function () {
+      button.removeAttribute('aria-busy');
+      msg.hidden = false;
+      msg.className = 'g-msg';
+      msg.textContent = t('offline');
+    });
+  }
+
+  function load() {
+    if (!gahwa.session()) {
+      root.innerHTML = head() +
+        '<div class="g-card g-stack"><p>' + esc(t('empty')) + '</p>' +
+        '<p><a class="g-btn" href="checkin.html">' + esc(t('signIn')) + '</a></p></div>';
+      return Promise.resolve();
+    }
+    return gahwa.stats().then(function (fresh) {
+      data = fresh;
+      render();
+    }, function () {
+      root.innerHTML = head() + '<p class="g-msg">' + esc(t('offline')) + '</p>';
+    });
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

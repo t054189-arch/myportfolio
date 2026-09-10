@@ -70,6 +70,25 @@
       </div>
     </div>
   </section>
+
+  <!-- ===================================================================
+       Bloom embeds the check-in widget with the same one line any other
+       coffee shop would paste into their own site. Nothing about this
+       markup is special to Bloom, and Bloom cannot see inside it.
+       =================================================================== -->
+  <section class="wrap block-tight">
+    <div class="page-head">
+      <h2 data-en="Been in this week?" data-ar="زرتنا هذا الأسبوع؟">Been in this week?</h2>
+      <p class="lede" data-en="Check in and it goes into your own coffee diary — every cup, everywhere, not only ours. We only ever see a number." data-ar="سجّل حضورك ليُضاف إلى دفتر قهوتك الخاص — كل فنجان، في كل مكان، وليس عندنا فقط. نحن لا نرى سوى رقم.">Check in and it goes into your own coffee diary — every cup, everywhere, not only ours. We only ever see a number.</p>
+    </div>
+    <div id="gahwa" style="max-width:420px"></div>
+    <script src="gahwa/embed.js"
+            data-venue="bloom-salmiya"
+            data-theme="warm"
+            data-lang="en"
+            data-mount="#gahwa"
+            async></script>
+  </section>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -81,8 +100,9 @@
 <script src="js/scene.js"></script>
 <script src="js/rings.js"></script>
 <script src="js/db.js"></script>
-<script src="js/gahwa.js"></script>
-<script src="js/gahwa-page.js"></script>
+<!-- The module, loaded for its public API only. Bloom calls
+     gahwa.myCheckIns() and nothing else. -->
+<script src="gahwa/gahwa.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

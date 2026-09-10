@@ -158,96 +158,16 @@ var WORDS = {
      "session", no "entry #4" — a cup, a place, the people who were
      there. */
   gahwaNav:   { en: 'Gahwa log', ar: 'سجل القهوة' },
-  gahwaLead:  { en: 'A private diary of the coffee you drink — where you were, who you were with, and whether it was any good.',
-                ar: 'دفتر خاص للقهوة التي تشربها — أين كنت، ومع من، وهل كانت جيدة.' },
-  gahwaPrivate: { en: 'Only you can read this. Not the shop, not anyone else.',
-                ar: 'أنت وحدك تقرأ هذا. لا المتجر ولا أي شخص آخر.' },
-
-  cupsMonth:  { en: 'Cups this month', ar: 'فناجين هذا الشهر' },
-  streakNow:  { en: 'Current streak', ar: 'السلسلة الحالية' },
-  avgBeans:   { en: 'Average rating', ar: 'متوسط التقييم' },
-  topPlaceLbl:{ en: 'Most-visited place', ar: 'أكثر مكان زيارة' },
-  noneYet:    { en: '—', ar: '—' },
-
-  logCup:     { en: 'Log a coffee', ar: 'سجّل فنجاناً' },
+  gahwaHosted:{ en: 'Your check-in log is its own thing, kept separately from the shop. It opens in the gahwa module and has its own sign-in, its own export and its own delete.',
+                ar: 'سجل حضورك شيء قائم بذاته، محفوظ بعيداً عن المتجر. يُفتح في وحدة gahwa وله تسجيل دخول خاص وتصدير وحذف خاصان به.' },
   logCupHere: { en: 'Log a coffee here', ar: 'سجّل فنجاناً هنا' },
   logThisCup: { en: 'Log this cup', ar: 'سجّل هذا الفنجان' },
-
-  qGood:      { en: 'Was it any good?', ar: 'هل كانت جيدة؟' },
-  qWhere:     { en: 'Where?', ar: 'أين؟' },
-  qWho:       { en: 'Who with?', ar: 'مع من؟' },
-  qWhat:      { en: 'What?', ar: 'ماذا شربت؟' },
-  beansOf:    { en: '{n} of 5 beans', ar: '{n} من ٥ حبّات' },
-  newPlace:   { en: 'Somewhere new — type its name', ar: 'مكان جديد — اكتب اسمه' },
-  placeKindQ: { en: 'What kind of place?', ar: 'ما نوع المكان؟' },
-  addPerson:  { en: 'A name or a nickname', ar: 'اسم أو لقب' },
-  nicknameOk: { en: 'Nicknames are fine — this is your diary, not a directory.',
-                ar: 'الألقاب مناسبة تماماً — هذا دفترك، وليس دليل أسماء.' },
-  bloomBeanQ: { en: 'A Bloom bean?', ar: 'حبة من بلوم؟' },
-  noBean:     { en: 'Not a Bloom bean', ar: 'ليست من بلوم' },
-  doseLbl:    { en: 'Dose', ar: 'الجرعة' },
-  noteLbl:    { en: 'A note, if you want one', ar: 'ملاحظة، إن أردت' },
-  photoLbl:   { en: 'Photo — stays private', ar: 'صورة — تبقى خاصة' },
-  whenLbl:    { en: 'When', ar: 'الوقت' },
-  saveCup:    { en: 'Save', ar: 'حفظ' },
-  savingCup:  { en: 'Saving…', ar: 'جارٍ الحفظ…' },
-  savedCup:   { en: 'Logged.', ar: 'تم التسجيل.' },
-  closeSheet: { en: 'Close', ar: 'إغلاق' },
-  onlyRating: { en: 'Nothing here is required except the beans.',
-                ar: 'لا شيء مطلوب هنا سوى الحبّات.' },
-
-  fAll:       { en: 'All', ar: 'الكل' },
-  fMonth:     { en: 'This month', ar: 'هذا الشهر' },
-  fFive:      { en: '5 beans only', ar: '٥ حبّات فقط' },
-  fPlace:     { en: 'By place', ar: 'حسب المكان' },
-  fPerson:    { en: 'By person', ar: 'حسب الشخص' },
-
-  yourPlaces: { en: 'Your places', ar: 'أماكنك' },
-  yourPeople: { en: 'Your people', ar: 'أشخاصك' },
-  lastLbl:    { en: 'Last', ar: 'آخر مرة' },
-  aBloomBranch:{ en: 'A Bloom branch', ar: 'فرع بلوم' },
-  peopleEmpty:{ en: 'Cups you drink with someone will show up here.',
-                ar: 'الفناجين التي تشربها بصحبة أحد ستظهر هنا.' },
-  placesEmpty:{ en: 'Places you log will show up here.',
-                ar: 'الأماكن التي تسجّلها ستظهر هنا.' },
-
-  logEmpty:   { en: 'Nothing logged yet. Tap a bean and you are halfway done.',
-                ar: 'لا شيء مسجّل بعد. اضغط حبة وتكون قد أنجزت النصف.' },
-  exampleTag: { en: 'Example', ar: 'مثال' },
-  exampleNote:{ en: 'This is what an entry looks like. It is not one of yours.',
-                ar: 'هكذا يبدو التسجيل. وهو ليس من تسجيلاتك.' },
-
-  removeCup:  { en: 'Delete this entry', ar: 'احذف هذا التسجيل' },
-  reallyOne:  { en: 'Delete it? This cannot be undone.', ar: 'حذفه؟ لا يمكن التراجع.' },
-  yesDelete:  { en: 'Delete', ar: 'حذف' },
-  keepIt:     { en: 'Keep it', ar: 'إبقاؤه' },
-
-  exportLog:  { en: 'Download my log', ar: 'تنزيل سجلي' },
-  exportCsv:  { en: 'CSV, for a spreadsheet', ar: 'CSV، لجدول بيانات' },
-  exportJson: { en: 'JSON, for everything else', ar: 'JSON، لما سوى ذلك' },
-  wipeLog:    { en: 'Delete my entire log', ar: 'احذف سجلي بالكامل' },
-  wipeWarn:   { en: 'Every entry and every photo, removed now and not recoverable. Your places are kept unless you tick the box.',
-                ar: 'كل تسجيل وكل صورة، تُحذف الآن ولا يمكن استرجاعها. تُحفظ أماكنك إلا إذا اخترت الصندوق.' },
-  wipePlaces: { en: 'My saved places too', ar: 'وأماكني المحفوظة أيضاً' },
-  wipeDo:     { en: 'Delete everything', ar: 'احذف كل شيء' },
-  wipeDone:   { en: 'Deleted {entries} and {photos}.', ar: 'حُذف {entries} و{photos}.' },
-  wipeNothing:{ en: 'There was nothing to delete.', ar: 'لم يكن هناك ما يُحذف.' },
-  photoLeft:  { en: 'The entries are gone, but a photo could not be removed. Try again.',
-                ar: 'حُذفت التسجيلات، لكن تعذّر حذف صورة. أعد المحاولة.' },
-
   bagBrewed:  { en: 'You have brewed {cups} from this bag — about {grams} g used.',
                 ar: 'حضّرت {cups} من هذا الكيس — نحو {grams} غم.' },
   bagLeft:    { en: 'About {grams} g left.', ar: 'يتبقّى نحو {grams} غم.' },
   bagOut:     { en: 'That bag is about finished.', ar: 'هذا الكيس على وشك الانتهاء.' },
   reorder:    { en: 'Reorder', ar: 'أعد الطلب' },
-
-  logSignedOut:{ en: 'The gahwa log belongs to an account, so there is somewhere private to keep it. Guests can browse everything else.',
-                ar: 'سجل القهوة مرتبط بحساب، ليكون له مكان خاص. يمكن للزوار تصفّح كل ما عداه.' },
-  goSignIn:   { en: 'Sign in or create an account →', ar: 'سجّل الدخول أو أنشئ حساباً →' },
-  loadFailed: { en: 'Could not reach your log. Check your connection and reload.',
-                ar: 'تعذّر الوصول إلى سجلك. تحقّق من اتصالك وأعد التحميل.' },
   myAccount:  { en: 'My account', ar: 'حسابي' },
-  accountData:{ en: 'Your data', ar: 'بياناتك' },
 
   dragHint:   { en: 'Drag to rotate', ar: 'اسحب للتدوير' },
   rigAlt:     { en: 'A V60 cone with brass rib rings above a glass server of brewed coffee',
@@ -421,7 +341,7 @@ function headerHTML(page) {
             '</button>' +
             '<div class="account-menu" id="account-menu">' +
               '<p class="account-who" id="account-who"></p>' +
-              '<a class="btn btn-quiet" href="gahwa-log.html"' + bi(WORDS.gahwaNav) + '>' + esc(t(WORDS.gahwaNav)) + '</a>' +
+              '<a class="btn btn-quiet" href="gahwa/log.html"' + bi(WORDS.gahwaNav) + '>' + esc(t(WORDS.gahwaNav)) + '</a>' +
               '<a class="btn btn-quiet" href="account.html"' + bi(WORDS.myAccount) + '>' + esc(t(WORDS.myAccount)) + '</a>' +
               '<button type="button" class="btn btn-secondary" id="signout-btn"' + bi(WORDS.signOut) + '>' + esc(t(WORDS.signOut)) + '</button>' +
             '</div>' +
@@ -1892,39 +1812,43 @@ function syncCatalogue() {
 /* Is the log available on this page at all? Only some pages load
    js/gahwa.js, and a page that does not is not broken — it just has no
    log to connect to, so every hook below asks first. */
-function gahwaOn() { return !!(window.Gahwa && Gahwa.ready()); }
+/* --- Bloom as a host of the gahwa module --------------------------------
+   The check-in log used to live in this file's world: its own js/gahwa.js,
+   its own page, its own words in Bloom's dictionary. It is now a guest
+   that could pack up and leave — everything it needs is in gahwa/, and
+   Bloom reaches it through exactly two doors:
 
-/* --- Where the gahwa log touches the rest of the site -------------------
-   Four small hooks and one page. Each is a one-way read from the log into
-   somewhere else, never the other direction, and none of them exposes the
-   log to anyone but its owner.
+     1. gahwa/embed.js, on the cafe page, the same one line any other
+        coffee shop would paste into their own site;
+     2. gahwa.myCheckIns(), for the bag tracking below.
+
+   There is deliberately no third. Bloom's nav points straight at
+   gahwa/log.html rather than wrapping it in a Bloom page, because a
+   wrapper is where coupling starts: a header to keep in sync, a theme to
+   pass down, a reason to reach in "just this once".
+
+   One consequence worth being plain about: the module keeps its own
+   session, so signing into Bloom's shop is not signing into the log. That
+   is the cost of the separation and not a bug — a module that shared a
+   session with whatever site embedded it would be the coupling we just
+   removed. A host that does want to lend its token can, through
+   gahwa.configure({ getToken }); Bloom does not, so that the log has one
+   identity wherever it is read from.
    ----------------------------------------------------------------------- */
 
-/* The café page: one button that logs a coffee here, now. The place and
-   the time are already known, so this is the fastest entry on the site. */
-function initCafeQuickLog() {
-  var host = el('cafe-bar');
-  if (!host || !gahwaOn()) return;
-  var row = document.createElement('p');
-  row.className = 'bagline-row';
-  row.innerHTML = '<a class="btn btn-primary" href="gahwa-log.html?log=1&place=bloom"' +
-                  bi(WORDS.logCupHere) + '>' + esc(t(WORDS.logCupHere)) + '</a>';
-  host.parentNode.insertBefore(row, host.nextSibling);
-  I18N.apply(row);
-}
+function gahwaOn() { return !!(window.gahwa && gahwa.session()); }
 
 /* The brew unit: once the V60 has actually finished pouring, a quiet
-   offer. It appears once and does not nag — the animation can be replayed
-   all afternoon without the link multiplying. */
+   offer. It links into the module rather than doing anything itself. */
 function initBrewLogLink() {
   var host = el('brew-unit');
-  if (!host || !gahwaOn()) return;
+  if (!host || !window.gahwa) return;
   document.addEventListener('bloom:brewed', function () {
     if (el('brew-log-link')) return;
     var link = document.createElement('p');
     link.className = 'bagline-row';
     link.id = 'brew-log-link';
-    link.innerHTML = '<a class="guest-link" href="gahwa-log.html?log=1&drink=V60"' +
+    link.innerHTML = '<a class="guest-link" href="gahwa/checkin.html?venue=bloom-salmiya"' +
                      bi(WORDS.logThisCup) + '>' + esc(t(WORDS.logThisCup)) + '</a>';
     host.appendChild(link);
     I18N.apply(link);
@@ -1932,30 +1856,32 @@ function initBrewLogLink() {
 }
 
 /* The product page: how much of this bag is left, worked out from the
-   doses logged since it was last ordered. A service, not an upsell — it
-   only says anything at all once there is something to say, and the
-   Reorder button sits next to the number rather than in front of it. */
+   doses recorded against it. The only place Bloom reads the log, and it
+   goes through the public call like any other host would — Bloom has no
+   idea how the module stores anything. */
 function initBagTracker(product) {
   if (!product || product.category !== 'beans' || !gahwaOn()) return;
   var host = el('bag-line');
   if (!host) return;
 
-  Gahwa.bagUsage(product.id).then(function (use) {
-    if (!use || !use.cups) return;
+  lastOrderOf(product.id).then(function (since) {
+    return gahwa.myCheckIns({ itemRef: product.id, withDose: true, since: since });
+  }).then(function (rows) {
+    if (!rows || !rows.length) return;
+    var cups = rows.length, grams = 0;
+    rows.forEach(function (r) { grams += Number(r.dose_g) || 0; });
+    grams = Math.round(grams * 10) / 10;
 
-    /* 250 g a bag, and the unit string is the shop's own. Deliberately
-       "about": a dose is what someone typed, not what a scale saw. */
-    var bagGrams = 250;
-    var left = Math.max(0, bagGrams - use.grams);
-    var lines = '<p>' + esc(tf(WORDS.bagBrewed,
-      { cups: counted('cups', use.cups), grams: use.grams })) + '</p>';
-    lines += '<p>' + esc(left > 15 ? tf(WORDS.bagLeft, { grams: Math.round(left) })
-                                   : t(WORDS.bagOut)) + '</p>';
-    host.innerHTML = '<div class="bagline">' + lines +
+    /* 250 g a bag, and "about" on purpose: a dose is what somebody
+       typed, not what a scale saw. */
+    var left = Math.max(0, 250 - grams);
+    host.innerHTML = '<div class="bagline">' +
+      '<p>' + esc(tf(WORDS.bagBrewed, { cups: counted('cups', cups), grams: grams })) + '</p>' +
+      '<p>' + esc(left > 15 ? tf(WORDS.bagLeft, { grams: Math.round(left) }) : t(WORDS.bagOut)) + '</p>' +
       '<div class="bagline-row">' +
         '<button type="button" class="btn btn-secondary" id="bag-reorder"' + bi(WORDS.reorder) + '>' +
           esc(t(WORDS.reorder)) + '</button>' +
-        '<a class="btn btn-quiet" href="gahwa-log.html?log=1&bean=' + esc(product.id) + '"' +
+        '<a class="btn btn-quiet" href="gahwa/checkin.html?venue=bloom-salmiya"' +
           bi(WORDS.logThisCup) + '>' + esc(t(WORDS.logThisCup)) + '</a>' +
       '</div></div>';
     I18N.apply(host);
@@ -1966,8 +1892,24 @@ function initBagTracker(product) {
   }, function () { /* no log, no line — nothing to say and nothing broken */ });
 }
 
-/* The account page: the same four numbers, a copy of everything, and the
-   button that destroys it. */
+/* When this bean was last ordered, so the doses counted are the ones
+   since. Bloom's own orders table, Bloom's own business. */
+function lastOrderOf(productId) {
+  if (!window.DB || !Auth.userId()) return Promise.resolve(null);
+  return Auth.token().then(function (tok) {
+    if (!tok) return null;
+    return fetch(BLOOM.url + '/rest/v1/orders?select=placed_at,order_items!inner(product_id)' +
+                 '&order_items.product_id=eq.' + encodeURIComponent(productId) +
+                 '&order=placed_at.desc&limit=1', {
+      headers: { apikey: BLOOM.key, Authorization: 'Bearer ' + tok }
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (rows) { return rows && rows[0] ? rows[0].placed_at : null; });
+  })['catch'](function () { return null; });
+}
+
+/* The account page: a way through to the log, and nothing about it that
+   Bloom has to keep in step. Export and delete live in the module, where
+   the data is. */
 function initAccountPage() {
   var host = el('account-gahwa');
   if (!host) return;
@@ -1975,134 +1917,18 @@ function initAccountPage() {
   var greet = el('account-greet');
   if (greet) greet.textContent = Auth.current() && !Auth.isGuest() ? Auth.current() : '';
 
-  if (!gahwaOn()) {
-    host.innerHTML = '<p class="gahwa-none"' + bi(WORDS.logSignedOut) + '>' +
-      esc(t(WORDS.logSignedOut)) + '</p>' +
-      '<p><a class="guest-link" href="login.html"' + bi(WORDS.goSignIn) + '>' +
-      esc(t(WORDS.goSignIn)) + '</a></p>';
-    I18N.apply(host);
-    return;
-  }
-
-  paintAccountStats();
-  initAccountData();
-}
-
-/* Only the numbers. Kept separate from initAccountData on purpose: after a
-   deletion the strip has to be redrawn, and redrawing the whole page would
-   destroy the message that says what was just deleted — leaving someone
-   who asked to erase their diary with no confirmation that anything
-   happened. */
-function paintAccountStats() {
-  var host = el('account-gahwa');
-  if (!host || !gahwaOn()) return;
-
-  Gahwa.load(1).then(function (data) {
-    GahwaPage.setData(data);
-    host.innerHTML = '<div class="acct-block">' +
-      '<h2' + bi(WORDS.gahwaNav) + '>' + esc(t(WORDS.gahwaNav)) + '</h2>' +
-      GahwaPage.statStripHTML() +
-      '<p class="bagline-row"><a class="guest-link" href="gahwa-log.html"' +
-        bi(WORDS.gahwaNav) + '>' + esc(t(WORDS.gahwaNav)) + ' &rarr;</a></p>' +
-    '</div>';
-    I18N.apply(host);
-  }, function () {
-    host.innerHTML = '<p class="gahwa-none">' + esc(t(WORDS.loadFailed)) + '</p>';
-  });
-}
-
-/* Export and delete. Both belong to the customer: one hands the whole log
-   over in a form they can keep, the other destroys it on the spot. */
-function initAccountData() {
-  var host = el('account-data');
-  if (!host) return;
-
   host.innerHTML = '<div class="acct-block">' +
-      '<h2' + bi(WORDS.accountData) + '>' + esc(t(WORDS.accountData)) + '</h2>' +
+      '<h2' + bi(WORDS.gahwaNav) + '>' + esc(t(WORDS.gahwaNav)) + '</h2>' +
+      '<p class="acct-warn"' + bi(WORDS.gahwaHosted) + '>' + esc(t(WORDS.gahwaHosted)) + '</p>' +
       '<div class="acct-row">' +
-        '<button type="button" class="btn btn-secondary" id="dl-csv"' + bi(WORDS.exportCsv) + '>' +
-          esc(t(WORDS.exportCsv)) + '</button>' +
-        '<button type="button" class="btn btn-secondary" id="dl-json"' + bi(WORDS.exportJson) + '>' +
-          esc(t(WORDS.exportJson)) + '</button>' +
+        '<a class="btn btn-primary" href="gahwa/log.html">' + esc(t(WORDS.gahwaNav)) + '</a>' +
+        '<a class="btn btn-quiet" href="gahwa/checkin.html?venue=bloom-salmiya">' +
+          esc(t(WORDS.logCupHere)) + '</a>' +
       '</div>' +
-      '<p class="form-msg" id="dl-msg" hidden role="status"></p>' +
-    '</div>' +
-    '<div class="acct-block">' +
-      '<h2' + bi(WORDS.wipeLog) + '>' + esc(t(WORDS.wipeLog)) + '</h2>' +
-      '<p class="acct-warn"' + bi(WORDS.wipeWarn) + '>' + esc(t(WORDS.wipeWarn)) + '</p>' +
-      '<label class="acct-check"><input type="checkbox" id="wipe-places">' +
-        '<span' + bi(WORDS.wipePlaces) + '>' + esc(t(WORDS.wipePlaces)) + '</span></label>' +
-      '<div class="acct-row">' +
-        '<button type="button" class="btn btn-danger" id="wipe-log"' + bi(WORDS.wipeDo) + '>' +
-          esc(t(WORDS.wipeDo)) + '</button>' +
-      '</div>' +
-      '<p class="form-msg" id="wipe-msg" hidden role="alert"></p>' +
     '</div>';
   I18N.apply(host);
-
-  /* Built in the browser from rows the customer already has, so the file
-     never passes through anyone else on its way to them. */
-  function download(name, text, type) {
-    var blob = new Blob([text], { type: type });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-  }
-
-  function stamp() { return new Date().toISOString().slice(0, 10); }
-
-  function exportAs(kind) {
-    var msg = el('dl-msg');
-    msg.hidden = false;
-    msg.textContent = t(WORDS.savingCup);
-    Gahwa.exportRows().then(function (rows) {
-      if (kind === 'csv') download('bloom-gahwa-log-' + stamp() + '.csv',
-        Gahwa.toCSV(rows), 'text/csv;charset=utf-8');
-      else download('bloom-gahwa-log-' + stamp() + '.json',
-        Gahwa.toJSON(rows), 'application/json');
-      msg.hidden = true;
-    }, function () {
-      msg.textContent = t(WORDS.loadFailed);
-    });
-  }
-
-  el('dl-csv').addEventListener('click', function () { exportAs('csv'); });
-  el('dl-json').addEventListener('click', function () { exportAs('json'); });
-
-  el('wipe-log').addEventListener('click', function () {
-    var button = this, msg = el('wipe-msg'), alsoPlaces = el('wipe-places').checked;
-    button.setAttribute('aria-busy', 'true');
-    msg.hidden = false;
-    msg.classList.remove('is-good');
-    msg.textContent = t(WORDS.savingCup);
-
-    Gahwa.deleteEverything().then(function (result) {
-      return (alsoPlaces ? Gahwa.deletePlaces() : Promise.resolve()).then(function () {
-        return result;
-      });
-    }).then(function (result) {
-      button.removeAttribute('aria-busy');
-      if (result.photoError) {
-        msg.textContent = t(WORDS.photoLeft);
-        return;
-      }
-      msg.classList.add('is-good');
-      msg.textContent = result.entries
-        ? tf(WORDS.wipeDone, { entries: counted('entries', result.entries),
-                               photos: counted('photos', result.photos) })
-        : t(WORDS.wipeNothing);
-      paintAccountStats();
-    })['catch'](function () {
-      button.removeAttribute('aria-busy');
-      msg.textContent = t(WORDS.loadFailed);
-    });
-  });
 }
+
 
 function boot() {
   var page = document.body.getAttribute('data-page') || '';
@@ -2143,9 +1969,7 @@ function boot() {
   initProductPage();
   initBrewGuides();
   initCafe();
-  initCafeQuickLog();
   initBrewLogLink();
-  if (window.GahwaPage) GahwaPage.init();
   initAccountPage();
   initCartPage();
   initTimer();

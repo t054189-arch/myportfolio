@@ -1,0 +1,397 @@
+/* ==========================================================================
+   gahwa — the module's own stylesheet
+   ==========================================================================
+   This file must never read anything from the site hosting it. No import
+   of a host stylesheet, no host token names, no web font loaded by a
+   brand's name. Everything the widget draws with is declared here, in the
+   --g-* namespace, so that a host page's own CSS can neither feed it
+   values nor accidentally collide with it.
+
+   Fonts are the system stack on purpose. A module that pulls a font from
+   a CDN adds a request, a tracking surface and a point of failure to
+   somebody else's website, and looks broken until it lands.
+
+   Two themes: warm (default) and dark, chosen with data-g-theme on the
+   root element. Nothing here consults prefers-color-scheme, because the
+   host decides — a dark widget dropped into a light page is the host's
+   call to make, not the browser's.
+   ========================================================================== */
+
+.g, .g-root {
+  /* ---- the four the host may reason about ---- */
+  --g-paper: #F6F2EA;
+  --g-ink:   #221C17;
+  --g-leaf:  #4E6B52;
+  --g-clay:  #B4552F;
+
+  /* ---- derived from those, so a host overriding the four gets a
+          coherent widget rather than four recoloured pieces ---- */
+  --g-surface:  #FFFDF8;
+  --g-surface-2:#EDE6DA;
+  --g-line:     #DED3C2;
+  --g-ink-2:    #4A3E34;
+  --g-ink-3:    #7E7166;
+  --g-leaf-wash:#E3E9E0;
+  --g-clay-wash:#F5E2D8;
+  --g-on-leaf:  #FFFDF8;
+
+  --g-r:    3px;
+  --g-r-lg: 6px;
+
+  --g-s1: 4px;
+  --g-s2: 8px;
+  --g-s3: 14px;
+  --g-s4: 20px;
+  --g-s5: 30px;
+
+  --g-font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, "Noto Sans Arabic", sans-serif;
+  --g-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+            "Liberation Mono", monospace;
+
+  --g-fast: 120ms;
+  --g-base: 200ms;
+  --g-ease: cubic-bezier(.22, .61, .36, 1);
+
+  --g-shadow: 0 8px 24px -14px rgba(34, 28, 23, .45);
+}
+
+/* The theme attribute may sit on the element carrying .g, or on an
+   ancestor — the module's own pages put it on <html> while .g is on
+   <body>, and a host embedding the markup directly would put it on the
+   widget's own wrapper. Both have to work, or data-theme="dark" is
+   silently ignored, which is exactly what happened the first time. */
+.g[data-g-theme="dark"],
+.g-root[data-g-theme="dark"],
+[data-g-theme="dark"] .g,
+[data-g-theme="dark"] .g-root {
+  --g-paper: #14110E;
+  --g-ink:   #F0E9DE;
+  --g-leaf:  #9CB79F;
+  --g-clay:  #DE8B63;
+
+  --g-surface:  #1D1815;
+  --g-surface-2:#2A231D;
+  --g-line:     #382F27;
+  --g-ink-2:    #D2C6B7;
+  --g-ink-3:    #968878;
+  --g-leaf-wash:#232B23;
+  --g-clay-wash:#31201A;
+  --g-on-leaf:  #14110E;
+
+  --g-shadow: 0 8px 24px -14px rgba(0, 0, 0, .7);
+}
+
+/* Everything below is scoped under .g so that dropping this file into a
+   host page cannot restyle the host's own buttons and headings. */
+
+.g, .g * { box-sizing: border-box; }
+.g {
+  margin: 0;
+  font-family: var(--g-font);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--g-ink);
+  background: var(--g-paper);
+  -webkit-font-smoothing: antialiased;
+}
+.g h1, .g h2, .g h3 { margin: 0; font-weight: 600; line-height: 1.2; }
+.g p { margin: 0; }
+.g ul { margin: 0; padding: 0; list-style: none; }
+.g button { font: inherit; color: inherit; }
+/* Anchors excluded when they are buttons: `.g a` out-specifies `.g-btn`,
+   so without this a link styled as a button gets leaf-on-leaf and reads
+   as an empty green rectangle. */
+.g a:not(.g-btn) { color: var(--g-leaf); }
+.g :focus-visible { outline: 2px solid var(--g-leaf); outline-offset: 2px; }
+
+.g-wrap { max-width: 940px; margin-inline: auto; padding: var(--g-s5) var(--g-s4); }
+.g-card {
+  background: var(--g-surface);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r-lg);
+  padding: var(--g-s4);
+}
+.g-muted { color: var(--g-ink-3); }
+.g-small { font-size: 13px; }
+.g-mono  { font-family: var(--g-mono); font-variant-numeric: tabular-nums; }
+.g-row   { display: flex; flex-wrap: wrap; gap: var(--g-s2); align-items: center; }
+.g-stack { display: grid; gap: var(--g-s3); }
+.g-eyebrow {
+  font-family: var(--g-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+}
+[dir="rtl"] .g-eyebrow { letter-spacing: 0; text-transform: none; font-size: 12px; }
+
+/* --- buttons ------------------------------------------------------------ */
+
+.g-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--g-s2);
+  min-height: 42px;
+  padding: 0 var(--g-s4);
+  border: 1px solid var(--g-leaf);
+  border-radius: var(--g-r);
+  background: var(--g-leaf);
+  color: var(--g-on-leaf);
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter var(--g-fast) linear, background-color var(--g-fast) linear;
+}
+.g-btn:hover { filter: brightness(.93); }
+.g-btn[disabled], .g-btn[aria-busy="true"] { opacity: .6; pointer-events: none; }
+.g-btn-quiet {
+  background: transparent;
+  color: var(--g-ink-2);
+  border-color: var(--g-line);
+}
+.g-btn-quiet:hover { background: var(--g-surface-2); }
+.g-btn-block { width: 100%; }
+.g-btn-danger { background: var(--g-clay); border-color: var(--g-clay); color: var(--g-on-leaf); }
+
+/* --- fields ------------------------------------------------------------- */
+
+.g-field { display: grid; gap: var(--g-s1); }
+.g-field > span { font-size: 12px; color: var(--g-ink-3); }
+.g-input, .g-field input, .g-field select, .g-field textarea {
+  /* An input will not shrink below roughly twenty characters of its own
+     font unless told to, and the Arabic face is far wider than the Latin
+     one — which silently pushes the widget wider than its iframe. */
+  min-width: 0;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px var(--g-s3);
+  background: var(--g-paper);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r);
+  color: var(--g-ink);
+  font: inherit;
+}
+.g-field textarea { min-height: 64px; resize: vertical; }
+
+.g-chips { display: flex; flex-wrap: wrap; gap: var(--g-s2); }
+.g-chip {
+  padding: 7px var(--g-s3);
+  background: var(--g-paper);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r);
+  color: var(--g-ink-2);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color var(--g-fast) linear, color var(--g-fast) linear;
+}
+.g-chip:hover { border-color: var(--g-ink-3); color: var(--g-ink); }
+.g-chip[aria-pressed="true"] { background: var(--g-leaf); border-color: var(--g-leaf); color: var(--g-on-leaf); }
+
+/* --- the rating ---------------------------------------------------------- */
+
+.g-beans { display: inline-flex; gap: 2px; align-items: center; }
+.g-bean { display: grid; place-items: center; padding: 0; background: none; border: 0; line-height: 0; }
+.g-bean svg { width: 16px; height: 16px; fill: var(--g-ink-3); opacity: .32; }
+.g-bean[data-on="1"] svg { fill: var(--g-clay); opacity: 1; }
+.g-beans-pick .g-bean { width: 40px; height: 40px; cursor: pointer; border-radius: var(--g-r); }
+.g-beans-pick .g-bean svg { width: 26px; height: 26px; }
+.g-beans-pick .g-bean:hover { background: var(--g-clay-wash); }
+
+/* --- messages ------------------------------------------------------------ */
+
+.g-msg {
+  padding: var(--g-s2) var(--g-s3);
+  border-radius: var(--g-r);
+  border: 1px solid var(--g-clay);
+  background: var(--g-clay-wash);
+  color: var(--g-clay);
+  font-size: 14px;
+}
+.g-msg[hidden] { display: none; }
+.g-msg-good { border-color: var(--g-leaf); background: var(--g-leaf-wash); color: var(--g-leaf); }
+
+/* --- the widget (inside the iframe) -------------------------------------- */
+
+.g-widget {
+  display: grid;
+  gap: var(--g-s3);
+  padding: var(--g-s4);
+  background: var(--g-surface);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r-lg);
+}
+.g-widget-head { display: grid; gap: 2px; }
+.g-widget-head h2 { font-size: 19px; }
+.g-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--g-line);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r);
+  overflow: hidden;
+}
+.g-board div { background: var(--g-surface); padding: var(--g-s3) var(--g-s2); text-align: center; }
+.g-board b {
+  display: block;
+  font-family: var(--g-mono);
+  font-size: 22px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.g-board span { font-size: 11px; color: var(--g-ink-3); }
+.g-spark { display: flex; align-items: flex-end; gap: 3px; height: 30px; }
+.g-spark i {
+  flex: 1;
+  min-height: 2px;
+  background: var(--g-leaf);
+  opacity: .75;
+  border-radius: 1px 1px 0 0;
+}
+
+/* --- the log ------------------------------------------------------------- */
+
+.g-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr));
+  gap: 1px;
+  background: var(--g-line);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r-lg);
+  overflow: hidden;
+}
+.g-stat { background: var(--g-surface); padding: var(--g-s4) var(--g-s3); display: grid; gap: 2px; }
+.g-stat b {
+  font-family: var(--g-mono);
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.g-stat span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--g-ink-3); }
+[dir="rtl"] .g-stat span { letter-spacing: 0; text-transform: none; font-size: 12px; }
+
+.g-cups { display: grid; gap: var(--g-s2); }
+.g-cup {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: var(--g-s3);
+  padding: var(--g-s3);
+  background: var(--g-surface);
+  border: 1px solid var(--g-line);
+  border-radius: var(--g-r-lg);
+  align-items: start;
+}
+.g-cup-when {
+  font-family: var(--g-mono);
+  font-size: 12px;
+  color: var(--g-ink-3);
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+.g-cup-when b { display: block; font-size: 13px; color: var(--g-ink); font-weight: 500; }
+.g-cup-main { display: grid; gap: var(--g-s1); min-width: 0; }
+.g-cup-main h3 { font-size: 16px; }
+.g-cup-meta { display: flex; flex-wrap: wrap; gap: var(--g-s3); align-items: center; font-size: 13px; color: var(--g-ink-2); }
+.g-cup-note { color: var(--g-ink-2); font-size: 14px; }
+.g-people { display: flex; flex-wrap: wrap; gap: var(--g-s1); }
+.g-person {
+  padding: 2px var(--g-s2);
+  background: var(--g-leaf-wash);
+  border-radius: var(--g-r);
+  color: var(--g-leaf);
+  font-size: 12px;
+}
+.g-tick {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: var(--g-r);
+  background: var(--g-leaf-wash);
+  color: var(--g-leaf);
+  white-space: nowrap;
+}
+.g-month {
+  font-family: var(--g-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--g-ink-3);
+  padding-bottom: var(--g-s2);
+  border-bottom: 1px solid var(--g-line);
+  margin: var(--g-s4) 0 var(--g-s3);
+}
+[dir="rtl"] .g-month { letter-spacing: 0; text-transform: none; font-size: 13px; }
+
+/* --- stickers ------------------------------------------------------------ */
+
+.g-stickers { display: flex; flex-wrap: wrap; gap: var(--g-s2); }
+.g-sticker {
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  width: 92px;
+  padding: var(--g-s3) var(--g-s2);
+  border: 1px dashed var(--g-line);
+  border-radius: var(--g-r-lg);
+  text-align: center;
+  opacity: .42;
+}
+.g-sticker[data-earned="1"] {
+  opacity: 1;
+  border-style: solid;
+  border-color: var(--g-leaf);
+  background: var(--g-leaf-wash);
+}
+.g-sticker svg { width: 26px; height: 26px; fill: var(--g-ink-3); }
+.g-sticker[data-earned="1"] svg { fill: var(--g-leaf); }
+.g-sticker b { font-size: 12px; font-weight: 600; }
+.g-sticker span { font-size: 10px; color: var(--g-ink-3); line-height: 1.25; }
+
+/* --- the governorate map -------------------------------------------------- */
+
+/* Not a map of anyone's movements: it colours the six governorates by how
+   many venues in the directory say they are there. The module has never
+   known where a person was. */
+.g-map { display: grid; gap: var(--g-s3); }
+.g-map svg { width: 100%; height: auto; max-width: 420px; }
+.g-map .gov { fill: var(--g-surface-2); stroke: var(--g-line); stroke-width: 1.5; transition: fill var(--g-base) var(--g-ease); }
+.g-map .gov[data-been="1"] { fill: var(--g-leaf-wash); stroke: var(--g-leaf); }
+.g-map .gov[data-been="2"] { fill: var(--g-leaf); stroke: var(--g-leaf); }
+/* Sized in the SVG's own user units, not screen pixels: the viewBox is
+   140 units wide and draws at up to 420px, so a `9px` here came out
+   nearly three times too big and pushed the labels off the map. */
+.g-map text { font-family: var(--g-font); font-size: 4.2px; fill: var(--g-ink-3); }
+.g-map text.n { font-size: 5.4px; font-weight: 600; fill: var(--g-ink-2); }
+.g-map .gov[data-been="2"] + text, .g-map text.on { fill: var(--g-ink); }
+.g-map-key { display: flex; flex-wrap: wrap; gap: var(--g-s3); font-size: 12px; color: var(--g-ink-3); }
+
+/* --- the printable counter card -------------------------------------------- */
+
+.g-card-print {
+  width: 105mm;
+  height: 148mm;                 /* A6 */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 6mm;
+  padding: 10mm;
+  background: #fff;
+  color: #111;
+  border: 1px solid #ddd;
+  border-radius: var(--g-r-lg);
+}
+.g-card-print h2 { font-size: 20px; text-align: center; color: #111; }
+.g-card-print .g-qr { display: grid; place-items: center; }
+.g-card-print .g-qr svg { width: 62mm; height: 62mm; }
+.g-card-print p { text-align: center; font-size: 12px; color: #444; }
+
+@media print {
+  body { background: #fff; }
+  .g-noprint { display: none !important; }
+  .g-card-print { border: 0; page-break-inside: avoid; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .g *, .g *::before, .g *::after { transition-duration: 1ms !important; animation-duration: 1ms !important; }
+}

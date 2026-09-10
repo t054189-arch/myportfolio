@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-g-theme="warm">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Check in — gahwa</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<link rel="stylesheet" href="gahwa.css">
+</head>
+<body class="g">
+<!-- This page has two jobs and knows which one it is doing.
+
+     In an iframe on somebody else's website it is the WIDGET: a venue
+     name, a board of counts, and a button. It never touches auth there,
+     because a session inside a third-party iframe is exactly the thing
+     browsers have spent years blocking.
+
+     Opened as a top-level window on our own origin — by that button, or
+     by scanning the printed QR — it is the CHECK-IN: sign in if needed,
+     then record the cup. The token exists only here. -->
+<div id="root" class="g-stack" style="padding:0"></div>
+
+<script src="gahwa.js"></script>
+<script>
+(function () {
+  'use strict';
+  var G = gahwa._internal, t = G.t, esc = G.esc;
+  var P = G.readParams();
+  G.applyChrome();
+
+  /* Inside an iframe the top window is somebody else's page. */
+  var embedded = window.top !== window.self;
+  var root = document.getElementById('root');
+  var venue = null;
+
+  /* ------------------------------------------------------------------
+     Talking to the page that embedded us
+
+     Exactly three messages go out, and the only one carrying anything
+     says { venue_id, at }. Not a name, not an id, not a count of this
+     person's other visits — a cafe learns that a check-in happened at
+     their venue and nothing else. That is enforced by what this function
+     is able to send, not by an interface choice further up.
+     ------------------------------------------------------------------ */
+  var hostOrigin = null;
+  if (embedded && P.host) {
+    try { hostOrigin = new URL(P.host).origin; } catch (e) { hostOrigin = null; }
+  }
+
+  function toHost(type, payload) {
+    if (!embedded || !hostOrigin) return;
+    var body = { type: type };
+    if (type === 'gahwa:resize')  body.height = payload.height;
+    if (type === 'gahwa:checkin') { body.venue_id = payload.venue_id; body.at = payload.at; }
+    window.parent.postMessage(body, hostOrigin);
+  }
+
+  var lastHeight = 0;
+  function reportHeight() {
+    var h = Math.ceil(document.documentElement.getBoundingClientRect().height);
+    if (h && h !== lastHeight) { lastHeight = h; toHost('gahwa:resize', { height: h }); }
+  }
+
+  /* ------------------------------------------------------------------
+     The widget, for an iframe
+     ------------------------------------------------------------------ */
+
+  function renderWidget(board) {
+    root.innerHTML =
+      '<div class="g-widget">' +
+        '<div class="g-widget-head">' +
+          '<p class="g-eyebrow">' + esc(t('board')) + '</p>' +
+          '<h2>' + esc(venue ? G.venueName(venue) : (P.venue || '')) + '</h2>' +
+          (venue && venue.area ? '<p class="g-muted g-small">' + esc(venue.area) + '</p>' : '') +
+        '</div>' +
+        G.boardHTML(board) +
+        '<button type="button" class="g-btn g-btn-block" id="open">' + esc(t('checkIn')) + '</button>' +
+        '<p class="g-muted g-small" style="text-align:center">' + esc(t('poweredBy')) + '</p>' +
+      '</div>';
+
+    document.getElementById('open').addEventListener('click', openPopup);
+    reportHeight();
+  }
+
+  /* A real top-level window on our own origin. The session lives there,
+     first-party, which is the only arrangement that still works now that
+     third-party cookies are blocked — and the only one where the token
+     is never inside a frame the host page could have made. */
+  var popup = null;
+  function openPopup() {
+    var url = new URL(window.location.href);
+    url.searchParams.delete('host');
+    url.searchParams.set('popup', '1');
+    popup = window.open(url.toString(), 'gahwa-checkin',
+      'width=440,height=680,menubar=no,toolbar=no,location=no');
+    if (!popup) {
+      /* Popups blocked: fall back to the same page in a new tab rather
+         than dead-ending. */
+      window.open(url.toString(), '_blank', 'noopener');
+    }
+  }
+
+  /* The popup is on our origin, so it can speak to us; the host page is
+     not, and gets only the stripped payload above. */
+  window.addEventListener('message', function (event) {
+    if (event.origin !== window.location.origin) return;
+    var d = event.data;
+    if (!d || d.type !== 'gahwa:checkin') return;
+    toHost('gahwa:checkin', { venue_id: d.venue_id, at: d.at });
+    load();
+  });
+
+  /* ------------------------------------------------------------------
+     The check-in, for a top-level window
+     ------------------------------------------------------------------ */
+
+  var state = { rating: 0, drink: 'V60' };
+
+  function renderAuth(message) {
+    var s = '<div class="g-wrap g-stack" style="max-width:420px">' +
+      '<div><p class="g-eyebrow">' + esc(t('checkIn')) + '</p>' +
+      '<h1 style="font-size:24px">' + esc(venue ? G.venueName(venue) : t('checkIn')) + '</h1></div>' +
+      '<div class="g-card g-stack">' +
+        '<div class="g-chips" role="tablist">' +
+          '<button type="button" class="g-chip" id="tab-in" aria-pressed="true">' + esc(t('signIn')) + '</button>' +
+          '<button type="button" class="g-chip" id="tab-up" aria-pressed="false">' + esc(t('signUp')) + '</button>' +
+        '</div>' +
+        '<label class="g-field" id="name-wrap" hidden><span>' + esc(t('yourName')) + '</span>' +
+          '<input type="text" id="name" autocomplete="name"></label>' +
+        '<label class="g-field"><span>' + esc(t('email')) + '</span>' +
+          '<input type="email" id="email" autocomplete="email" inputmode="email" autocapitalize="none"></label>' +
+        '<label class="g-field"><span>' + esc(t('password')) + '</span>' +
+          '<input type="password" id="password" autocomplete="current-password"></label>' +
+        '<p class="g-msg" id="msg" hidden role="alert"></p>' +
+        '<button type="button" class="g-btn g-btn-block" id="go">' + esc(t('signIn')) + '</button>' +
+      '</div></div>';
+    root.innerHTML = s;
+    if (message) showMsg(message);
+
+    var mode = 'in';
+    function setMode(next) {
+      mode = next;
+      document.getElementById('tab-in').setAttribute('aria-pressed', String(mode === 'in'));
+      document.getElementById('tab-up').setAttribute('aria-pressed', String(mode === 'up'));
+      document.getElementById('name-wrap').hidden = mode !== 'up';
+      document.getElementById('password').setAttribute('autocomplete',
+        mode === 'up' ? 'new-password' : 'current-password');
+      document.getElementById('go').textContent = mode === 'up' ? t('signUp') : t('signIn');
+    }
+    document.getElementById('tab-in').addEventListener('click', function () { setMode('in'); });
+    document.getElementById('tab-up').addEventListener('click', function () { setMode('up'); });
+
+    document.getElementById('go').addEventListener('click', function () {
+      var button = this;
+      button.setAttribute('aria-busy', 'true');
+      var email = document.getElementById('email').value;
+      var pass = document.getElementById('password').value;
+      var name = (document.getElementById('name') || {}).value;
+      var run = mode === 'up' ? gahwa.signUp(name, email, pass) : gahwa.signIn(email, pass);
+      run.then(function (r) {
+        button.removeAttribute('aria-busy');
+        if (r.ok && r.session) { renderForm(); return; }
+        if (r.ok && r.needsConfirm) { setMode('in'); showMsg(t('confirmEmail'), true); return; }
+        showMsg(t(r.reason || 'offline'));
+      });
+    });
+  }
+
+  function showMsg(text, good) {
+    var m = document.getElementById('msg');
+    if (!m) return;
+    m.textContent = text;
+    m.className = 'g-msg' + (good ? ' g-msg-good' : '');
+    m.hidden = false;
+  }
+
+  function renderForm() {
+    var drinks = gahwa._internal.DRINKS.map(function (d) {
+      return '<button type="button" class="g-chip" data-drink="' + esc(d.id) + '" aria-pressed="' +
+             (d.id === state.drink) + '">' + esc(G.drinkLabel(d.id)) + '</button>';
+    }).join('');
+
+    root.innerHTML = '<div class="g-wrap g-stack" style="max-width:440px">' +
+      '<div><p class="g-eyebrow">' + esc(t('checkIn')) + '</p>' +
+        '<h1 style="font-size:24px">' + esc(venue ? G.venueName(venue) : t('venueUnknown')) + '</h1>' +
+        (venue && venue.area ? '<p class="g-muted g-small">' + esc(venue.area) + '</p>' : '') +
+      '</div>' +
+      '<div class="g-card g-stack">' +
+        '<div><p class="g-eyebrow">' + esc(t('wasItGood')) + '</p>' + G.beansPick('beans', 0) + '</div>' +
+        '<div><p class="g-eyebrow">' + esc(t('whatDrink')) + '</p>' +
+          '<div class="g-chips" id="drinks">' + drinks + '</div></div>' +
+        '<label class="g-field"><span>' + esc(t('aNote')) + '</span>' +
+          '<textarea id="note" rows="2"></textarea></label>' +
+        '<label class="g-field"><span>' + esc(t('counterCode')) + '</span>' +
+          '<input type="text" id="code" autocomplete="off" inputmode="latin" maxlength="8" ' +
+            'style="text-transform:uppercase"></label>' +
+        '<p class="g-muted g-small">' + esc(t('counterHint')) + '</p>' +
+        '<p class="g-msg" id="msg" hidden role="alert"></p>' +
+        '<button type="button" class="g-btn g-btn-block" id="go">' + esc(t('checkIn')) + '</button>' +
+      '</div>' +
+      '<p class="g-small g-muted" style="text-align:center">' +
+        '<button type="button" class="g-btn g-btn-quiet g-small" id="out" ' +
+          'style="min-height:30px">' + esc(t('signOut')) + '</button></p>' +
+    '</div>';
+
+    var beans = document.getElementById('beans');
+    beans.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-bean]');
+      if (!b) return;
+      state.rating = Number(b.getAttribute('data-bean'));
+      G.paintBeans(beans, state.rating);
+    });
+    document.getElementById('drinks').addEventListener('click', function (e) {
+      var d = e.target.closest('[data-drink]');
+      if (!d) return;
+      state.drink = d.getAttribute('data-drink');
+      var all = this.querySelectorAll('[data-drink]');
+      for (var i = 0; i < all.length; i++) {
+        all[i].setAttribute('aria-pressed', String(all[i].getAttribute('data-drink') === state.drink));
+      }
+    });
+    document.getElementById('out').addEventListener('click', function () {
+      gahwa.signOut();
+      renderAuth();
+    });
+    document.getElementById('go').addEventListener('click', submit);
+  }
+
+  function submit() {
+    var button = document.getElementById('go');
+    if (button.getAttribute('aria-busy') === 'true') return;
+    button.setAttribute('aria-busy', 'true');
+    button.textContent = t('checkingIn');
+
+    gahwa.checkIn({
+      venue: P.venue || null,
+      rating: state.rating || null,
+      drink: state.drink,
+      note: (document.getElementById('note').value || '').trim() || null,
+      code: (document.getElementById('code').value || '').trim() || null,
+      source: P.src === 'qr' ? 'qr' : (window.opener ? 'embed' : 'web')
+    }).then(function (r) {
+      button.removeAttribute('aria-busy');
+      button.textContent = t('checkIn');
+      if (!r.ok) { showMsg(t('offline')); return; }
+      done(r);
+    }, function () {
+      button.removeAttribute('aria-busy');
+      button.textContent = t('checkIn');
+      showMsg(t('offline'));
+    });
+  }
+
+  function done(r) {
+    /* Tell whoever opened us — the widget, on our own origin. It decides
+       what, if anything, reaches the site around it. */
+    if (window.opener) {
+      try {
+        window.opener.postMessage({
+          type: 'gahwa:checkin', venue_id: r.venue_id, at: r.at
+        }, window.location.origin);
+      } catch (e) { /* opener gone */ }
+    }
+
+    root.innerHTML = '<div class="g-wrap g-stack" style="max-width:420px;text-align:center">' +
+      '<h1 style="font-size:26px">' + esc(t('checkedIn')) + '</h1>' +
+      '<p>' + esc(venue ? G.venueName(venue) : '') + '</p>' +
+      '<p class="g-tick" style="justify-self:center">' +
+        esc(r.verified ? t('verified') : t('unverified')) + '</p>' +
+      (r.verified ? '' : '<p class="g-muted g-small">' + esc(t('codeWrong')) + '</p>') +
+      '<p><a class="g-btn g-btn-quiet" href="log.html">' + esc(t('myLog')) + '</a></p>' +
+    '</div>';
+
+    /* A popup closes itself; a QR scan lands on a real page and stays. */
+    if (window.opener) window.setTimeout(function () { window.close(); }, 1400);
+  }
+
+  /* ------------------------------------------------------------------ */
+
+  function load() {
+    var wantVenue = P.venue ? gahwa.venue(P.venue) : Promise.resolve(null);
+    var wantBoard = (embedded && P.venue) ? gahwa.board(P.venue) : Promise.resolve(null);
+    return Promise.all([wantVenue, wantBoard]).then(function (r) {
+      venue = r[0] || null;
+      if (embedded) { renderWidget(r[1]); return; }
+      if (gahwa.session()) renderForm(); else renderAuth();
+    }, function () {
+      root.innerHTML = '<div class="g-wrap"><p class="g-msg">' + esc(t('offline')) + '</p></div>';
+    });
+  }
+
+  load();
+
+  if (embedded) {
+    toHost('gahwa:ready', {});
+    if (window.ResizeObserver) new ResizeObserver(reportHeight).observe(document.body);
+    window.setInterval(reportHeight, 1000);
+  }
+})();
+</script>
+</body>
+</html>

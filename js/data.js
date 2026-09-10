@@ -89,6 +89,8 @@ var GLYPHS = {
   drop:   '<path d="M12 3.4c3.6 4.3 5.6 7.5 5.6 10.2a5.6 5.6 0 0 1-11.2 0c0-2.7 2-5.9 5.6-10.2z"/><path d="M9.6 13.8c0 1.5.9 2.7 2.2 3.2" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.2" stroke-linecap="round"/>',
   nut:    '<path d="M12 4.2c4 0 6.8 3 6.8 7.4 0 4.6-3 8.2-6.8 8.2s-6.8-3.6-6.8-8.2C5.2 7.2 8 4.2 12 4.2z"/><path d="M12 6.4v11.4M9.2 8.6c-.9 1.6-1.2 3.4-.9 5.4" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="1.2" stroke-linecap="round"/>',
   star:   '<path d="M12 2.8l2.5 5.1 5.6.8-4 4 .9 5.6-5-2.7-5 2.7.9-5.6-4-4 5.6-.8z"/>',
+  /* the rating glyph: a bean, tilted, with the crease down the middle */
+  bean:   '<ellipse cx="12" cy="12" rx="6.4" ry="8.4" transform="rotate(-18 12 12)"/><path d="M12.6 4.2c-1.9 2.6-2 5.2-.3 7.8 1.7 2.6 1.5 5.2-.6 7.8" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.3" stroke-linecap="round"/>',
   fig:    '<path d="M12 6.4c3.8 0 6.6 3 6.6 6.6 0 3.9-3 6.8-6.6 6.8s-6.6-2.9-6.6-6.8c0-3.6 2.8-6.6 6.6-6.6z"/><path d="M12 6.5V3.2c1.8 0 3.1 1 3.6 2.8" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="1.3" stroke-linecap="round"/>'
 };
 
@@ -154,6 +156,105 @@ var TAGS = {
   grinding : { en: 'Grinding', ar: 'الطحن',   tone: 'leaf' },
   weighing : { en: 'Weighing', ar: 'القياس',  tone: 'leaf' }
 };
+
+/* --- The gahwa log's vocabulary ----------------------------------------
+   Three closed lists, all bilingual. The place and company kinds match the
+   Postgres enums exactly — if one is added there it must be added here or
+   the interface will show a raw enum value to a customer.
+
+   DRINKS is keyed by the English name that goes into the column, not by a
+   slug: the schema stores 'Arabic coffee', so that string is the key and
+   the Arabic label hangs off it. Anything the customer types themselves
+   falls through this table unchanged, which is right — a drink they named
+   is not ours to translate.
+   ----------------------------------------------------------------------- */
+var PLACE_KINDS = {
+  bloom_cafe: { en: 'Bloom café',   ar: 'مقهى بلوم' },
+  other_cafe: { en: 'Café',         ar: 'مقهى' },
+  home:       { en: 'Home',         ar: 'البيت' },
+  work:       { en: 'Work',         ar: 'العمل' },
+  majlis:     { en: 'Majlis',       ar: 'المجلس' },
+  outdoors:   { en: 'Outdoors',     ar: 'في الخارج' },
+  travel:     { en: 'Travelling',   ar: 'في السفر' },
+  other:      { en: 'Somewhere else', ar: 'مكان آخر' }
+};
+
+var COMPANY_KINDS = {
+  alone:        { en: 'Alone',        ar: 'بمفردي' },
+  family:       { en: 'Family',       ar: 'العائلة' },
+  friends:      { en: 'Friends',      ar: 'الأصدقاء' },
+  colleagues:   { en: 'Colleagues',   ar: 'الزملاء' },
+  guests:       { en: 'Guests',       ar: 'ضيوف' },
+  work_meeting: { en: 'Work meeting', ar: 'اجتماع عمل' }
+};
+
+var DRINKS = [
+  { id: 'V60',           ar: 'تقطير V60' },
+  { id: 'Espresso',      ar: 'إسبريسو' },
+  { id: 'Cortado',       ar: 'كورتادو' },
+  { id: 'Arabic coffee', ar: 'قهوة عربية' },
+  { id: 'Turkish',       ar: 'قهوة تركية' },
+  { id: 'Batch brew',    ar: 'قهوة الدفعة' },
+  { id: 'Latte',         ar: 'لاتيه' }
+];
+
+/* Counting things, in two languages with very different rules.
+
+   English has two forms. Arabic has six categories — zero, one, two, few
+   (3-10), many (11-99) and other — so "2 cups" cannot be translated by
+   appending a plural label to a number: it needs the dual. Intl.PluralRules
+   knows the rules for both languages; this table only has to hold the
+   words, and the count picks the form. */
+var PLURALS = {
+  cups: {
+    en: { one: 'cup', other: 'cups' },
+    ar: { zero: 'فناجين', one: 'فنجان', two: 'فنجانان', few: 'فناجين', many: 'فنجاناً', other: 'فنجان' }
+  },
+  visits: {
+    en: { one: 'visit', other: 'visits' },
+    ar: { zero: 'زيارات', one: 'زيارة', two: 'زيارتان', few: 'زيارات', many: 'زيارة', other: 'زيارة' }
+  },
+  days: {
+    en: { one: 'day', other: 'days' },
+    ar: { zero: 'أيام', one: 'يوم', two: 'يومان', few: 'أيام', many: 'يوماً', other: 'يوم' }
+  },
+  entries: {
+    en: { one: 'entry', other: 'entries' },
+    ar: { zero: 'تسجيلات', one: 'تسجيل', two: 'تسجيلان', few: 'تسجيلات', many: 'تسجيلاً', other: 'تسجيل' }
+  },
+  photos: {
+    en: { one: 'photo', other: 'photos' },
+    ar: { zero: 'صور', one: 'صورة', two: 'صورتان', few: 'صور', many: 'صورة', other: 'صورة' }
+  }
+};
+
+function plural(key, count) {
+  var lang = I18N.isArabic() ? 'ar' : 'en';
+  var forms = (PLURALS[key] || {})[lang] || {};
+  var category = 'other';
+  try { category = new Intl.PluralRules(lang).select(count); } catch (e) { /* old browser */ }
+  return forms[category] || forms.other || '';
+}
+
+/* A count and its word, in the right order for the language. */
+function counted(key, count) { return count + ' ' + plural(key, count); }
+
+function drinkLabel(stored) {
+  for (var i = 0; i < DRINKS.length; i++) {
+    if (DRINKS[i].id === stored) return I18N.isArabic() ? DRINKS[i].ar : stored;
+  }
+  return stored || '';
+}
+
+function placeKindLabel(kind) {
+  var k = PLACE_KINDS[kind];
+  return k ? (I18N.isArabic() ? k.ar : k.en) : '';
+}
+
+function companyKindLabel(kind) {
+  var k = COMPANY_KINDS[kind];
+  return k ? (I18N.isArabic() ? k.ar : k.en) : '';
+}
 
 /* Labels for the spec tables */
 var SPEC_LABELS = {
@@ -829,6 +930,7 @@ var MENUS = [
 /* Plain links that sit beside the menus in the bar. */
 var NAV_LINKS = [
   { href: 'brew-guides.html', label: { en: 'Brew guides', ar: 'طرق التحضير' } },
+  { href: 'gahwa-log.html',   label: { en: 'Gahwa log', ar: 'سجل القهوة' } },
   { href: 'cafe.html',        label: { en: 'Café', ar: 'المقهى' } }
 ];
 
@@ -932,6 +1034,7 @@ var FOOTER = [
       { href: 'cafe.html',          label: { en: 'The café', ar: 'المقهى' } },
       { href: 'cafe.html#hours',    label: { en: 'Opening hours', ar: 'أوقات العمل' } },
       { href: 'cafe.html#find-us',  label: { en: 'Find us', ar: 'كيف تجدنا' } },
+      { href: 'gahwa-log.html',     label: { en: 'Gahwa log', ar: 'سجل القهوة' } },
       { href: 'index.html',         label: { en: 'Home', ar: 'الرئيسية' } }
     ]
   }

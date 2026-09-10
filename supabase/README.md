@@ -60,6 +60,68 @@ sign-up and is read for the name to greet, but the `lang` and `theme`
 columns in it are not yet used; those preferences still live in
 `localStorage` on each device.
 
+## The gahwa log
+
+A private diary of the coffee a customer drinks: where they were, who they
+were with, and whether it was any good. It is the most personal thing in
+this database, and two things about it are decisions rather than gaps:
+
+**There is no staff policy on `gahwa_logs`, and none may be added.** The
+only policy is the owner's own. Nobody at the shop can read a customer's
+log, and no admin screen may be built over it. If a customer needs help
+with their log, the answer is to help them read their own.
+
+**It is never mined for marketing.** Not for recommendations, not for
+segments, not for "customers like you". The orders table already answers
+what sells, from data a customer handed over on purpose in exchange for
+coffee. This is a diary they keep for themselves and store here for
+convenience — the difference matters.
+
+Both are written at the top of `20260910000100_gahwa_log.sql` too, so
+whoever opens the schema next reads them before the tables.
+
+Everything else follows from the same place:
+
+- **No coordinates, anywhere.** A place is a name the customer chose.
+  The site never asks the browser where it is, and there is nowhere in
+  the schema to put an answer.
+- **Photos are private.** They live in a bucket with `public = false`,
+  under a folder named for the owner's user id, and reach the page
+  through signed URLs that expire in fifteen minutes. There is no
+  durable link to forward.
+- **The names of companions are just text.** Whatever the customer types
+  — nicknames encouraged. Nothing tries to match them to accounts,
+  contacts, or each other.
+- **Delete means delete.** Per-entry, and "delete my entire log" in
+  account settings: photos through the Storage API first, then the rows.
+  No soft-delete column, no tombstone, no copy.
+- **Nothing is cached in the browser.** The page holds the log in memory
+  while the tab is open and writes none of it to localStorage.
+
+### The views
+
+Four, all `security_invoker = true`. That flag is the reason they are
+safe to expose: a view normally runs with its author's rights and would
+hand one customer's totals to anyone who selected from it. With
+`security_invoker` the table policies apply to whoever is asking, so each
+returns exactly one person's numbers.
+
+| View | Answers |
+|---|---|
+| `v_gahwa_places` | where they drink, how often, and how good it is there |
+| `v_gahwa_people` | who they drink with, and whether those cups score higher |
+| `v_gahwa_streak` | current and longest run of days, bucketed at Kuwait midnight |
+| `v_gahwa_summary` | the headline strip: cups, 30-day count, average, usual drink, top place, top companion |
+
+One deliberate change from the schema as specified: `v_gahwa_streak`
+compares against `(current_timestamp at time zone 'Asia/Kuwait')::date`
+rather than a bare `current_date`. The days are bucketed at Kuwait
+midnight, and the database's own clock is UTC, so for the three hours
+after midnight in Kuwait — exactly when someone logging a late cup would
+look — a bare `current_date` would call a streak that ended the day
+before yesterday "current". Same intent, measured on the same clock as
+the buckets.
+
 ## Tables
 
 | Table | Rows | What it is for |
@@ -69,6 +131,8 @@ columns in it are not yet used; those preferences still live in
 | `profiles` | 0 | Display name, language and theme — created by a trigger on sign-up |
 | `orders` | 0 | A placed order. `user_id` is nullable — guests must be able to buy |
 | `order_items` | 0 | Lines on an order, with the price frozen at checkout |
+| `places` | 1 shared | Reusable place names. `user_id` null = one of Bloom's branches, pickable by everyone |
+| `gahwa_logs` | 0 | The diary. One policy, the owner's own |
 
 Two conventions worth knowing before editing anything:
 
@@ -112,6 +176,10 @@ Applied in order:
 2. `20260909000200_accounts_orders.sql` — `profiles`, the sign-up trigger, `orders`, `order_items`
 3. `20260909000300_catalogue_seed.sql` — the 18 products, generated from `js/data.js`
 4. `20260909000400_lock_down_trigger_function.sql` — revokes public EXECUTE on the trigger function
+5. `20260910000100_gahwa_log.sql` — the enums, `places`, `gahwa_logs`, and their policies
+6. `20260910000200_gahwa_views.sql` — the four `security_invoker` views
+7. `20260910000300_gahwa_photos.sql` — the private photo bucket and its per-user folder policies
+8. `20260910000400_gahwa_seed_places.sql` — Bloom's own branch as a shared place, and nothing else
 
 The seed is generated, not hand-written. Regenerate it from `js/data.js`
 rather than editing it, so the shipped catalogue and the database cannot

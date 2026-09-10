@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brew guides — Bloom</title>
-<meta name="description" content="Three recipes from the Bloom bar in Kuwait: V60 pour-over, French press and espresso, in grams, degrees and seconds.">
+<title>My account — Bloom</title>
+<meta name="description" content="Your Bloom account: your gahwa log at a glance, a copy of your own data to download, and the button that deletes it.">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
 <!-- Restore theme and reading direction before the first paint. -->
 <script>
 (function () {
@@ -27,18 +29,20 @@
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/components.css">
 </head>
-<body data-page="brew-guides" data-title-en="Brew guides — Bloom" data-title-ar="طرق التحضير — بلوم">
-<!-- The header, footer and cart drawer are injected by js/main.js so that
-     every page carries exactly the same one. -->
+<body data-page="account" data-title-en="My account — Bloom" data-title-ar="حسابي — بلوم">
 <main id="main">
   <section class="wrap">
     <div class="page-head">
-      <p class="eyebrow" data-en="Recipes · grams, degrees, seconds" data-ar="وصفات · غرامات ودرجات وثوان">Recipes · grams, degrees, seconds</p>
-      <h1 data-en="Brew guides" data-ar="طرق التحضير">Brew guides</h1>
-      <p class="lede" data-en="The three recipes we run on the bar. Weigh everything, start the timer at the first drop, and change one variable at a time." data-ar="الوصفات الثلاث التي نعمل بها على البار. زِن كل شيء، وابدأ المؤقّت مع أول قطرة، وغيّر عاملاً واحداً في كل مرة.">The three recipes we run on the bar.</p>
+      <p class="eyebrow" id="account-greet"></p>
+      <h1 data-en="My account" data-ar="حسابي">My account</h1>
     </div>
+
+    <!-- The gahwa log's own numbers, repeated here, linking through. -->
+    <div id="account-gahwa"></div>
+
+    <!-- Export and delete. Both are the customer's, not the shop's. -->
+    <div id="account-data"></div>
   </section>
-  <div class="wrap" id="guides-host"></div>
 </main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

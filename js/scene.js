@@ -328,10 +328,14 @@ var Scene = (function () {
     machines:     { x: 3.5,  y: 1.2,  z: 8,   ry: -0.209 },
     product:      { x: 0,    y: 0,    z: 5,   ry: 0 },
     cart:         { x: 0,    y: 2.5,  z: 7,   ry: 0 },
-    /* Not in the brief's table, so these two keep the room coherent:
-       the guides sit just off centre, the cafe faces the bean shelf. */
-    'brew-guides': { x: -1.2, y: 0.4, z: 7.2, ry: 0.07 },
-    cafe:          { x: -2.5, y: 0.8, z: 7.6, ry: 0.13 }
+    /* Not in the brief's table, so these keep the room coherent: the
+       guides sit just off centre, the cafe faces the bean shelf, and the
+       two private pages pull in close and low — a quieter corner than
+       the shop, which is roughly what they are. */
+    'brew-guides': { x: -1.2, y: 0.4,  z: 7.2, ry: 0.07 },
+    cafe:          { x: -2.5, y: 0.8,  z: 7.6, ry: 0.13 },
+    'gahwa-log':   { x: -1.8, y: -0.5, z: 6.4, ry: 0.1 },
+    account:       { x: 1.8,  y: -0.5, z: 6.4, ry: -0.1 }
   };
 
   var CAM_KEY = 'bloom.camera';

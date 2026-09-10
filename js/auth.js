@@ -186,6 +186,12 @@ var Auth = (function () {
   function isGuest() { var s = load(); return !!(s && s.guest); }
   function email()   { var s = load(); return s && !s.guest ? s.email : null; }
 
+  /* The account's own id, or null for a guest. The gahwa log needs it to
+     stamp rows it writes; the policies then check that stamp against the
+     token, so a wrong one here fails the write rather than mislabelling
+     it. */
+  function userId()  { var s = load(); return s && !s.guest ? s.id : null; }
+
   /* Create an account. Resolves { ok: true, signedIn: true } when the
      project signs new customers straight in, or { ok: true, signedIn:
      false } when it is set to send a confirmation email first — the
@@ -367,6 +373,7 @@ var Auth = (function () {
     current: current,
     isGuest: isGuest,
     email: email,
+    userId: userId,
     signUp: signUp,
     signIn: signIn,
     signInAsGuest: signInAsGuest,

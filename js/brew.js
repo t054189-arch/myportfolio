@@ -324,6 +324,10 @@ var Brew = (function () {
       if (frame) window.cancelAnimationFrame(frame);
       frame = 0;
       setToggle(finished ? WORDS.brewAgain : WORDS.resume);
+      /* The cup is poured. Announced rather than acted on here, because
+         the brew unit has no business knowing the gahwa log exists —
+         whoever wants to offer "log this cup" listens for this. */
+      if (finished) document.dispatchEvent(new CustomEvent('bloom:brewed'));
     }
 
     function setToggle(words) {

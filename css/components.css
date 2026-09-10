@@ -1864,3 +1864,675 @@ button:hover .ico-close .layers { transform: rotate(90deg); }
   .film-rule { width: 260px; }
   .film-tag { opacity: .9; }
 }
+
+/* --- 24. The gahwa log --------------------------------------------------
+   No new colours: the beans fill in --clay, companions sit on
+   --leaf-wash, and everything else is the paper/surface/ink set the rest
+   of the site is built from. Numbers are mono, place names are Bodoni,
+   radii are the same 3px and 6px.
+   ----------------------------------------------------------------------- */
+
+.gahwa-lock { color: var(--ink-3); margin-top: var(--s-2); }
+
+/* The headline strip. These are the biggest numbers on the page on
+   purpose — they are the reason someone opens it. */
+.gstats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: 1px;
+  margin-block: var(--s-4);
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  overflow: hidden;
+}
+.gstat {
+  display: grid;
+  align-content: start;
+  gap: var(--s-1);
+  padding: var(--s-4) var(--s-3);
+  background: var(--surface);
+}
+.gstat-n {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.gstat-word {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  line-height: 1.15;
+  display: block;
+}
+.lang-ar .gstat-word { font-family: var(--font-display-ar); }
+.gstat-none { color: var(--ink-3); }
+.gstat-sub {
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--ink-3);
+}
+.lang-ar .gstat-sub, .lang-ar .gstat-n { font-family: var(--font-mono-ar); }
+.gstat-l {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.lang-ar .gstat-l {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .8125rem;
+}
+
+/* The way in. The beans are a control, not decoration: tapping one here
+   opens the sheet with that rating already answered. */
+.gquick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.gquick-q {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--ink);
+}
+.lang-ar .gquick-q { font-family: var(--font-display-ar); }
+.gquick .btn { margin-inline-start: auto; }
+
+/* --- the beans ---------------------------------------------------------- */
+
+.beans { display: inline-flex; gap: 2px; align-items: center; }
+.beans .bean {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  line-height: 0;
+}
+.beans .bean svg { width: 18px; height: 18px; fill: var(--ink-3); opacity: .35; }
+.beans .bean.is-on svg { fill: var(--clay); opacity: 1; }
+
+.beans-pick .bean {
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  border-radius: var(--r-control);
+  transition: transform var(--t-fast) var(--e-out), background-color var(--t-fast) linear;
+}
+.beans-pick .bean svg { width: 24px; height: 24px; transition: fill var(--t-fast) linear, opacity var(--t-fast) linear; }
+.beans-pick .bean:hover { background: var(--clay-wash); transform: translateY(-1px); }
+.beans-static .bean svg { width: 13px; height: 13px; }
+
+/* --- layout ------------------------------------------------------------- */
+
+.gahwa-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: var(--s-6);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .gahwa-main { grid-template-columns: 1fr; }
+}
+.gahwa-side { display: grid; gap: var(--s-4); position: sticky; top: var(--s-4); }
+@media (max-width: 900px) { .gahwa-side { position: static; } }
+
+/* --- filters ------------------------------------------------------------ */
+
+.gfilters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-bottom: var(--s-4);
+}
+.filter {
+  padding: 6px var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color var(--t-fast) linear, color var(--t-fast) linear,
+              border-color var(--t-fast) linear;
+}
+.lang-ar .filter {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .8125rem;
+}
+.filter:hover { border-color: var(--ink-3); color: var(--ink); }
+.filter.is-on { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.filter-select { display: inline-flex; align-items: center; gap: var(--s-2); }
+.filter-select select {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  max-width: 12ch;
+}
+.filter-select.is-on select { color: var(--surface); }
+
+/* The list fades out and back rather than snapping, and its height is
+   pinned across the swap so the page never jumps under the reader. */
+#gahwa-timeline {
+  transition: opacity var(--t-base) var(--e-in-out);
+}
+#gahwa-timeline.is-swapping { opacity: 0; }
+
+/* --- the timeline ------------------------------------------------------- */
+
+.cup-month {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--s-3);
+}
+.lang-ar .cup-month {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .875rem;
+}
+.cup-group { display: grid; gap: var(--s-2); margin-bottom: var(--s-5); }
+
+/* A receipt: the date on one side in mono, the place in Bodoni. */
+.cup {
+  position: relative;
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: var(--s-3);
+  padding: var(--s-3);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.cup-when {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding-top: 2px;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  /* A date and a time are read left to right in both languages. */
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+.lang-ar .cup-when { font-family: var(--font-mono-ar); }
+.cup-day  { font-size: .8125rem; color: var(--ink); }
+.cup-time { font-size: .6875rem; color: var(--ink-3); }
+
+.cup-body { display: grid; gap: var(--s-2); min-width: 0; }
+.cup-place {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+.lang-ar .cup-place { font-family: var(--font-display-ar); }
+.cup-bloom {
+  font-family: var(--font-display);
+  font-size: .6875rem;
+  color: var(--leaf);
+  border: 1px solid var(--leaf-wash);
+  border-radius: var(--r-control);
+  padding: 1px 5px;
+}
+.cup-bloom em { font-style: italic; }
+
+.cup-people { display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.chip-person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: 3px var(--s-2);
+  background: var(--leaf-wash);
+  border: 0;
+  border-radius: var(--r-control);
+  color: var(--leaf-deep);
+  font-size: .8125rem;
+}
+
+.cup-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+}
+.cup-drink {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.lang-ar .cup-drink {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .8125rem;
+}
+.cup-dose {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  color: var(--ink-3);
+}
+.cup-note { color: var(--ink-2); font-size: .9375rem; }
+.cup-photo {
+  width: 100%;
+  max-width: 220px;
+  border-radius: var(--r-control);
+  border: 1px solid var(--line);
+}
+
+.cup-x {
+  position: absolute;
+  top: var(--s-2);
+  inset-inline-end: var(--s-2);
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  border-radius: var(--r-control);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity var(--t-fast) linear, background-color var(--t-fast) linear;
+}
+.cup:hover .cup-x, .cup-x:focus-visible { opacity: 1; }
+.cup-x:hover { background: var(--clay-wash); }
+.cup-x .ico3d { width: 14px; height: 14px; }
+
+.cup-confirm {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.cup-confirm p { flex: 1 1 12ch; color: var(--ink-2); font-size: .875rem; }
+.btn-danger {
+  background: var(--clay);
+  border: 1px solid var(--clay);
+  color: var(--surface);
+}
+.btn-danger:hover { filter: brightness(.92); }
+
+/* The example on an empty page: greyed, labelled, and never mistakable
+   for something the customer wrote. */
+.cup-example { opacity: .62; border-style: dashed; }
+.cup-tag {
+  align-self: start;
+  font-family: var(--font-mono);
+  font-size: .625rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border: 1px dashed var(--line);
+  border-radius: var(--r-control);
+  padding: 1px 6px;
+  width: max-content;
+}
+.lang-ar .cup-tag { font-family: var(--font-arabic); letter-spacing: 0; text-transform: none; }
+
+.gahwa-empty {
+  display: grid;
+  justify-items: start;
+  gap: var(--s-4);
+  max-width: 56ch;
+}
+.gahwa-empty .cup { width: 100%; }
+.gahwa-none, .panel-none { color: var(--ink-3); }
+.gahwa-loading { min-height: 40vh; }
+
+/* --- the two panels ----------------------------------------------------- */
+
+.gpanel {
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+}
+.gpanel h2 {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: var(--s-3);
+}
+.lang-ar .gpanel h2 {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .875rem;
+}
+
+/* The people panel is the one that gets screenshotted, so it gets the
+   nicer treatment: a warmer ground and the names in Bodoni. */
+.panel-people {
+  background: var(--leaf-wash);
+  border-color: transparent;
+}
+.panel-people h2 { color: var(--leaf-deep); }
+.people { display: grid; gap: var(--s-1); }
+.person {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name cups" "rate last";
+  gap: 2px var(--s-3);
+  align-items: baseline;
+  padding: var(--s-2) 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--leaf-deep) 14%, transparent);
+}
+.person:last-child { border-bottom: 0; }
+.person-name {
+  grid-area: name;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1.15;
+  color: var(--leaf-deep);
+  overflow-wrap: anywhere;
+}
+.lang-ar .person-name { font-family: var(--font-display-ar); }
+.person-cups {
+  grid-area: cups;
+  font-family: var(--font-mono);
+  font-size: .75rem;
+  color: var(--leaf-deep);
+  white-space: nowrap;
+}
+.lang-ar .person-cups { font-family: var(--font-mono-ar); }
+.person-cups b { font-size: 1rem; font-weight: 500; }
+.person-rate { grid-area: rate; }
+.person-rate .bean svg { fill: var(--leaf-deep); }
+.person-rate .bean.is-on svg { fill: var(--clay); }
+.person-last {
+  grid-area: last;
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  color: color-mix(in srgb, var(--leaf-deep) 70%, transparent);
+  text-align: end;
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.plist { display: grid; gap: var(--s-2); }
+.pitem {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--s-3);
+  align-items: center;
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line-soft);
+}
+.pitem:last-child { border-bottom: 0; padding-bottom: 0; }
+.pitem-main { min-width: 0; display: grid; gap: 1px; }
+.pitem-name {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+}
+.lang-ar .pitem-name { font-family: var(--font-display-ar); }
+.pitem-sub { font-size: .75rem; color: var(--ink-3); }
+.pitem-n { display: grid; justify-items: center; }
+.pnum {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+.punit {
+  font-family: var(--font-mono);
+  font-size: .625rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.lang-ar .punit, .lang-ar .pnum { font-family: var(--font-mono-ar); letter-spacing: 0; text-transform: none; }
+.pitem-r { display: grid; justify-items: end; gap: 2px; }
+.pitem-last {
+  font-family: var(--font-mono);
+  font-size: .625rem;
+  color: var(--ink-3);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* --- the log sheet ------------------------------------------------------ */
+
+body.sheet-open { overflow: hidden; }
+
+.sheet-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: var(--scrim);
+  animation: scrim-in var(--t-base) var(--e-out) both;
+}
+@keyframes scrim-in { from { opacity: 0; } to { opacity: 1; } }
+
+.sheet {
+  position: fixed;
+  z-index: 61;
+  inset-block-end: 0;
+  inset-inline: 0;
+  margin-inline: auto;
+  width: min(560px, 100%);
+  max-height: 92vh;
+  max-height: 92svh;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-start-start-radius: var(--r-card);
+  border-start-end-radius: var(--r-card);
+  box-shadow: var(--shadow-login);
+  animation: sheet-up var(--t-slow) var(--e-out) both;
+}
+@keyframes sheet-up {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+@media (min-width: 700px) {
+  .sheet {
+    inset-block: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: var(--r-card);
+    animation-name: sheet-in;
+  }
+  @keyframes sheet-in {
+    from { transform: translateY(calc(-50% + 12px)); opacity: 0; }
+    to   { transform: translateY(-50%); opacity: 1; }
+  }
+}
+
+.sheet-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--line);
+}
+.sheet-top h2 { font-family: var(--font-display); font-size: 1.375rem; }
+.lang-ar .sheet-top h2 { font-family: var(--font-display-ar); }
+.sheet-body { overflow-y: auto; padding: var(--s-4); display: grid; gap: var(--s-4); }
+.sheet-foot { padding: var(--s-3) var(--s-4); border-top: 1px solid var(--line); }
+
+.ask { display: grid; gap: var(--s-2); border: 0; padding: 0; }
+.ask legend, .ask-more summary {
+  font-family: var(--font-mono);
+  font-size: .6875rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding: 0;
+  margin-bottom: var(--s-1);
+}
+.lang-ar .ask legend, .lang-ar .ask-more summary {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .875rem;
+}
+.ask-more summary { cursor: pointer; }
+.ask-more[open] { gap: var(--s-3); }
+.ask-hint { font-size: .8125rem; color: var(--ink-3); }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.chip {
+  padding: 7px var(--s-3);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  color: var(--ink-2);
+  font-size: .875rem;
+  cursor: pointer;
+  transition: background-color var(--t-fast) linear, color var(--t-fast) linear,
+              border-color var(--t-fast) linear;
+}
+.chip:hover { border-color: var(--ink-3); color: var(--ink); }
+.chip.is-on { background: var(--leaf); border-color: var(--leaf); color: var(--surface); }
+.chips-people .chip { background: var(--surface); }
+
+.picked { display: flex; flex-wrap: wrap; gap: var(--s-1); }
+.picked:empty { display: none; }
+.chip-drop { cursor: pointer; }
+.chip-drop .ico3d { width: 10px; height: 10px; }
+
+.ask input[type="text"], .ask input[type="number"],
+.ask input[type="datetime-local"], .ask textarea, .ask select,
+.ask-more input[type="text"], .ask-more textarea {
+  /* Same floor as the login fields, and for the same reason: an input
+     refuses to shrink below about twenty characters of its own font, and
+     the Arabic face is much wider than the Latin one. */
+  min-width: 0;
+  width: 100%;
+  padding: 10px var(--s-3);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-control);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: .9375rem;
+}
+.ask textarea { resize: vertical; }
+.ask-kind { display: grid; gap: var(--s-1); }
+.ask-kind > span {
+  font-family: var(--font-mono);
+  font-size: .625rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.lang-ar .ask-kind > span {
+  font-family: var(--font-arabic);
+  letter-spacing: 0;
+  text-transform: none;
+  font-size: .8125rem;
+}
+.ask-kind[hidden] { display: none; }
+
+.dose-in { position: relative; display: block; }
+.dose-in i {
+  position: absolute;
+  inset-inline-end: var(--s-3);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: .8125rem;
+  color: var(--ink-3);
+  pointer-events: none;
+}
+.dose-in input { padding-inline-end: var(--s-6); }
+
+/* --- the account page --------------------------------------------------- */
+
+.acct-block {
+  padding: var(--s-4);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  display: grid;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.acct-block h2 { font-family: var(--font-display); font-size: 1.5rem; }
+.lang-ar .acct-block h2 { font-family: var(--font-display-ar); }
+.acct-row { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+.acct-warn { color: var(--ink-2); font-size: .9375rem; }
+.acct-check { display: flex; align-items: center; gap: var(--s-2); font-size: .9375rem; }
+.acct-check input { width: 18px; height: 18px; }
+
+/* --- the bag tracker on a product page ---------------------------------- */
+
+.bagline {
+  display: grid;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  margin-top: var(--s-3);
+  background: var(--leaf-wash);
+  border-radius: var(--r-card);
+}
+.bagline p { color: var(--leaf-deep); font-size: .9375rem; }
+.bagline b { font-family: var(--font-mono); font-weight: 500; }
+.lang-ar .bagline b { font-family: var(--font-mono-ar); }
+.bagline-row { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+
+/* Someone who has asked for less movement gets the sheet and the fade
+   without the travel. */
+@media (prefers-reduced-motion: reduce) {
+  .sheet, .sheet-scrim { animation: none; }
+  #gahwa-timeline { transition: none; }
+  #gahwa-timeline.is-swapping { opacity: 1; }
+  .beans-pick .bean { transition: none; }
+  .beans-pick .bean:hover { transform: none; }
+}
+
+/* The empty log has exactly one thing worth doing, so it is unmissable
+   there — and only there. */
+.gquick-big { padding: var(--s-5) var(--s-4); gap: var(--s-4); }
+.gquick-big .gquick-q { font-size: 1.5rem; }
+.gquick-big .beans-pick .bean { width: 44px; height: 44px; }
+.gquick-big .beans-pick .bean svg { width: 32px; height: 32px; }
+.gquick-big .btn { padding: 14px var(--s-5); font-size: 1rem; }
+@media (max-width: 560px) {
+  .gquick-big .btn { margin-inline-start: 0; width: 100%; }
+}
